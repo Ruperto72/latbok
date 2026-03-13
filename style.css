@@ -55,6 +55,15 @@ body {
   margin-top: 4px;
 }
 
+.version-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  opacity: 0.4;
+  margin-top: 6px;
+  display: block;
+}
+
 .song-list {
   flex: 1;
   overflow-y: auto;
