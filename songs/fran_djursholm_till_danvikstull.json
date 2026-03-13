@@ -1,0 +1,105 @@
+{
+  "title": "Från Djursholm till Danvikstull",
+  "artist": "Orup",
+  "key": "Gm",
+  "difficulty": "intermediate",
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "Cm           D          Gm       Eb",
+          "l": "Från Djursholm till Danvikstull via broarna i Gamla"
+        },
+        {
+          "c": "Cm                    D  Gm  G7  Gm7  G7",
+          "l": "Stan, har jag irrat full, vid min Gud."
+        },
+        {
+          "c": "Gm             G7                Gm7",
+          "l": "Jag har vandrat kring, letat efter nån som kan visa"
+        },
+        {
+          "c": "G7",
+          "l": "vägen hem."
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "Gm                   Gm7              Cm",
+          "l": "I en ändlös ring, men jag undrar ännu vem, skall ta hand"
+        },
+        {
+          "c": "D          Gm              Em7",
+          "l": "om denna obrukbara spillra av en man?"
+        },
+        {
+          "c": "Cm         D",
+          "l": "Åh, ta mig hem. Ta mig dit jag kan få sova mig hel igen"
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "Cm           D          Gm       Eb",
+          "l": "Från Djursholm till Danvikstull, via broarna i Gamla"
+        },
+        {
+          "c": "Cm           D            Gm",
+          "l": "Stan, har jag irrat full i tusen mörka dar."
+        },
+        {
+          "c": "Cm         D              Gm",
+          "l": "Från Blåsut till Jakobsberg, för dina unga läppars"
+        },
+        {
+          "c": "Em7  Cm          D            Gm",
+          "l": "färg, har jag irrat full vid min Gud"
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "G7                Cm          D            Gm",
+          "l": "Vem skall ta skall ta hand om denna obrukbara spillra"
+        },
+        {
+          "c": "             Em7",
+          "l": "av en man?"
+        },
+        {
+          "c": "Cm         D",
+          "l": "Åh, ta mig hem. Ta mig dit jag kan få sova mig hel igen"
+        }
+      ]
+    },
+    {
+      "label": "Outro (refräng)",
+      "lines": [
+        {
+          "c": "Cm           D          Gm       Eb",
+          "l": "Från Djursholm till Danvikstull, via broarna i Gamla"
+        },
+        {
+          "c": "Cm         D            Gm",
+          "l": "Stan, har jag irrat full i tusen mörka dar."
+        },
+        {
+          "c": "Cm         D              Gm",
+          "l": "Från Blåsut till Jakobsberg, för dina unga läppars"
+        },
+        {
+          "c": "Em7  Cm          D            Gm",
+          "l": "färg, har jag irrat full vid min Gud"
+        }
+      ]
+    }
+  ]
+}

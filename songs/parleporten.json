@@ -1,0 +1,122 @@
+{
+  "title": "Pärleporten",
+  "artist": "Christer Sjögren",
+  "key": "G",
+  "difficulty": "intermediate",
+  "sections": [
+    {
+      "label": "Intro",
+      "lines": [
+        {
+          "c": "G  C7   Am/E  C  G",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "G      D7             G",
+          "l": "Som en härlig gudoms-källa,"
+        },
+        {
+          "c": "C       G            Dsus4",
+          "l": "rik och mäktig, djup och stor"
+        },
+        {
+          "c": "G       G/B            C",
+          "l": "är den kärlek, nåd och sanning"
+        },
+        {
+          "c": "   G/D  D7      G",
+          "l": "som i Jesu hjärta bor."
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "D                G  G7",
+          "l": "Han har öppnat pärle-porten"
+        },
+        {
+          "c": "C       G        A       D",
+          "l": "så att jag kan komma in."
+        },
+        {
+          "c": "G       G/B            C",
+          "l": "Genom blodet har han frälst mig"
+        },
+        {
+          "c": "   G/D  D7      G",
+          "l": "och bevarat mig som sin."
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "G      D7             G",
+          "l": "En gång som en jagad duva,"
+        },
+        {
+          "c": "C       G            Dsus4",
+          "l": "som en sårad hjort jag var,"
+        },
+        {
+          "c": "G       G/B              C",
+          "l": "men ett djupt förkrossat hjärta"
+        },
+        {
+          "c": "   G/D    D7      G",
+          "l": "Jesus ej för-skjutit har."
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "G      D7        G",
+          "l": "Under över alla under,"
+        },
+        {
+          "c": "C       G          Dsus4",
+          "l": "allt förlåt han mig en gång."
+        },
+        {
+          "c": "G       G/B          C",
+          "l": "Om hans underbara godhet"
+        },
+        {
+          "c": "   G/D  D7      G",
+          "l": "glad jag sjunger nu min sång."
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "G      D7          G",
+          "l": "När en gång i livets morgon"
+        },
+        {
+          "c": "C       G          Dsus4",
+          "l": "till den gyllne port jag når,"
+        },
+        {
+          "c": "G       G/B          C",
+          "l": "då för Jesus stora kärlek"
+        },
+        {
+          "c": "   G/D  D7      G",
+          "l": "och för mig den öppen står."
+        }
+      ]
+    }
+  ]
+}

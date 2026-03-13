@@ -1,0 +1,117 @@
+{
+  "title": "Amazing Grace",
+  "artist": "John Newton",
+  "key": "G",
+  "difficulty": "beginner",
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "G            C/G        G",
+          "l": "Amazing Grace, how sweet the sound,"
+        },
+        {
+          "c": "                        D7",
+          "l": "that saved a wretch like me."
+        },
+        {
+          "c": "G    G7       C         G",
+          "l": "I once was lost, but now am found,"
+        },
+        {
+          "c": "Em       D7      G   C/D",
+          "l": "was blind, but now I see."
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "G                    C         G",
+          "l": "'Twas grace that taught my heart to fear,"
+        },
+        {
+          "c": "                        D7",
+          "l": "and grace my fears relieved."
+        },
+        {
+          "c": "G    G7       C         G",
+          "l": "How precious did that grace appear,"
+        },
+        {
+          "c": "Em   D7      G       E7",
+          "l": "the hour I first believed."
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "A                    D         A",
+          "l": "Through many dangers, toils and snares"
+        },
+        {
+          "c": "  A            E",
+          "l": "I have already come"
+        },
+        {
+          "c": "A          A7        D         A",
+          "l": "Tis' grace hath brought me safe thus far"
+        },
+        {
+          "c": "F#m      E       A       D/E",
+          "l": "And grace will lead me home"
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "A                    D       A",
+          "l": "When we've been there ten thousand years,"
+        },
+        {
+          "c": "A            E7",
+          "l": "bright shining as the sun,"
+        },
+        {
+          "c": "A      A7        D         A",
+          "l": "We've no less days to sing God's praise"
+        },
+        {
+          "c": "F#m    E       A      F#",
+          "l": "than when we first begun."
+        }
+      ]
+    },
+    {
+      "label": "Vers 5",
+      "lines": [
+        {
+          "c": "B               E         B",
+          "l": "Amazing Grace, how sweet the sound,"
+        },
+        {
+          "c": "                        F#7",
+          "l": "That saved a wretch like me."
+        },
+        {
+          "c": "B      B7        E         B",
+          "l": "I once was lost, but now am found,"
+        },
+        {
+          "c": "G#m       F#7     G#m  E",
+          "l": "Was blind, but now I see."
+        },
+        {
+          "c": "C#        F#      E/B  B",
+          "l": "Was blind, but now I see."
+        }
+      ]
+    }
+  ]
+}

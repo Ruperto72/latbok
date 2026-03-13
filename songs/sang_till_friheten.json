@@ -1,0 +1,125 @@
+{
+  "title": "Sång till Friheten",
+  "artist": "Björn Afzelius",
+  "key": "C",
+  "difficulty": "intermediate",
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "C        F     G      C  F  G",
+          "l": "Du är det finaste jag vet."
+        },
+        {
+          "c": "C          F      Dm    G",
+          "l": "Du är det dyraste i världen."
+        },
+        {
+          "c": "Dm         G            C           Am7",
+          "l": "Du är som stjärnorna, som vindarna, som vågorna,"
+        },
+        {
+          "c": "   F            Dm         G",
+          "l": "som fåglarna, som blommorna på marken."
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "C        F     G      C  F  G",
+          "l": "Du är min ledstjärna och vän."
+        },
+        {
+          "c": "C          F      Dm    G",
+          "l": "Du är min tro, mitt hopp, min kärlek."
+        },
+        {
+          "c": "Dm         G              C            Am7",
+          "l": "Du är mitt blod och mina lungor, mina ögon,"
+        },
+        {
+          "c": "   F               Dm              G",
+          "l": "mina skuldror, mina händer och mitt hjärta."
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "C      F        G      C  F  G",
+          "l": "Friheten är ditt vackra namn."
+        },
+        {
+          "c": "C        F      Dm    G",
+          "l": "Vänskapen är din stolta moder."
+        },
+        {
+          "c": "Dm     G              C              Am7",
+          "l": "Rättvisan är din broder, freden är din syster,"
+        },
+        {
+          "c": "   F            Dm              G",
+          "l": "kampen är din fader, framtiden ditt ansvar."
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "C        F     G      C  F  G",
+          "l": "Du är det finaste jag vet."
+        },
+        {
+          "c": "C        F      Dm    G",
+          "l": "Du är det dyraste i världen."
+        },
+        {
+          "c": "Dm         G            C           Am7",
+          "l": "Du är som stjärnorna, som vindarna, som vågorna,"
+        },
+        {
+          "c": "   F            Dm         G",
+          "l": "som fåglarna, som blommorna på marken."
+        }
+      ]
+    },
+    {
+      "label": "Brygga",
+      "lines": [
+        {
+          "c": "D         G       A        D   G  A",
+          "l": "Du är det finaste jag vet."
+        },
+        {
+          "c": "D           G       Em   A",
+          "l": "Du är det dyraste i världen."
+        },
+        {
+          "c": "Em         A",
+          "l": "Du är som stjärnorna,"
+        },
+        {
+          "c": "   D",
+          "l": "som vindarna,"
+        },
+        {
+          "c": "   Bm7",
+          "l": "som vågorna,"
+        },
+        {
+          "c": "   G",
+          "l": "som fåglarna,"
+        },
+        {
+          "c": "Em              A",
+          "l": "som blommorna på marken."
+        }
+      ]
+    }
+  ]
+}

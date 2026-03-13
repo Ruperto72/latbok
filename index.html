@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Körhäftet — Ackord & Text</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>Körhäftet</h1>
+      <p>Laddar låtar...</p>
+    </div>
+    <div class="song-list" id="songList"></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="topbar-title" id="topbarTitle">Välj en låt</span>
+        <span class="transpose-badge" id="transposeBadge" style="display:none"></span>
+        <span class="save-indicator" id="saveIndicator">✓ Sparat</span>
+      </div>
+      <div class="controls">
+        <div class="font-ctrl">
+          <button onclick="changeFontSize(-1)">−</button>
+          <span id="fontLabel">13</span>
+          <button onclick="changeFontSize(1)">+</button>
+        </div>
+        <button class="ctrl-btn" onclick="toggleColumns()" id="colBtn">2 kolumner</button>
+        <button class="ctrl-btn" onclick="transpose(-1)">♭</button>
+        <button class="ctrl-btn" onclick="transpose(1)">♯</button>
+        <button class="ctrl-btn" onclick="toggleEditMode()" id="editBtn">✎ Justera ackord</button>
+        <button class="ctrl-btn" onclick="toggleListen()" id="listenBtn">🎤 Följ med</button>
+        <button class="ctrl-btn" onclick="resetPositions()" id="resetBtn" style="display:none">↺ Återställ</button>
+        <button class="ctrl-btn" onclick="exportAdjusted()" id="exportBtn" style="display:none">⬇ Exportera</button>
+      </div>
+    </div>
+    <div class="song-display" id="songDisplay">
+      <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
+        <p style="font-size:40px;margin-bottom:12px">🎸</p>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Laddar...</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="chords.js"></script>
+<script src="listener.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
