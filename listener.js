@@ -257,7 +257,7 @@ function startListening() {
         if (listenActive && recognition) {
           try { recognition.start(); } catch(e) {}
         }
-      }, 200);
+      }, 1000);
     }
   };
 
