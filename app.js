@@ -31,7 +31,9 @@ async function loadSongs() {
         try {
           const resp = await fetch(`songs/${filename}`);
           if (!resp.ok) return null;
-          return await resp.json();
+          const song = await resp.json();
+          song._filename = filename;
+          return song;
         } catch (e) {
           console.warn(`Could not load songs/${filename}:`, e);
           return null;
@@ -101,7 +103,10 @@ async function savePrefs() {
 
 function debouncedSaveOffsets() {
   if (saveTimeout) clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => saveOffsets(), 300);
+  saveTimeout = setTimeout(() => {
+    saveOffsets();
+    saveCurrentSongToFile();
+  }, 800);
 }
 
 function flashSaveIndicator() {
@@ -406,71 +411,62 @@ function toggleEditMode() {
   editMode = !editMode;
   document.getElementById('editBtn').className = 'ctrl-btn' + (editMode ? ' active' : '');
   document.getElementById('resetBtn').style.display = editMode ? 'inline-block' : 'none';
-  document.getElementById('exportBtn').style.display = editMode ? 'inline-block' : 'none';
   renderSong();
 }
 
-function exportAdjusted() {
+async function saveCurrentSongToFile() {
+  if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+
+  const songIdx = currentSong;
+  const s = songs[songIdx];
+  const filename = s._filename;
+  if (!filename) return;
+
   measureChWidth();
   const chWidth = chWidthCache;
+  const exportSong = { ...s, sections: [] };
+  delete exportSong._filename;
 
-  const hasAdjustments = {};
-  Object.keys(chordOffsets).forEach(k => {
-    hasAdjustments[parseInt(k.split('-')[0])] = true;
-  });
-
-  if (Object.keys(hasAdjustments).length === 0) {
-    alert('Inga justeringar att exportera. Dra ackord till önskad position först.');
-    return;
-  }
-
-  let output = '';
-
-  Object.keys(hasAdjustments).map(Number).sort((a,b) => a-b).forEach(songIdx => {
-    const s = songs[songIdx];
-    output += `\n// ═══ ${s.title} (index ${songIdx}) ═══\n`;
-
-    const exportSong = { ...s, sections: [] };
-
-    s.sections.forEach((sec, si) => {
-      const exportSec = { label: sec.label, lines: [] };
-
-      sec.lines.forEach((line, li) => {
-        const chords = parseChordLine(line.c);
-        if (chords.length === 0) {
-          exportSec.lines.push({ c: "", l: line.l });
-          return;
-        }
-
-        const newChords = chords.map((ch, ci) => {
-          const key = `${songIdx}-${si}-${li}-${ci}`;
-          const charOffset = Math.round((chordOffsets[key] || 0) / chWidth);
-          return { name: ch.name, pos: Math.max(0, ch.pos + charOffset) };
-        }).sort((a, b) => a.pos - b.pos);
-
-        let chordStr = '';
-        newChords.forEach(ch => {
-          while (chordStr.length < ch.pos) chordStr += ' ';
-          chordStr += ch.name;
-        });
-
-        exportSec.lines.push({ c: chordStr, l: line.l });
+  s.sections.forEach((sec, si) => {
+    const exportSec = { label: sec.label, lines: [] };
+    sec.lines.forEach((line, li) => {
+      const chords = parseChordLine(line.c);
+      if (chords.length === 0) {
+        exportSec.lines.push({ c: '', l: line.l });
+        return;
+      }
+      const newChords = chords.map((ch, ci) => {
+        const key = `${songIdx}-${si}-${li}-${ci}`;
+        const charOffset = Math.round((chordOffsets[key] || 0) / chWidth);
+        return { name: ch.name, pos: Math.max(0, ch.pos + charOffset) };
+      }).sort((a, b) => a.pos - b.pos);
+      let chordStr = '';
+      newChords.forEach(ch => {
+        while (chordStr.length < ch.pos) chordStr += ' ';
+        chordStr += ch.name;
       });
-
-      exportSong.sections.push(exportSec);
+      exportSec.lines.push({ c: chordStr, l: line.l });
     });
-
-    output += JSON.stringify(exportSong, null, 2) + '\n';
+    exportSong.sections.push(exportSec);
   });
 
-  const blob = new Blob([output], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'ackord-justeringar.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  flashSaveIndicator();
+  try {
+    const resp = await fetch('/save-song', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename, content: exportSong })
+    });
+    if (!resp.ok) throw new Error(await resp.text());
+    // Uppdatera songs i minnet och rensa offsets för denna låt
+    songs[songIdx] = { ...exportSong, _filename: filename };
+    chordOffsets = Object.fromEntries(
+      Object.entries(chordOffsets).filter(([k]) => !k.startsWith(songIdx + '-'))
+    );
+    await saveOffsets();
+    flashSaveIndicator();
+  } catch (e) {
+    console.error(`Kunde inte spara ${filename}:`, e);
+  }
 }
 
 async function resetPositions() {
