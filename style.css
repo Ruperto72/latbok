@@ -451,6 +451,7 @@ body {
   .song-display { padding: 18px 12px; }
   .columns-2 .song-body { column-count: 1; }
   .sidebar-header { padding-top: 64px; }
+  #colBtn, #editBtn { display: none !important; }
 }
 
 @media print {
