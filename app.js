@@ -203,6 +203,7 @@ function measureChWidth() {
 
 function renderSong() {
   if (songs.length === 0) return;
+  try {
   measureChWidth();
   const s = songs[currentSong];
   const display = document.getElementById('songDisplay');
@@ -322,6 +323,11 @@ function renderSong() {
   display.className = 'song-display' + (twoColumns ? ' columns-2' : '');
 
   if (editMode) attachDragHandlers();
+  } catch (e) {
+    console.error('renderSong crash:', e);
+    document.getElementById('songDisplay').innerHTML =
+      `<div style="padding:40px;color:#f66;font-family:monospace">FEL: ${e.message}</div>`;
+  }
 }
 
 // ─── Drag system ───
