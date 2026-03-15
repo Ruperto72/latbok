@@ -269,14 +269,18 @@ function renderSong() {
       } else {
         if (chords.length > 0 && lyric.trim()) {
           html += `<div class="cl-pair">`;
-          chords.forEach((ch, ci) => {
+          // Pre-compute snapped start positions so segment boundaries fall on word starts
+          const snappedStarts = chords.map((ch, ci) => {
             const key = `${currentSong}-${si}-${li}-${ci}`;
             const pxOffset = chordOffsets[key] || 0;
             const charShift = Math.round(pxOffset / chWidthCache);
-            const startPos = Math.max(0, ch.pos + charShift);
-            const nextPos = ci < chords.length - 1
-              ? Math.max(0, chords[ci+1].pos + Math.round((chordOffsets[`${currentSong}-${si}-${li}-${ci+1}`] || 0) / chWidthCache))
-              : lyric.length;
+            let pos = Math.max(0, ch.pos + charShift);
+            while (pos > 0 && lyric[pos - 1] !== ' ') pos--;
+            return pos;
+          });
+          chords.forEach((ch, ci) => {
+            const startPos = snappedStarts[ci];
+            const nextPos = ci < chords.length - 1 ? snappedStarts[ci + 1] : lyric.length;
             const textSlice = lyric.substring(startPos, Math.max(startPos, nextPos));
             if (ci === 0 && startPos > 0) {
               const pre = lyric.substring(0, startPos);
