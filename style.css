@@ -196,7 +196,7 @@ body {
 
 .song-display {
   padding: 28px 32px;
-  max-width: 960px;
+  width: 100%;
 }
 
 .song-display .header {
@@ -524,10 +524,7 @@ body {
 /* Display-mode lyric in measure context: fills full measure width */
 .cl-display-lyric {
   color: var(--text);
-  white-space: normal;
-  word-break: normal;
-  overflow-wrap: break-word;
-  text-align: justify;
+  white-space: nowrap;
   width: 100%;
 }
 
