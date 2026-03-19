@@ -291,7 +291,11 @@ function renderSong() {
         const chords = parseChordLine(cPart);
         const lyric = displayLyrics[mi] || '';
 
-        if (mi > 0) {
+        // Open a row group every 2 measures (for 2+2 mobile layout)
+        if (isMultiMeasure && mi % 2 === 0) html += `<div class="cl-measure-row">`;
+
+        // Barline within a row group (mi=1, 3, 5…); NOT at row boundaries (mi=2, 4…)
+        if (mi > 0 && (!isMultiMeasure || mi % 2 !== 0)) {
           html += editMode
             ? `<div class="cl-measure-bar cl-bar-edit" data-si="${si}" data-li="${li}" data-left="${mi-1}" title="Klicka för att ta bort taktstreck"></div>`
             : `<div class="cl-measure-bar"></div>`;
@@ -382,6 +386,17 @@ function renderSong() {
             } else if (lyric.trim()) {
               html += `<div class="cl-pair"><span class="cl-segment-plain">${escHtml(lyric)}</span></div>`;
             }
+          }
+        }
+
+        // Close row group after 2nd measure of a pair, or at the last measure
+        if (isMultiMeasure && (mi % 2 === 1 || mi === cMeasures.length - 1)) {
+          html += `</div>`; // close cl-measure-row
+          // Between-rows barline: visible on desktop (display:contents), hidden on mobile
+          if (mi < cMeasures.length - 1) {
+            html += editMode
+              ? `<div class="cl-measure-bar cl-measure-bar--between cl-bar-edit" data-si="${si}" data-li="${li}" data-left="${mi}" title="Klicka för att ta bort taktstreck"></div>`
+              : `<div class="cl-measure-bar cl-measure-bar--between"></div>`;
           }
         }
       });

@@ -307,6 +307,7 @@ body {
   border-right: 2px solid rgba(232,200,106,0.5);
   padding: 0 8px;
   margin-bottom: 6px;
+  row-gap: 6px;
 }
 
 /* Vertical barline between measures */
@@ -493,6 +494,11 @@ body {
 .cl-abs-pair:hover .cl-add-bar-btn { opacity: 1; }
 .cl-add-bar-btn:hover { background: rgba(232,200,106,0.2); border-color: var(--accent); }
 
+/* Row groups: transparent on desktop (flat flex), flex items on mobile */
+.cl-measure-row {
+  display: contents;
+}
+
 .cl-line-measures .cl-abs-pair {
   flex: 1;
   min-width: 0;
@@ -592,6 +598,15 @@ body {
   .columns-2 .song-body { column-count: 1; }
 
   #colBtn, #editBtn { display: none !important; }
+
+  /* 4 takter → 2+2 på mobil: varje radgrupp tar full bredd */
+  .cl-measure-row {
+    display: flex;
+    flex: 1 1 100%;
+    align-items: flex-start;
+  }
+  /* Dölj taktstreck mellan radgrupperna (visas bara på desktop) */
+  .cl-measure-bar--between { display: none; }
 }
 
 @media print {
