@@ -2,47 +2,53 @@
   "title": "Fattig Bonddräng",
   "artist": "Astrid Lindgren / Georg Riedel",
   "key": "G",
+  "timeSignature": "4/4",
   "difficulty": "beginner",
+  "chordTemplates": {
+    "vers_a": "G|C|D|G",
+    "vers_b": "G|Am7|D|Bm",
+	"vers_c": "Em|C|D|G"
+  },
   "sections": [
     {
       "label": "Vers 1",
       "lines": [
         {
-          "c": "G             C                  D",
-          "l": "Jag är fattig bonddräng, men jag lever ändå."
+          "c": "@vers_a",
+          "l": "Jag är fattig |bonddräng, men jag |lever än|då."
         },
         {
-          "c": "G             C                 D       G",
-          "l": "Dagar går och kommer, medan jag knogar på."
+          "c": "@vers_a",
+          "l": "Dagar går och |kommer, medan |jag knogar |på."
         },
         {
-          "c": "G              Am7              D          Bm",
-          "l": "Harvar, sår och plöjer, mockar, gräver och bär."
+          "c": "@vers_b",
+          "l": "Harvar, sår och |plöjer, mockar, |gräver och |bär."
         },
         {
-          "c": "Em           C            D           G",
-          "l": "Går bak mina oxar, hojtar visslar och svär."
+          "c": "@vers_c",
+          "l": "Går bak mina |oxar, hojtar |visslar och |svär."
         }
       ]
     },
-    {
+	{
       "label": "Vers 2",
       "lines": [
         {
-          "c": "G             C                  D",
-          "l": "Jag är fattig bonddräng, och jag tuggar mitt snus."
+          "c": "@vers_a",
+          "l": "Jag är fattig |bonddräng, och jag |tuggar mitt |snus."
         },
         {
-          "c": "G               C                D          G",
-          "l": "Och när lörda'n kommer, vill jag ta mig ett rus."
+          "c": "@vers_a",
+          "l": "Och när lörda'n |kommer, vill jag |ta mig ett |rus."
         },
         {
-          "c": "G                  Am7             D         Bm",
-          "l": "Sen, när jag blitt livad vill jag tampas och slåss."
+          "c": "@vers_b",
+          "l": "Sen, när jag blitt |livad vill jag |tampas och |slåss."
         },
         {
-          "c": "Em          C               D          G",
-          "l": "Vila hos en flicka vill jag också, förstås."
+          "c": "@vers_c",
+          "l": "Vila hos en |flicka vill jag |också, |förstås."
         }
       ]
     },
@@ -50,20 +56,20 @@
       "label": "Vers 3",
       "lines": [
         {
-          "c": "G              C               D",
-          "l": "Sen, då kommer sönda'n, och då vill våran präst,"
+          "c": "@vers_a",
+          "l": "Sen, då kommer |sönda'n, och då |vill våran |präst"
         },
         {
-          "c": "G             C              D         G",
-          "l": "att jag ska i kyrkan, men då sover jag mest."
+          "c": "@vers_a",
+          "l": "att jag ska i |kyrkan, men då |sover jag |mest."
         },
         {
-          "c": "G               Am7       D        Bm",
-          "l": "Prästen kan väl sova hela måndagen men,"
+          "c": "@vers_b",
+          "l": "Prästen kan väl |sova hela |måndagen |men"
         },
         {
-          "c": "Em            C                 D        G",
-          "l": "för en fattig bonddräng, börjar knoget igen."
+          "c": "@vers_c",
+          "l": "för en fattig |bonddräng, börjar |knoget |igen."
         }
       ]
     },
@@ -71,20 +77,20 @@
       "label": "Vers 4",
       "lines": [
         {
-          "c": "G            C            D",
-          "l": "Så går hela veckan, alla dagar och år."
+          "c": "@vers_a",
+          "l": "Så går hela |veckan, alla |dagar och |år."
         },
         {
-          "c": "G               C            D          G",
-          "l": "Jag går med min lie, och jag plöjer och sår."
+          "c": "@vers_a",
+          "l": "Jag går med min |lie, och jag |plöjer och |sår."
         },
         {
-          "c": "G            Am7          D            Bm",
-          "l": "Jag kör mina oxar och jag hässjar mitt hö."
+          "c": "@vers_b",
+          "l": "Jag kör mina |oxar och jag |hässjar mitt |hö."
         },
         {
-          "c": "Em               C                 D            G",
-          "l": "Harvar, gnor och trälar, och till sist ska jag dö."
+          "c": "@vers_c",
+          "l": "Harvar, gnor och |trälar, och till |sist ska jag |dö."
         }
       ]
     },
@@ -92,20 +98,20 @@
       "label": "Vers 5",
       "lines": [
         {
-          "c": "G                C               D",
-          "l": "Står där, fattig bonddräng invid Himmelens port."
+          "c": "@vers_a",
+          "l": "Står där, fattig |bonddräng invid |Himmelens |port."
         },
         {
-          "c": "G             C              D         G",
-          "l": "Lite rädd och ledsen för de synder jag gjort."
+          "c": "@vers_a",
+          "l": "Lite rädd och |ledsen för de |synder jag |gjort."
         },
         {
-          "c": "G            Am7              D           Bm",
-          "l": "Man ska inte supa, hålls med flickor och slåss."
+          "c": "@vers_b",
+          "l": "Man ska inte |supa, hålls med |flickor och |slåss."
         },
         {
-          "c": "Em            C              D            G",
-          "l": "Herren, Gud i Himlen, är väl missnöjd förstås."
+          "c": "@vers_c",
+          "l": "Herren, Gud i |Himlen, är väl |missnöjd |förstås."
         }
       ]
     },
@@ -113,20 +119,20 @@
       "label": "Vers 6",
       "lines": [
         {
-          "c": "G             C              D",
-          "l": "Men, då säger Herren: Fattig bonddräng, kom hit."
+          "c": "@vers_a",
+          "l": "Men, då säger |Herren: Fattig |bonddräng, kom |hit."
         },
         {
-          "c": "G                C                D       G",
-          "l": "Jag har sett din strävan och ditt eviga slit."
+          "c": "@vers_a",
+          "l": "Jag har sett din |strävan och ditt |eviga |slit."
         },
         {
-          "c": "G              Am7              D         Bm",
-          "l": "Därför, fattig bonddräng, är Du välkommen här."
+          "c": "@vers_b",
+          "l": "Därför, fattig |bonddräng, är Du |välkommen |här."
         },
         {
-          "c": "Em             C                   D        G",
-          "l": "Därför, fattig bonddräng, skall Du vara mig när."
+          "c": "@vers_c",
+          "l": "Därför, fattig |bonddräng, skall Du |vara mig |när."
         }
       ]
     },
@@ -134,20 +140,20 @@
       "label": "Vers 7",
       "lines": [
         {
-          "c": "G               C                 D",
-          "l": "Åh, jag, fattig bonddräng står så still inför Gud."
+          "c": "@vers_a",
+          "l": "Åh, jag, fattig |bonddräng står så |still inför |Gud."
         },
         {
-          "c": "G                C               D          G",
-          "l": "Och sen klär han på mig den mest snövita skrud."
+          "c": "@vers_a",
+          "l": "Och sen klär han |på mig den mest |snövita |skrud."
         },
         {
-          "c": "G            Am7             D       Bm",
-          "l": "Nu Du, säger Herren, är ditt arbete slut."
+          "c": "@vers_b",
+          "l": "Nu Du, säger |Herren, är ditt |arbete |slut."
         },
         {
-          "c": "Em            C                 D       G",
-          "l": "Nu Du, fattig bonddräng, nu får Du vila ut."
+          "c": "@vers_c",
+          "l": "Nu Du, fattig |bonddräng, nu får |Du vila |ut."
         }
       ]
     }

@@ -2,42 +2,51 @@
   "title": "Visa Från Utanmyra",
   "artist": "Trad. / Monica Zetterlund",
   "key": "Am",
+  "timeSignature": "3/4",
   "difficulty": "intermediate",
+  "chordTemplates": {
+    "vers_a": "Am E7|Am B7",
+    "vers_b": "Em E7|Am E7",
+    "vers_e": "Am E7|C C/B",
+    "vers_f": "C/A C/F|Bm7b5 E7",
+    "vers_g": "Am E7|Am",
+    "vers_h": "C Em|Am"
+  },
   "sections": [
     {
       "label": "Vers 1",
       "lines": [
         {
-          "c": "Am       E7          Am    B7",
-          "l": "Endast en gång såg jag den man"
+          "c": "@vers_a",
+          "l": "Endast en gång |såg jag den man"
         },
         {
-          "c": "Em  E7          Am  E7",
-          "l": "mina ögon blev som förvän-da."
+          "c": "@vers_b",
+          "l": "mina ögon blev |som förvända."
         },
         {
-          "c": "Am     E7       Am",
-          "l": "Såsom vinden gångade han,"
+          "c": "Am E7|Am",
+          "l": "Såsom vinden |gångade han,"
         },
         {
-          "c": "      Em    E7         Am  E7",
-          "l": "rask och orädd, säker att se-gra."
+          "c": "@vers_b",
+          "l": "rask och orädd, |säker att segra."
         },
         {
-          "c": "Am      E7         C   C/B",
-          "l": "Han såg på mig och han log."
+          "c": "@vers_e",
+          "l": "Han såg på mig |och han log."
         },
         {
-          "c": "C/A     C/F      Bm7b5  E7",
-          "l": "Han såg min ros och log,"
+          "c": "@vers_f",
+          "l": "Han såg min ros |och log,"
         },
         {
-          "c": "      Am      E7      Am",
-          "l": "sen han gångade mig förbi."
+          "c": "@vers_g",
+          "l": "sen han gångade |mig förbi."
         },
         {
-          "c": "      C        Em      Am",
-          "l": "Men han gångade mig förbi."
+          "c": "@vers_h",
+          "l": "Men han gångade |mig förbi."
         }
       ]
     },
@@ -45,36 +54,36 @@
       "label": "Vers 2",
       "lines": [
         {
-          "c": "Am       E7          Am    B7",
-          "l": "Endast en gång såg jag den man,"
+          "c": "@vers_a",
+          "l": "Endast en gång |såg jag den man,"
         },
         {
-          "c": "Em  E7          Am  E7",
-          "l": "mina ögon blev som förvända."
+          "c": "@vers_b",
+          "l": "mina ögon blev |som förvända."
         },
         {
-          "c": "Am     E7+      Am   B7",
-          "l": "Såsom solen strålade han,"
+          "c": "Am E7+|Am B7",
+          "l": "Såsom solen |strålade han,"
         },
         {
-          "c": "      Em    E7         Am  E7",
-          "l": "all min levnad kom han att än-dra."
+          "c": "@vers_b",
+          "l": "all min levnad |kom han att ändra."
         },
         {
-          "c": "Am      E7         C   C/B",
-          "l": "Han tog på mig och han log."
+          "c": "@vers_e",
+          "l": "Han tog på mig |och han log."
         },
         {
-          "c": "C/A     C/F      Bm7b5  E7",
-          "l": "Han tog min ros och log,"
+          "c": "@vers_f",
+          "l": "Han tog min ros |och log,"
         },
         {
-          "c": "      Am      E7      Am",
-          "l": "sen han gångade mig förbi."
+          "c": "@vers_g",
+          "l": "sen han gångade |mig förbi."
         },
         {
-          "c": "      C        Em      Am",
-          "l": "Men han gångade mig förbi"
+          "c": "@vers_h",
+          "l": "Men han gångade |mig förbi"
         }
       ]
     },
@@ -82,36 +91,36 @@
       "label": "Vers 3",
       "lines": [
         {
-          "c": "Am       E7          Am    B7",
-          "l": "Endast en gång såg jag den man,"
+          "c": "@vers_a",
+          "l": "Endast en gång |såg jag den man,"
         },
         {
-          "c": "Em  E7          Am  E7",
-          "l": "mina ögon blev som förvända."
+          "c": "@vers_b",
+          "l": "mina ögon blev |som förvända."
         },
         {
-          "c": "Am     E7       Am   B7",
-          "l": "Sådan man, sån man är han,"
+          "c": "Am E7|Am B7",
+          "l": "Sådan man, |sån man är han,"
         },
         {
-          "c": "      Em    E7         Am  E7",
-          "l": "Att hans hand kan livet fullän-dra."
+          "c": "@vers_b",
+          "l": "Att hans hand |kan livet fullända."
         },
         {
-          "c": "Am      E7         C   C/B",
-          "l": "Han bröt mitt motstånd, han log."
+          "c": "@vers_e",
+          "l": "Han bröt mitt |motstånd, han log."
         },
         {
-          "c": "C/A     C/F      Bm7b5  E7",
-          "l": "Han bröt min ros och log,"
+          "c": "@vers_f",
+          "l": "Han bröt min ros |och log,"
         },
         {
-          "c": "      Am      E7      Am",
-          "l": "sen han gångade mig förbi."
+          "c": "@vers_g",
+          "l": "sen han gångade |mig förbi."
         },
         {
-          "c": "      C        Em      Am",
-          "l": "Men han gångade mig förbi"
+          "c": "@vers_h",
+          "l": "Men han gångade |mig förbi"
         }
       ]
     }

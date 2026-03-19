@@ -1,10 +1,11 @@
-# 🎸 Körhäftet — Ackord & Text
+# Körhäftet — Ackord & Text
 
 En modern webbapp för körsånger med ackord, byggd som en ren statisk sida för GitHub Pages. Ingen server, inga beroenden — bara HTML, CSS och JavaScript.
 
 ## Funktioner
 
 ### Visning
+- **Taktbaserad layout** — med `timeSignature: "4/4"` visas varje rad som 4 lika breda taktkolumner, ackord och text hålls ihop per takt
 - **Ackorddiagram** — SVG-genererade gitarrgrepp visas automatiskt för varje låts unika ackord
 - **Responsiv layout** — ackord och text wrappas naturligt på mobil, ingen horisontell scrollning
 - **2-kolumnläge** — komprimera långa låtar med balanserade kolumner
@@ -14,8 +15,10 @@ En modern webbapp för körsånger med ackord, byggd som en ren statisk sida fö
 - **Tonartsbyte** med ♭/♯-knappar
 - Ackorddiagrammen uppdateras automatiskt vid transponering
 
-### Ackordjustering
-- **Redigeringsläge** — dra ackord horisontellt för att finjustera placeringen
+### Redigering (Justera ackord-läge)
+- **Dra ackord** horisontellt för att finjustera placeringen inom en takt
+- **Redigera låttext** direkt i webbläsaren — klicka på en textrad för att ändra
+- **Lägg till/ta bort taktstreck** — klicka på ett taktstreck för att ta bort det, eller använd `+|` för att lägga till ett nytt
 - **Sparas automatiskt** i webbläsaren (localStorage) per användare
 - **Exportfunktion** — ladda ner justerade ackordpositioner som JSON för att baka in permanent
 - **Återställ** — nollställ justeringar per låt
@@ -27,6 +30,7 @@ En modern webbapp för körsånger med ackord, byggd som en ren statisk sida fö
 - Kräver Chrome/Edge och HTTPS (GitHub Pages ger det automatiskt)
 
 ### Övrigt
+- **Döljbar sidopanel** — hamburgaremenyn fungerar både på mobil och desktop
 - **Mobilanpassad** med sidopanel och hamburgaremeny
 - **Utskriftsvänlig** — skriv ut direkt från webbläsaren
 - **Mörkt tema** med guldiga ackord
@@ -57,13 +61,54 @@ korhaftet/
 
 ### 1. Skapa en JSON-fil i `songs/`
 
+#### Taktbaserat format (rekommenderat för 4/4-låtar)
+
+Separera takter med `|` i både `"c"` (ackord) och `"l"` (text). Varje rad bör ha exakt 4 takter (3 `|`-tecken).
+
 ```json
 {
   "title": "Låtens namn",
   "artist": "Artist / Kompositör",
   "key": "Am",
+  "timeSignature": "4/4",
   "difficulty": "beginner",
-  "bpm": "120",
+  "chordTemplates": {
+    "vers": "Am|F|G|Am",
+    "refr": "F|G|C|Am"
+  },
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        { "c": "@vers", "l": "Här skrivs |texten uppdelad |i fyra |takter." },
+        { "c": "Am|F|G|Am", "l": "Eller ange |ackorden |direkt per |takt." }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        { "c": "@refr", "l": "Refrängen |kan ha en |annan |ackordföljd." }
+      ]
+    }
+  ]
+}
+```
+
+**Ackordmallar** (`chordTemplates`) låter dig namnge återkommande ackordföljder och referera till dem med `@mallnamn` i `"c"`-fältet. Webbsidan visar ackorden som vanligt.
+
+Varje rad har två fält:
+- `"c"` — ackordrad, antingen `@mallnamn` eller ackord separerade med `|` (ett ackord per takt)
+- `"l"` — textrad separerad med `|` (en takt per segment)
+
+**Obs:** Om ett ord delas av ett taktstreck (t.ex. `"än|då"`) hanterar appen detta automatiskt — hela ordet visas i rätt takt.
+
+#### Fritt format (för låtar utan taktstruktur)
+
+```json
+{
+  "title": "Låtens namn",
+  "artist": "Artist / Kompositör",
+  "key": "Am",
   "sections": [
     {
       "label": "Vers 1",
@@ -71,20 +116,10 @@ korhaftet/
         { "c": "Am        F     G", "l": "Här skrivs texten med ackord ovanför." },
         { "c": "C              Am", "l": "Ackorden placeras med mellanslag." }
       ]
-    },
-    {
-      "label": "Refräng",
-      "lines": [
-        { "c": "F        G        Am", "l": "Refrängen kommer här." }
-      ]
     }
   ]
 }
 ```
-
-Varje rad har två fält:
-- `"c"` — ackordrad där position i strängen motsvarar position ovanför texten
-- `"l"` — textraden
 
 ### 2. Lägg till filnamnet i `songs/index.json`
 
@@ -104,7 +139,7 @@ Appen läser `songs/index.json` vid laddning och hämtar varje låtfil dynamiskt
 
 ## Ackordbibliotek
 
-Filen `chords.js` innehåller ~60 vanliga gitarrackord med fingersättningar. Diagram genereras som SVG direkt i webbläsaren. Ackord som saknas i biblioteket hoppas över.
+Filen `chords.js` innehåller ~80 vanliga gitarrackord med fingersättningar. Diagram genereras som SVG direkt i webbläsaren. Ackord som saknas i biblioteket hoppas över.
 
 För att lägga till ett nytt ackord, utöka `CHORD_LIB` i `chords.js`:
 
@@ -129,6 +164,7 @@ Sidan hostas gratis via GitHub Pages:
 |---|---|---|---|
 | Grundfunktioner | ✅ | ✅ | ✅ |
 | Ackorddiagram | ✅ | ✅ | ✅ |
+| Taktbaserad layout | ✅ | ✅ | ✅ |
 | Ackordjustering (drag) | ✅ | ✅ | ✅ |
 | Följ med (taligenkänning) | ✅ | ❌ | ❌ |
 

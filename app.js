@@ -11,6 +11,7 @@ let currentSong = 0;
 let transposeSemitones = 0;
 let fontSize = 13;
 let twoColumns = false;
+let sidebarHidden = false;
 let editMode = false;
 let chordOffsets = {};
 let storageReady = false;
@@ -75,6 +76,7 @@ async function loadFromStorage() {
       const p = JSON.parse(raw);
       if (p.fontSize) fontSize = p.fontSize;
       if (p.twoColumns !== undefined) twoColumns = p.twoColumns;
+      if (p.sidebarHidden !== undefined) sidebarHidden = p.sidebarHidden;
       if (p.currentSong !== undefined) currentSong = p.currentSong;
     }
   } catch (e) {}
@@ -95,7 +97,7 @@ async function saveOffsets() {
 async function savePrefs() {
   if (!storageReady) return;
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, twoColumns, currentSong }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, twoColumns, sidebarHidden, currentSong }));
   } catch (e) {
     console.error('Failed to save prefs:', e);
   }
@@ -117,35 +119,48 @@ function flashSaveIndicator() {
 
 // ─── Init ───
 async function init() {
-  await loadFromStorage();
-  await loadSongs();
+  try {
+    await loadFromStorage();
+    await loadSongs();
 
-  if (songs.length === 0) return;
+    if (songs.length === 0) {
+      document.getElementById('songDisplay').innerHTML =
+        `<div style="padding:40px;color:#f66;font-family:monospace">Inga låtar laddades. Kontrollera konsolen.</div>`;
+      return;
+    }
 
-  // Clamp currentSong to valid range
-  if (currentSong >= songs.length) currentSong = 0;
+    // Clamp currentSong to valid range
+    if (currentSong >= songs.length) currentSong = 0;
 
-  const list = document.getElementById('songList');
-  list.innerHTML = '';
-  songs.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'song-item' + (i === currentSong ? ' active' : '');
-    div.innerHTML = `
-      <div class="song-title">${s.title}</div>
-      <div class="song-artist">${s.artist}</div>
-      <div class="song-meta">
-        <span class="tag">${s.key}</span>
-        <span class="tag">${s.difficulty}</span>
-        ${s.bpm ? `<span class="tag">${s.bpm} bpm</span>` : ''}
-      </div>
-    `;
-    div.onclick = () => selectSong(i);
-    list.appendChild(div);
-  });
+    const list = document.getElementById('songList');
+    list.innerHTML = '';
+    songs.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'song-item' + (i === currentSong ? ' active' : '');
+      div.innerHTML = `
+        <div class="song-title">${s.title}</div>
+        <div class="song-artist">${s.artist}</div>
+        <div class="song-meta">
+          <span class="tag">${s.key}</span>
+          <span class="tag">${s.difficulty}</span>
+          ${s.bpm ? `<span class="tag">${s.bpm} bpm</span>` : ''}
+        </div>
+      `;
+      div.onclick = () => selectSong(i);
+      list.appendChild(div);
+    });
 
-  document.getElementById('fontLabel').textContent = fontSize;
-  document.getElementById('colBtn').className = 'ctrl-btn' + (twoColumns ? ' active' : '');
-  renderSong();
+    document.getElementById('fontLabel').textContent = fontSize;
+    document.getElementById('colBtn').className = 'ctrl-btn' + (twoColumns ? ' active' : '');
+    if (sidebarHidden && window.innerWidth > 768) {
+      document.querySelector('.app').classList.add('sidebar-hidden');
+    }
+    renderSong();
+  } catch (e) {
+    console.error('init() kraschade:', e);
+    document.getElementById('songDisplay').innerHTML =
+      `<div style="padding:40px;color:#f66;font-family:monospace">Startfel: ${e.message}<br><pre style="font-size:11px;margin-top:8px;opacity:.7">${e.stack}</pre></div>`;
+  }
 }
 
 function selectSong(idx) {
@@ -210,9 +225,8 @@ function renderSong() {
   const transposedKey = transposeSemitones !== 0
     ? transposeChordName(s.key, transposeSemitones) : s.key;
 
-  document.getElementById('topbarTitle').textContent = s.title;
-
   let info = `Tonart: ${transposedKey}`;
+  if (s.timeSignature) info += ` · ${s.timeSignature}`;
   if (s.bpm) info += ` · ${s.bpm} bpm`;
   info += ` · ${s.difficulty}`;
 
@@ -232,7 +246,7 @@ function renderSong() {
   if (editMode) {
     html += `<div class="edit-banner">
       <span class="icon">↔</span>
-      <span>Redigeringsläge — dra ackorden åt vänster/höger · sparas automatiskt</span>
+      <span>Redigeringsläge — dra ackord · klicka text för att redigera · klicka taktstreck (×) för att ta bort · +| för att lägga till</span>
     </div>`;
   }
 
@@ -243,76 +257,136 @@ function renderSong() {
     html += `<div class="section-label">${escHtml(sec.label)}</div>`;
 
     sec.lines.forEach((line, li) => {
-      const chords = parseChordLine(line.c);
-      const lyric = line.l || '';
+      // Resolve chord template reference: "c": "@mallnamn" → lookup in s.chordTemplates
+      const rawC = line.c || '';
+      const cStr = rawC.startsWith('@') && s.chordTemplates
+        ? (s.chordTemplates[rawC.slice(1)] || '')
+        : rawC;
+      const cMeasures = cStr.split('|');
+      const lMeasures = (line.l || '').split('|');
+      const isMultiMeasure = cMeasures.length > 1;
 
-      if (editMode) {
-        html += `<div class="cl-abs-pair">`;
-        if (chords.length > 0) {
-          html += `<div class="cl-abs-chord-row">`;
-          chords.forEach((ch, ci) => {
-            const key = `${currentSong}-${si}-${li}-${ci}`;
-            const offset = chordOffsets[key] || 0;
-            const name = transposeSemitones !== 0
-              ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-            html += `<span class="chord-tag editable" `
-              + `data-key="${key}" `
-              + `data-base-pos="${ch.pos}" `
-              + `style="left:calc(${ch.pos}ch + ${offset}px)">`
-              + `${escHtml(name)}</span>`;
-          });
-          html += `</div>`;
-        }
-        if (lyric.trim()) {
-          html += `<div class="cl-abs-lyric-row">${escHtml(lyric)}</div>`;
-        }
-        html += `</div>`;
-      } else {
-        if (chords.length > 0 && lyric.trim()) {
-          html += `<div class="cl-pair">`;
-          // Pre-compute snapped start positions so segment boundaries fall on word starts
-          const snappedStarts = chords.map((ch, ci) => {
-            const key = `${currentSong}-${si}-${li}-${ci}`;
-            const pxOffset = chordOffsets[key] || 0;
-            const charShift = Math.round(pxOffset / chWidthCache);
-            let pos = Math.max(0, ch.pos + charShift);
-            while (pos > 0 && lyric[pos - 1] !== ' ') pos--;
-            return pos;
-          });
-          chords.forEach((ch, ci) => {
-            const startPos = snappedStarts[ci];
-            const nextPos = ci < chords.length - 1 ? snappedStarts[ci + 1] : lyric.length;
-            const textSlice = lyric.substring(startPos, Math.max(startPos, nextPos));
-            if (ci === 0 && startPos > 0) {
-              const pre = lyric.substring(0, startPos);
-              html += `<span class="cl-segment-chord"><span class="chord-name">&nbsp;</span><span class="chord-text">${escHtml(pre)}</span></span>`;
+      // Display only: if a measure boundary falls mid-word, move the
+      // trailing fragment to the start of the next measure so the full
+      // word appears together. Edit mode always shows the raw data.
+      const displayLyrics = [...lMeasures];
+      if (!editMode) {
+        for (let mi = 0; mi < displayLyrics.length - 1; mi++) {
+          const cur = displayLyrics[mi] || '';
+          const nxt = displayLyrics[mi + 1] || '';
+          if (cur.length > 0 && cur[cur.length - 1] !== ' ' &&
+              nxt.length > 0 && nxt[0] !== ' ') {
+            const m = cur.match(/\S+$/);
+            if (m && cur.length > m[0].length) {
+              displayLyrics[mi] = cur.slice(0, cur.length - m[0].length);
+              displayLyrics[mi + 1] = m[0] + nxt;
             }
-            const name = transposeSemitones !== 0
-              ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-            html += `<span class="cl-segment-chord"><span class="chord-name">${escHtml(name)}</span><span class="chord-text">${escHtml(textSlice)}</span></span>`;
-          });
-          html += `</div>`;
-        } else if (chords.length > 0 && !lyric.trim()) {
-          html += `<div class="cl-chord-only">`;
-          chords.forEach((ch, ci) => {
-            const key = `${currentSong}-${si}-${li}-${ci}`;
-            const pxOffset = chordOffsets[key] || 0;
-            const charShift = Math.round(pxOffset / chWidthCache);
-            const startPos = Math.max(0, ch.pos + charShift);
-            const nextPos = ci < chords.length - 1
-              ? Math.max(0, chords[ci+1].pos + Math.round((chordOffsets[`${currentSong}-${si}-${li}-${ci+1}`] || 0) / chWidthCache))
-              : startPos + ch.name.length + 2;
-            const spacing = ' '.repeat(Math.max(1, nextPos - startPos - ch.name.length));
-            const name = transposeSemitones !== 0
-              ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-            html += `<span class="chord-name">${escHtml(name)}</span>`;
-            if (ci < chords.length - 1) html += `<span>${escHtml(spacing)}</span>`;
-          });
-          html += `</div>`;
-        } else if (lyric.trim()) {
-          html += `<div class="cl-pair"><span class="cl-segment-plain">${escHtml(lyric)}</span></div>`;
+          }
         }
       }
+
+      if (isMultiMeasure) html += `<div class="cl-line-measures">`;
+
+      cMeasures.forEach((cPart, mi) => {
+        const chords = parseChordLine(cPart);
+        const lyric = displayLyrics[mi] || '';
+
+        if (mi > 0) {
+          html += editMode
+            ? `<div class="cl-measure-bar cl-bar-edit" data-si="${si}" data-li="${li}" data-left="${mi-1}" title="Klicka för att ta bort taktstreck"></div>`
+            : `<div class="cl-measure-bar"></div>`;
+        }
+
+        if (editMode) {
+          html += `<div class="cl-abs-pair">`;
+          if (chords.length > 0) {
+            html += `<div class="cl-abs-chord-row">`;
+            chords.forEach((ch, ci) => {
+              const key = `${currentSong}-${si}-${li}-${mi}-${ci}`;
+              const offset = chordOffsets[key] || 0;
+              const name = transposeSemitones !== 0
+                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+              html += `<span class="chord-tag editable" `
+                + `data-key="${key}" `
+                + `data-base-pos="${ch.pos}" `
+                + `style="left:calc(${ch.pos}ch + ${offset}px)">`
+                + `${escHtml(name)}</span>`;
+            });
+            html += `</div>`;
+          }
+          html += `<div class="cl-abs-lyric-row cl-lyric-edit" contenteditable="true" spellcheck="false" `
+            + `data-si="${si}" data-li="${li}" data-mi="${mi}">${escHtml(lyric)}</div>`;
+          html += `<button class="cl-add-bar-btn" data-si="${si}" data-li="${li}" data-after="${mi}" title="Lägg till taktstreck">+|</button>`;
+          html += `</div>`;
+        } else {
+          if (isMultiMeasure) {
+            // Multi-measure display: abs-positioned chords + full-width justified lyric
+            html += `<div class="cl-abs-pair">`;
+            if (chords.length > 0) {
+              html += `<div class="cl-abs-chord-row">`;
+              chords.forEach((ch, ci) => {
+                const key = `${currentSong}-${si}-${li}-${mi}-${ci}`;
+                const offset = chordOffsets[key] || 0;
+                const name = transposeSemitones !== 0
+                  ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+                html += `<span class="chord-tag" style="left:calc(${ch.pos}ch + ${offset}px)">${escHtml(name)}</span>`;
+              });
+              html += `</div>`;
+            }
+            if (lyric.trim()) {
+              html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+            }
+            html += `</div>`;
+          } else {
+            // Single-measure: segment-based rendering with word-wrap
+            if (chords.length > 0 && lyric.trim()) {
+              html += `<div class="cl-pair cl-pair--chords">`;
+              const snappedStarts = chords.map((ch, ci) => {
+                const key = `${currentSong}-${si}-${li}-${mi}-${ci}`;
+                const pxOffset = chordOffsets[key] || 0;
+                const charShift = Math.round(pxOffset / chWidthCache);
+                let pos = Math.max(0, ch.pos + charShift);
+                while (pos > 0 && lyric[pos - 1] !== ' ') pos--;
+                return pos;
+              });
+              chords.forEach((ch, ci) => {
+                const startPos = snappedStarts[ci];
+                const nextPos = ci < chords.length - 1 ? snappedStarts[ci + 1] : lyric.length;
+                const textSlice = lyric.substring(startPos, Math.max(startPos, nextPos));
+                if (ci === 0 && startPos > 0) {
+                  const pre = lyric.substring(0, startPos);
+                  html += `<span class="cl-segment-chord"><span class="chord-name">&nbsp;</span><span class="chord-text">${escHtml(pre)}</span></span>`;
+                }
+                const name = transposeSemitones !== 0
+                  ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+                html += `<span class="cl-segment-chord"><span class="chord-name">${escHtml(name)}</span><span class="chord-text">${escHtml(textSlice)}</span></span>`;
+              });
+              html += `</div>`;
+            } else if (chords.length > 0 && !lyric.trim()) {
+              html += `<div class="cl-chord-only">`;
+              chords.forEach((ch, ci) => {
+                const key = `${currentSong}-${si}-${li}-${mi}-${ci}`;
+                const pxOffset = chordOffsets[key] || 0;
+                const charShift = Math.round(pxOffset / chWidthCache);
+                const startPos = Math.max(0, ch.pos + charShift);
+                const nextPos = ci < chords.length - 1
+                  ? Math.max(0, chords[ci+1].pos + Math.round((chordOffsets[`${currentSong}-${si}-${li}-${mi}-${ci+1}`] || 0) / chWidthCache))
+                  : startPos + ch.name.length + 2;
+                const spacing = ' '.repeat(Math.max(1, nextPos - startPos - ch.name.length));
+                const name = transposeSemitones !== 0
+                  ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+                html += `<span class="chord-name">${escHtml(name)}</span>`;
+                if (ci < chords.length - 1) html += `<span>${escHtml(spacing)}</span>`;
+              });
+              html += `</div>`;
+            } else if (lyric.trim()) {
+              html += `<div class="cl-pair"><span class="cl-segment-plain">${escHtml(lyric)}</span></div>`;
+            }
+          }
+        }
+      });
+
+      if (isMultiMeasure) html += `</div>`;
     });
 
     html += `</div>`;
@@ -338,6 +412,58 @@ function attachDragHandlers() {
     el.addEventListener('mousedown', startDrag);
     el.addEventListener('touchstart', startDragTouch, { passive: false });
   });
+  document.querySelectorAll('.cl-lyric-edit').forEach(el => {
+    el.addEventListener('blur', onLyricBlur);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+  });
+  document.querySelectorAll('.cl-bar-edit').forEach(el => {
+    el.addEventListener('click', onBarlineRemove);
+  });
+  document.querySelectorAll('.cl-add-bar-btn').forEach(el => {
+    el.addEventListener('click', onBarlineAdd);
+  });
+}
+
+// ─── Lyric & barline editing ───
+
+function onLyricBlur(e) {
+  const el = e.target;
+  const si = +el.dataset.si, li = +el.dataset.li, mi = +el.dataset.mi;
+  const line = songs[currentSong].sections[si].lines[li];
+  const parts = (line.l || '').split('|');
+  while (parts.length <= mi) parts.push('');
+  parts[mi] = el.textContent;
+  line.l = parts.join('|');
+  debouncedSaveOffsets();
+}
+
+function onBarlineRemove(e) {
+  const el = e.currentTarget;
+  const si = +el.dataset.si, li = +el.dataset.li, left = +el.dataset.left;
+  const line = songs[currentSong].sections[si].lines[li];
+  const cp = (line.c || '').split('|');
+  const lp = (line.l || '').split('|');
+  if (left + 1 < cp.length) { cp[left] = cp[left] + cp[left + 1]; cp.splice(left + 1, 1); }
+  if (left + 1 < lp.length) { lp[left] = (lp[left]||'') + (lp[left+1]||''); lp.splice(left + 1, 1); }
+  line.c = cp.join('|');
+  line.l = lp.join('|');
+  debouncedSaveOffsets();
+  renderSong();
+}
+
+function onBarlineAdd(e) {
+  e.stopPropagation();
+  const el = e.currentTarget;
+  const si = +el.dataset.si, li = +el.dataset.li, after = +el.dataset.after;
+  const line = songs[currentSong].sections[si].lines[li];
+  const cp = (line.c || '').split('|');
+  const lp = (line.l || '').split('|');
+  cp.splice(after + 1, 0, '');
+  lp.splice(after + 1, 0, '');
+  line.c = cp.join('|');
+  line.l = lp.join('|');
+  debouncedSaveOffsets();
+  renderSong();
 }
 
 function startDrag(e) {
@@ -488,8 +614,14 @@ async function resetPositions() {
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('open');
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  } else {
+    sidebarHidden = !sidebarHidden;
+    document.querySelector('.app').classList.toggle('sidebar-hidden', sidebarHidden);
+    savePrefs();
+  }
 }
 
 // ─── Start ───

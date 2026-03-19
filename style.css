@@ -25,6 +25,7 @@ body {
 .sidebar {
   width: 280px;
   min-width: 280px;
+  transition: width 0.25s ease, min-width 0.25s ease;
   background: var(--surface);
   border-right: 1px solid var(--border);
   display: flex;
@@ -36,7 +37,7 @@ body {
 }
 
 .sidebar-header {
-  padding: 28px 24px 20px;
+  padding: 64px 24px 20px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -104,6 +105,7 @@ body {
 .main {
   flex: 1;
   margin-left: 280px;
+  transition: margin-left 0.25s ease;
   min-height: 100vh;
 }
 
@@ -231,16 +233,19 @@ body {
 
 .section-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85em;
+  font-size: 0.75em;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--accent);
-  margin-top: 1.4em;
-  margin-bottom: 0.3em;
-  opacity: 0.8;
+  display: inline-block;
+  border: 1px solid rgba(232,200,106,0.45);
+  border-radius: 3px;
+  padding: 1px 8px;
+  margin-top: 1.6em;
+  margin-bottom: 0.55em;
 }
 
-.song-block { margin-bottom: 2.2em; }
+.song-block { margin-bottom: 2.8em; }
 
 /* ─── Listening mode ─── */
 .song-block.listening-active {
@@ -289,12 +294,68 @@ body {
 .columns-2 .song-body { column-count: 2; column-gap: 40px; column-fill: balance; }
 .columns-2 .song-block { break-inside: avoid; }
 
+/* ─── Sheet Music Layout ─── */
+
+/* Multi-measure line wrapper: opening + closing barlines */
+.cl-line-measures {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  border-left: 2px solid rgba(232,200,106,0.5);
+  border-right: 2px solid rgba(232,200,106,0.5);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+/* Vertical barline between measures */
+.cl-measure-bar {
+  width: 2px;
+  background: rgba(232,200,106,0.45);
+  align-self: stretch;
+  margin: 0 6px;
+  min-height: 2.5em;
+  border-radius: 1px;
+}
+
 .cl-pair {
   font-family: 'JetBrains Mono', monospace;
-  margin-bottom: 1px;
+  margin-bottom: 4px;
   line-height: 1.15;
   display: flex;
   flex-wrap: wrap;
+}
+
+/* Staff line: horizontal divider at chord/lyric boundary */
+.cl-pair.cl-pair--chords {
+  background-image: linear-gradient(rgba(232,200,106,0.15), rgba(232,200,106,0.15));
+  background-size: 100% 1px;
+  background-position: 0 1.4em;
+  background-repeat: no-repeat;
+}
+
+/* Single-measure chord+lyric line: left barline only */
+.song-block > .cl-pair.cl-pair--chords {
+  border-left: 2px solid rgba(232,200,106,0.5);
+  padding-left: 8px;
+}
+
+/* Single-measure chord-only line: left barline */
+.song-block > .cl-chord-only {
+  border-left: 2px solid rgba(232,200,106,0.5);
+  padding-left: 8px;
+}
+
+/* Inside a measure wrapper, cl-pair loses its own bottom margin and barline,
+   and grows to fill equal share of the row */
+.cl-line-measures .cl-pair,
+.cl-line-measures .cl-chord-only {
+  margin-bottom: 0;
+  border-left: none;
+  padding-left: 0;
+  flex-grow: 1;
+  min-width: 0;
 }
 
 /* Each segment = a chord (optional) + text chunk, rendered inline-block so it wraps */
@@ -377,11 +438,74 @@ body {
   overflow-x: auto;
 }
 
+/* Editable lyric row (edit mode) */
+.cl-lyric-edit {
+  outline: none;
+  border-bottom: 1px dashed rgba(232,200,106,0.3);
+  min-height: 1.3em;
+  cursor: text;
+  padding-bottom: 1px;
+  white-space: pre-wrap;
+}
+.cl-lyric-edit:hover { border-bottom-color: rgba(232,200,106,0.6); }
+.cl-lyric-edit:focus { background: rgba(232,200,106,0.06); border-bottom-color: var(--accent); }
+
+/* Removable barline (edit mode) */
+.cl-bar-edit {
+  cursor: pointer;
+  width: 14px;
+  margin: 0 3px;
+  position: relative;
+  transition: background 0.15s;
+}
+.cl-bar-edit::after {
+  content: '×';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: #f88;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+.cl-bar-edit:hover { background: rgba(255,100,100,0.15) !important; opacity: 1 !important; }
+.cl-bar-edit:hover::after { opacity: 1; }
+
+/* Add barline button (+|) */
+.cl-add-bar-btn {
+  position: absolute;
+  right: 2px; bottom: 2px;
+  background: rgba(232,200,106,0.08);
+  border: 1px solid rgba(232,200,106,0.25);
+  color: var(--accent);
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+  line-height: 1.6;
+  z-index: 5;
+}
+.cl-abs-pair:hover .cl-add-bar-btn { opacity: 1; }
+.cl-add-bar-btn:hover { background: rgba(232,200,106,0.2); border-color: var(--accent); }
+
+.cl-line-measures .cl-abs-pair {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+  overflow-x: visible;
+}
+
 .cl-abs-chord-row {
   position: relative;
   height: 1.4em;
   white-space: pre;
   user-select: none;
+  border-bottom: 1px solid rgba(232,200,106,0.15);
 }
 
 .cl-abs-lyric-row {
@@ -389,6 +513,16 @@ body {
   word-break: normal;
   overflow-wrap: break-word;
   color: var(--text);
+}
+
+/* Display-mode lyric in measure context: fills full measure width */
+.cl-display-lyric {
+  color: var(--text);
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+  text-align: justify;
+  width: 100%;
 }
 
 .chord-tag {
@@ -421,7 +555,7 @@ body {
 }
 
 .menu-toggle {
-  display: none;
+  display: flex;
   position: fixed;
   top: 12px; left: 12px;
   z-index: 200;
@@ -442,16 +576,21 @@ body {
   z-index: 90;
 }
 
+/* Desktop: sidebar can be collapsed */
+@media (min-width: 769px) {
+  .app.sidebar-hidden .sidebar { width: 0; min-width: 0; overflow: hidden; }
+  .app.sidebar-hidden .main { margin-left: 0; }
+}
+
 @media (max-width: 768px) {
-  .menu-toggle { display: flex; }
-  .sidebar { transform: translateX(-100%); }
+  .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
   .sidebar.open { transform: translateX(0); }
   .overlay.open { display: block; }
   .main { margin-left: 0; }
   .topbar { padding-left: 56px; }
   .song-display { padding: 18px 12px; }
   .columns-2 .song-body { column-count: 1; }
-  .sidebar-header { padding-top: 64px; }
+
   #colBtn, #editBtn { display: none !important; }
 }
 

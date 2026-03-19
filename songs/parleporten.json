@@ -2,7 +2,13 @@
   "title": "Pärleporten",
   "artist": "Christer Sjögren",
   "key": "G",
+  "timeSignature": "4/4",
   "difficulty": "intermediate",
+  "chordTemplates": {
+    "vers_a": "G D7|G|C G|Dsus4",
+    "vers_b": "G G/B|C|G/D D7|G",
+    "refr_a": "D|G G7|C G|A D"
+  },
   "sections": [
     {
       "label": "Intro",
@@ -17,20 +23,12 @@
       "label": "Vers 1",
       "lines": [
         {
-          "c": "G      D7             G",
-          "l": "Som en härlig gudoms-källa,"
+          "c": "@vers_a",
+          "l": "Som en härlig |gudomskälla,|rik och mäktig, |djup och stor"
         },
         {
-          "c": "C       G            Dsus4",
-          "l": "rik och mäktig, djup och stor"
-        },
-        {
-          "c": "G       G/B            C",
-          "l": "är den kärlek, nåd och sanning"
-        },
-        {
-          "c": "   G/D  D7      G",
-          "l": "som i Jesu hjärta bor."
+          "c": "@vers_b",
+          "l": "är den kärlek, |nåd och sanning|som i Jesu |hjärta bor."
         }
       ]
     },
@@ -38,20 +36,12 @@
       "label": "Refräng",
       "lines": [
         {
-          "c": "D                G  G7",
-          "l": "Han har öppnat pärle-porten"
+          "c": "@refr_a",
+          "l": "Han har öppnat |pärleporten|så att jag |kan komma in."
         },
         {
-          "c": "C       G        A       D",
-          "l": "så att jag kan komma in."
-        },
-        {
-          "c": "G       G/B            C",
-          "l": "Genom blodet har han frälst mig"
-        },
-        {
-          "c": "   G/D  D7      G",
-          "l": "och bevarat mig som sin."
+          "c": "@vers_b",
+          "l": "Genom blodet |har han frälst mig|och bevarat |mig som sin."
         }
       ]
     },
@@ -59,20 +49,12 @@
       "label": "Vers 2",
       "lines": [
         {
-          "c": "G      D7             G",
-          "l": "En gång som en jagad duva,"
+          "c": "@vers_a",
+          "l": "En gång som |en jagad duva,|som en sårad |hjort jag var,"
         },
         {
-          "c": "C       G            Dsus4",
-          "l": "som en sårad hjort jag var,"
-        },
-        {
-          "c": "G       G/B              C",
-          "l": "men ett djupt förkrossat hjärta"
-        },
-        {
-          "c": "   G/D    D7      G",
-          "l": "Jesus ej för-skjutit har."
+          "c": "@vers_b",
+          "l": "men ett djupt |förkrossat hjärta|Jesus ej |förskjutit har."
         }
       ]
     },
@@ -80,20 +62,12 @@
       "label": "Vers 3",
       "lines": [
         {
-          "c": "G      D7        G",
-          "l": "Under över alla under,"
+          "c": "@vers_a",
+          "l": "Under över |alla under,|allt förlåt |han mig en gång."
         },
         {
-          "c": "C       G          Dsus4",
-          "l": "allt förlåt han mig en gång."
-        },
-        {
-          "c": "G       G/B          C",
-          "l": "Om hans underbara godhet"
-        },
-        {
-          "c": "   G/D  D7      G",
-          "l": "glad jag sjunger nu min sång."
+          "c": "@vers_b",
+          "l": "Om hans underbara |godhet|glad jag sjunger |nu min sång."
         }
       ]
     },
@@ -101,20 +75,12 @@
       "label": "Vers 4",
       "lines": [
         {
-          "c": "G      D7          G",
-          "l": "När en gång i livets morgon"
+          "c": "@vers_a",
+          "l": "När en gång |i livets morgon|till den gyllne |port jag når,"
         },
         {
-          "c": "C       G          Dsus4",
-          "l": "till den gyllne port jag når,"
-        },
-        {
-          "c": "G       G/B          C",
-          "l": "då för Jesus stora kärlek"
-        },
-        {
-          "c": "   G/D  D7      G",
-          "l": "och för mig den öppen står."
+          "c": "@vers_b",
+          "l": "då för Jesus |stora kärlek|och för mig |den öppen står."
         }
       ]
     }
