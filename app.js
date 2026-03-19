@@ -12,12 +12,15 @@ let transposeSemitones = 0;
 let fontSize = 13;
 let twoColumns = false;
 let sidebarHidden = false;
-let editMode = false;
-let chordOffsets = {};
+let songEditorMode = false;
 let storageReady = false;
-let saveTimeout = null;
 
-const STORAGE_KEY = 'korhaftet-chord-offsets';
+// ─── Auto-scroll ───
+let scrollLevel = 3;       // 1–9, visas i knappen
+let scrollActive = false;
+let scrollRAF = null;
+let scrollLastTime = null;
+
 const PREFS_KEY = 'korhaftet-preferences';
 
 // ─── Song Loading ───
@@ -64,13 +67,6 @@ async function loadSongs() {
 // ─── Persistent Storage (localStorage) ───
 async function loadFromStorage() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) chordOffsets = JSON.parse(raw);
-  } catch (e) {
-    chordOffsets = {};
-  }
-
-  try {
     const raw = localStorage.getItem(PREFS_KEY);
     if (raw) {
       const p = JSON.parse(raw);
@@ -80,18 +76,7 @@ async function loadFromStorage() {
       if (p.currentSong !== undefined) currentSong = p.currentSong;
     }
   } catch (e) {}
-
   storageReady = true;
-}
-
-async function saveOffsets() {
-  if (!storageReady) return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(chordOffsets));
-    flashSaveIndicator();
-  } catch (e) {
-    console.error('Failed to save offsets:', e);
-  }
 }
 
 async function savePrefs() {
@@ -101,14 +86,6 @@ async function savePrefs() {
   } catch (e) {
     console.error('Failed to save prefs:', e);
   }
-}
-
-function debouncedSaveOffsets() {
-  if (saveTimeout) clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => {
-    saveOffsets();
-    saveCurrentSongToFile();
-  }, 800);
 }
 
 function flashSaveIndicator() {
@@ -163,7 +140,41 @@ async function init() {
   }
 }
 
+function toggleAutoScroll() {
+  scrollActive = !scrollActive;
+  document.getElementById('scrollBtn').className = 'ctrl-btn' + (scrollActive ? ' active' : '');
+  if (scrollActive) {
+    scrollLastTime = null;
+    scrollRAF = requestAnimationFrame(autoScrollStep);
+  } else {
+    cancelAnimationFrame(scrollRAF);
+    scrollRAF = null;
+  }
+}
+
+function autoScrollStep(ts) {
+  if (!scrollActive) return;
+  if (scrollLastTime !== null) {
+    const px = (scrollLevel * 12) * (ts - scrollLastTime) / 1000;
+    window.scrollBy(0, px);
+    // Stanna automatiskt vid sidans slut
+    if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+      toggleAutoScroll();
+      return;
+    }
+  }
+  scrollLastTime = ts;
+  scrollRAF = requestAnimationFrame(autoScrollStep);
+}
+
+function changeScrollSpeed(dir) {
+  scrollLevel = Math.max(1, Math.min(9, scrollLevel + dir));
+  document.getElementById('scrollSpeedLabel').textContent = scrollLevel;
+}
+
 function selectSong(idx) {
+  if (scrollActive) toggleAutoScroll();
+  if (songEditorMode) { songEditorMode = false; document.getElementById('songEditorBtn').className = 'ctrl-btn'; }
   currentSong = idx;
   transposeSemitones = 0;
   document.getElementById('transposeBadge').style.display = 'none';
@@ -205,21 +216,17 @@ function escHtml(s) {
 }
 
 // ─── Render ───
-let chWidthCache = 8;
-
-function measureChWidth() {
-  const probe = document.createElement('span');
-  probe.style.cssText = 'font-family:JetBrains Mono,monospace;font-size:'+fontSize+'px;position:absolute;visibility:hidden;white-space:pre';
-  probe.textContent = '0';
-  document.body.appendChild(probe);
-  chWidthCache = probe.getBoundingClientRect().width || 8;
-  document.body.removeChild(probe);
-}
 
 function renderSong() {
   if (songs.length === 0) return;
   try {
-  measureChWidth();
+  if (songEditorMode) {
+    const display = document.getElementById('songDisplay');
+    display.className = 'song-display song-display--editor';
+    display.innerHTML = renderSongEditor();
+    attachEditorHandlers();
+    return;
+  }
   const s = songs[currentSong];
   const display = document.getElementById('songDisplay');
   const transposedKey = transposeSemitones !== 0
@@ -238,16 +245,8 @@ function renderSong() {
     </div>
   `;
 
-  // Chord diagrams
   if (typeof renderChordDiagrams === 'function') {
     html += renderChordDiagrams(s, transposeSemitones);
-  }
-
-  if (editMode) {
-    html += `<div class="edit-banner">
-      <span class="icon">↔</span>
-      <span>Redigeringsläge — dra ackord · klicka text för att redigera · klicka taktstreck (×) för att ta bort · +| för att lägga till</span>
-    </div>`;
   }
 
   html += `<div class="song-body" style="font-size:${fontSize}px">`;
@@ -257,7 +256,6 @@ function renderSong() {
     html += `<div class="section-label">${escHtml(sec.label)}</div>`;
 
     sec.lines.forEach((line, li) => {
-      // Resolve chord template reference: "c": "@mallnamn" → lookup in s.chordTemplates
       const rawC = line.c || '';
       const cStr = rawC.startsWith('@') && s.chordTemplates
         ? (s.chordTemplates[rawC.slice(1)] || '')
@@ -266,21 +264,18 @@ function renderSong() {
       const lMeasures = (line.l || '').split('|');
       const isMultiMeasure = cMeasures.length > 1;
 
-      // Display only: if a measure boundary falls mid-word, move the
-      // trailing fragment to the start of the next measure so the full
-      // word appears together. Edit mode always shows the raw data.
+      // If a measure boundary falls mid-word, move the trailing fragment
+      // to the next measure so the full word appears together.
       const displayLyrics = [...lMeasures];
-      if (!editMode) {
-        for (let mi = 0; mi < displayLyrics.length - 1; mi++) {
-          const cur = displayLyrics[mi] || '';
-          const nxt = displayLyrics[mi + 1] || '';
-          if (cur.length > 0 && cur[cur.length - 1] !== ' ' &&
-              nxt.length > 0 && nxt[0] !== ' ') {
-            const m = cur.match(/\S+$/);
-            if (m && cur.length > m[0].length) {
-              displayLyrics[mi] = cur.slice(0, cur.length - m[0].length);
-              displayLyrics[mi + 1] = m[0] + nxt;
-            }
+      for (let mi = 0; mi < displayLyrics.length - 1; mi++) {
+        const cur = displayLyrics[mi] || '';
+        const nxt = displayLyrics[mi + 1] || '';
+        if (cur.length > 0 && cur[cur.length - 1] !== ' ' &&
+            nxt.length > 0 && nxt[0] !== ' ') {
+          const m = cur.match(/\S+$/);
+          if (m && cur.length > m[0].length) {
+            displayLyrics[mi] = cur.slice(0, cur.length - m[0].length);
+            displayLyrics[mi + 1] = m[0] + nxt;
           }
         }
       }
@@ -291,112 +286,68 @@ function renderSong() {
         const chords = parseChordLine(cPart);
         const lyric = displayLyrics[mi] || '';
 
-        // Open a row group every 2 measures (for 2+2 mobile layout)
         if (isMultiMeasure && mi % 2 === 0) html += `<div class="cl-measure-row">`;
 
-        // Barline within a row group (mi=1, 3, 5…); NOT at row boundaries (mi=2, 4…)
         if (mi > 0 && (!isMultiMeasure || mi % 2 !== 0)) {
-          html += editMode
-            ? `<div class="cl-measure-bar cl-bar-edit" data-si="${si}" data-li="${li}" data-left="${mi-1}" title="Klicka för att ta bort taktstreck"></div>`
-            : `<div class="cl-measure-bar"></div>`;
+          html += `<div class="cl-measure-bar"></div>`;
         }
 
-        if (editMode) {
+        if (isMultiMeasure) {
           html += `<div class="cl-abs-pair">`;
           if (chords.length > 0) {
             html += `<div class="cl-abs-chord-row">`;
-            chords.forEach((ch, ci) => {
-              const key = `${currentSong}-${si}-${li}-${mi}-${ci}`;
-              const offset = chordOffsets[key] || 0;
+            chords.forEach(ch => {
               const name = transposeSemitones !== 0
                 ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-              html += `<span class="chord-tag editable" `
-                + `data-key="${key}" `
-                + `data-base-pos="${ch.pos}" `
-                + `style="left:calc(${ch.pos}ch + ${offset}px)">`
-                + `${escHtml(name)}</span>`;
+              html += `<span class="chord-tag" style="left:${ch.pos}ch">${escHtml(name)}</span>`;
             });
             html += `</div>`;
           }
-          html += `<div class="cl-abs-lyric-row cl-lyric-edit" contenteditable="true" spellcheck="false" `
-            + `data-si="${si}" data-li="${li}" data-mi="${mi}">${escHtml(lyric)}</div>`;
-          html += `<button class="cl-add-bar-btn" data-si="${si}" data-li="${li}" data-after="${mi}" title="Lägg till taktstreck">+|</button>`;
+          if (lyric.trim()) {
+            html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+          }
           html += `</div>`;
         } else {
-          if (isMultiMeasure) {
-            // Multi-measure display: abs-positioned chords + full-width justified lyric
-            html += `<div class="cl-abs-pair">`;
-            if (chords.length > 0) {
-              html += `<div class="cl-abs-chord-row">`;
-              chords.forEach((ch, ci) => {
-                const key = `${currentSong}-${si}-${li}-${mi}-${ci}`;
-                const offset = chordOffsets[key] || 0;
-                const name = transposeSemitones !== 0
-                  ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-                html += `<span class="chord-tag" style="left:calc(${ch.pos}ch + ${offset}px)">${escHtml(name)}</span>`;
-              });
-              html += `</div>`;
-            }
-            if (lyric.trim()) {
-              html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
-            }
+          if (chords.length > 0 && lyric.trim()) {
+            html += `<div class="cl-pair cl-pair--chords">`;
+            const snappedStarts = chords.map(ch => {
+              let pos = Math.max(0, ch.pos);
+              while (pos > 0 && lyric[pos - 1] !== ' ') pos--;
+              return pos;
+            });
+            chords.forEach((ch, ci) => {
+              const startPos = snappedStarts[ci];
+              const nextPos = ci < chords.length - 1 ? snappedStarts[ci + 1] : lyric.length;
+              const textSlice = lyric.substring(startPos, Math.max(startPos, nextPos));
+              if (ci === 0 && startPos > 0) {
+                const pre = lyric.substring(0, startPos);
+                html += `<span class="cl-segment-chord"><span class="chord-name">&nbsp;</span><span class="chord-text">${escHtml(pre)}</span></span>`;
+              }
+              const name = transposeSemitones !== 0
+                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+              html += `<span class="cl-segment-chord"><span class="chord-name">${escHtml(name)}</span><span class="chord-text">${escHtml(textSlice)}</span></span>`;
+            });
             html += `</div>`;
-          } else {
-            // Single-measure: segment-based rendering with word-wrap
-            if (chords.length > 0 && lyric.trim()) {
-              html += `<div class="cl-pair cl-pair--chords">`;
-              const snappedStarts = chords.map((ch, ci) => {
-                const key = `${currentSong}-${si}-${li}-${mi}-${ci}`;
-                const pxOffset = chordOffsets[key] || 0;
-                const charShift = Math.round(pxOffset / chWidthCache);
-                let pos = Math.max(0, ch.pos + charShift);
-                while (pos > 0 && lyric[pos - 1] !== ' ') pos--;
-                return pos;
-              });
-              chords.forEach((ch, ci) => {
-                const startPos = snappedStarts[ci];
-                const nextPos = ci < chords.length - 1 ? snappedStarts[ci + 1] : lyric.length;
-                const textSlice = lyric.substring(startPos, Math.max(startPos, nextPos));
-                if (ci === 0 && startPos > 0) {
-                  const pre = lyric.substring(0, startPos);
-                  html += `<span class="cl-segment-chord"><span class="chord-name">&nbsp;</span><span class="chord-text">${escHtml(pre)}</span></span>`;
-                }
-                const name = transposeSemitones !== 0
-                  ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-                html += `<span class="cl-segment-chord"><span class="chord-name">${escHtml(name)}</span><span class="chord-text">${escHtml(textSlice)}</span></span>`;
-              });
-              html += `</div>`;
-            } else if (chords.length > 0 && !lyric.trim()) {
-              html += `<div class="cl-chord-only">`;
-              chords.forEach((ch, ci) => {
-                const key = `${currentSong}-${si}-${li}-${mi}-${ci}`;
-                const pxOffset = chordOffsets[key] || 0;
-                const charShift = Math.round(pxOffset / chWidthCache);
-                const startPos = Math.max(0, ch.pos + charShift);
-                const nextPos = ci < chords.length - 1
-                  ? Math.max(0, chords[ci+1].pos + Math.round((chordOffsets[`${currentSong}-${si}-${li}-${mi}-${ci+1}`] || 0) / chWidthCache))
-                  : startPos + ch.name.length + 2;
-                const spacing = ' '.repeat(Math.max(1, nextPos - startPos - ch.name.length));
-                const name = transposeSemitones !== 0
-                  ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-                html += `<span class="chord-name">${escHtml(name)}</span>`;
-                if (ci < chords.length - 1) html += `<span>${escHtml(spacing)}</span>`;
-              });
-              html += `</div>`;
-            } else if (lyric.trim()) {
-              html += `<div class="cl-pair"><span class="cl-segment-plain">${escHtml(lyric)}</span></div>`;
-            }
+          } else if (chords.length > 0 && !lyric.trim()) {
+            html += `<div class="cl-chord-only">`;
+            chords.forEach((ch, ci) => {
+              const nextPos = ci < chords.length - 1 ? chords[ci+1].pos : ch.pos + ch.name.length + 2;
+              const spacing = ' '.repeat(Math.max(1, nextPos - ch.pos - ch.name.length));
+              const name = transposeSemitones !== 0
+                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+              html += `<span class="chord-name">${escHtml(name)}</span>`;
+              if (ci < chords.length - 1) html += `<span>${escHtml(spacing)}</span>`;
+            });
+            html += `</div>`;
+          } else if (lyric.trim()) {
+            html += `<div class="cl-pair"><span class="cl-segment-plain">${escHtml(lyric)}</span></div>`;
           }
         }
 
-        // Close row group after 2nd measure of a pair, or at the last measure
         if (isMultiMeasure && (mi % 2 === 1 || mi === cMeasures.length - 1)) {
-          html += `</div>`; // close cl-measure-row
-          // Between-rows barline: visible on desktop (display:contents), hidden on mobile
+          html += `</div>`;
           if (mi < cMeasures.length - 1) {
-            html += editMode
-              ? `<div class="cl-measure-bar cl-measure-bar--between cl-bar-edit" data-si="${si}" data-li="${li}" data-left="${mi}" title="Klicka för att ta bort taktstreck"></div>`
-              : `<div class="cl-measure-bar cl-measure-bar--between"></div>`;
+            html += `<div class="cl-measure-bar cl-measure-bar--between"></div>`;
           }
         }
       });
@@ -410,125 +361,11 @@ function renderSong() {
   html += `</div>`;
   display.innerHTML = html;
   display.className = 'song-display' + (twoColumns ? ' columns-2' : '');
-
-  if (editMode) attachDragHandlers();
   } catch (e) {
     console.error('renderSong crash:', e);
     document.getElementById('songDisplay').innerHTML =
       `<div style="padding:40px;color:#f66;font-family:monospace">FEL: ${e.message}</div>`;
   }
-}
-
-// ─── Drag system ───
-let dragState = null;
-
-function attachDragHandlers() {
-  document.querySelectorAll('.chord-tag.editable').forEach(el => {
-    el.addEventListener('mousedown', startDrag);
-    el.addEventListener('touchstart', startDragTouch, { passive: false });
-  });
-  document.querySelectorAll('.cl-lyric-edit').forEach(el => {
-    el.addEventListener('blur', onLyricBlur);
-    el.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
-  });
-  document.querySelectorAll('.cl-bar-edit').forEach(el => {
-    el.addEventListener('click', onBarlineRemove);
-  });
-  document.querySelectorAll('.cl-add-bar-btn').forEach(el => {
-    el.addEventListener('click', onBarlineAdd);
-  });
-}
-
-// ─── Lyric & barline editing ───
-
-function onLyricBlur(e) {
-  const el = e.target;
-  const si = +el.dataset.si, li = +el.dataset.li, mi = +el.dataset.mi;
-  const line = songs[currentSong].sections[si].lines[li];
-  const parts = (line.l || '').split('|');
-  while (parts.length <= mi) parts.push('');
-  parts[mi] = el.textContent;
-  line.l = parts.join('|');
-  debouncedSaveOffsets();
-}
-
-function onBarlineRemove(e) {
-  const el = e.currentTarget;
-  const si = +el.dataset.si, li = +el.dataset.li, left = +el.dataset.left;
-  const line = songs[currentSong].sections[si].lines[li];
-  const cp = (line.c || '').split('|');
-  const lp = (line.l || '').split('|');
-  if (left + 1 < cp.length) { cp[left] = cp[left] + cp[left + 1]; cp.splice(left + 1, 1); }
-  if (left + 1 < lp.length) { lp[left] = (lp[left]||'') + (lp[left+1]||''); lp.splice(left + 1, 1); }
-  line.c = cp.join('|');
-  line.l = lp.join('|');
-  debouncedSaveOffsets();
-  renderSong();
-}
-
-function onBarlineAdd(e) {
-  e.stopPropagation();
-  const el = e.currentTarget;
-  const si = +el.dataset.si, li = +el.dataset.li, after = +el.dataset.after;
-  const line = songs[currentSong].sections[si].lines[li];
-  const cp = (line.c || '').split('|');
-  const lp = (line.l || '').split('|');
-  cp.splice(after + 1, 0, '');
-  lp.splice(after + 1, 0, '');
-  line.c = cp.join('|');
-  line.l = lp.join('|');
-  debouncedSaveOffsets();
-  renderSong();
-}
-
-function startDrag(e) {
-  e.preventDefault();
-  const el = e.target.closest('.chord-tag');
-  if (!el) return;
-  dragState = { el, key: el.dataset.key, startX: e.clientX, startOffset: chordOffsets[el.dataset.key] || 0 };
-  el.classList.add('dragging');
-  document.addEventListener('mousemove', onDrag);
-  document.addEventListener('mouseup', endDrag);
-}
-
-function startDragTouch(e) {
-  e.preventDefault();
-  const el = e.target.closest('.chord-tag');
-  if (!el) return;
-  const touch = e.touches[0];
-  dragState = { el, key: el.dataset.key, startX: touch.clientX, startOffset: chordOffsets[el.dataset.key] || 0 };
-  el.classList.add('dragging');
-  document.addEventListener('touchmove', onDragTouch, { passive: false });
-  document.addEventListener('touchend', endDragTouch);
-}
-
-function onDrag(e) {
-  if (!dragState) return;
-  const newOffset = dragState.startOffset + (e.clientX - dragState.startX);
-  chordOffsets[dragState.key] = newOffset;
-  dragState.el.style.left = `calc(${dragState.el.dataset.basePos}ch + ${newOffset}px)`;
-}
-
-function onDragTouch(e) {
-  if (!dragState) return;
-  e.preventDefault();
-  const newOffset = dragState.startOffset + (e.touches[0].clientX - dragState.startX);
-  chordOffsets[dragState.key] = newOffset;
-  dragState.el.style.left = `calc(${dragState.el.dataset.basePos}ch + ${newOffset}px)`;
-}
-
-function endDrag() {
-  if (dragState) { dragState.el.classList.remove('dragging'); debouncedSaveOffsets(); }
-  dragState = null;
-  document.removeEventListener('mousemove', onDrag);
-  document.removeEventListener('mouseup', endDrag);
-}
-
-function endDragTouch() {
-  if (dragState) { dragState.el.classList.remove('dragging'); debouncedSaveOffsets(); }
-  dragState = null;
-  document.removeEventListener('touchmove', onDragTouch);
-  document.removeEventListener('touchend', endDragTouch);
 }
 
 // ─── Controls ───
@@ -558,74 +395,11 @@ function toggleColumns() {
   savePrefs();
 }
 
-function toggleEditMode() {
-  editMode = !editMode;
-  document.getElementById('editBtn').className = 'ctrl-btn' + (editMode ? ' active' : '');
-  document.getElementById('resetBtn').style.display = editMode ? 'inline-block' : 'none';
+function toggleSongEditor() {
+  songEditorMode = !songEditorMode;
+  if (songEditorMode && scrollActive) toggleAutoScroll();
+  document.getElementById('songEditorBtn').className = 'ctrl-btn' + (songEditorMode ? ' active' : '');
   renderSong();
-}
-
-async function saveCurrentSongToFile() {
-  if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
-
-  const songIdx = currentSong;
-  const s = songs[songIdx];
-  const filename = s._filename;
-  if (!filename) return;
-
-  measureChWidth();
-  const chWidth = chWidthCache;
-  const exportSong = { ...s, sections: [] };
-  delete exportSong._filename;
-
-  s.sections.forEach((sec, si) => {
-    const exportSec = { label: sec.label, lines: [] };
-    sec.lines.forEach((line, li) => {
-      const chords = parseChordLine(line.c);
-      if (chords.length === 0) {
-        exportSec.lines.push({ c: '', l: line.l });
-        return;
-      }
-      const newChords = chords.map((ch, ci) => {
-        const key = `${songIdx}-${si}-${li}-${ci}`;
-        const charOffset = Math.round((chordOffsets[key] || 0) / chWidth);
-        return { name: ch.name, pos: Math.max(0, ch.pos + charOffset) };
-      }).sort((a, b) => a.pos - b.pos);
-      let chordStr = '';
-      newChords.forEach(ch => {
-        while (chordStr.length < ch.pos) chordStr += ' ';
-        chordStr += ch.name;
-      });
-      exportSec.lines.push({ c: chordStr, l: line.l });
-    });
-    exportSong.sections.push(exportSec);
-  });
-
-  try {
-    const resp = await fetch('/save-song', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename, content: exportSong })
-    });
-    if (!resp.ok) throw new Error(await resp.text());
-    // Uppdatera songs i minnet och rensa offsets för denna låt
-    songs[songIdx] = { ...exportSong, _filename: filename };
-    chordOffsets = Object.fromEntries(
-      Object.entries(chordOffsets).filter(([k]) => !k.startsWith(songIdx + '-'))
-    );
-    await saveOffsets();
-    flashSaveIndicator();
-  } catch (e) {
-    console.error(`Kunde inte spara ${filename}:`, e);
-  }
-}
-
-async function resetPositions() {
-  Object.keys(chordOffsets).forEach(k => {
-    if (k.startsWith(currentSong + '-')) delete chordOffsets[k];
-  });
-  renderSong();
-  await saveOffsets();
 }
 
 function toggleSidebar() {
@@ -636,6 +410,291 @@ function toggleSidebar() {
     sidebarHidden = !sidebarHidden;
     document.querySelector('.app').classList.toggle('sidebar-hidden', sidebarHidden);
     savePrefs();
+  }
+}
+
+// ─── Song Editor ───
+
+function renderSongEditor() {
+  const s = songs[currentSong];
+  const tplNames = s.chordTemplates ? Object.keys(s.chordTemplates) : [];
+  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+  let html = `<div class="sed-wrap">`;
+
+  // Metadata
+  html += `<div class="sed-card">
+    <div class="sed-card-title">Metadata</div>
+    <div class="sed-meta-grid">
+      <label class="sed-field">Titel<input class="sed-input" data-prop="title" value="${escHtml(s.title || '')}"></label>
+      <label class="sed-field">Artist<input class="sed-input" data-prop="artist" value="${escHtml(s.artist || '')}"></label>
+      <label class="sed-field">Tonart<input class="sed-input sed-input--sm" data-prop="key" value="${escHtml(s.key || '')}"></label>
+      <label class="sed-field">Taktart<input class="sed-input sed-input--sm" data-prop="timeSignature" value="${escHtml(s.timeSignature || '')}"></label>
+      <label class="sed-field">Svårigh.<input class="sed-input sed-input--sm" data-prop="difficulty" value="${escHtml(s.difficulty || '')}"></label>
+    </div>
+  </div>`;
+
+  // ChordTemplates
+  html += `<div class="sed-card">
+    <div class="sed-card-title">Ackordmallar</div>
+    <div class="sed-tpl-list">`;
+  tplNames.forEach(name => {
+    html += `<div class="sed-tpl-row">
+      <input class="sed-input sed-tpl-name" data-orig="${escHtml(name)}" value="${escHtml(name)}" placeholder="mallnamn">
+      <span class="sed-colon">:</span>
+      <input class="sed-input sed-input--wide sed-tpl-val" data-name="${escHtml(name)}" value="${escHtml(s.chordTemplates[name])}" placeholder="C|F|G|Am">
+      <button class="sed-btn sed-btn--danger sed-del-tpl" data-name="${escHtml(name)}">✕</button>
+    </div>`;
+  });
+  html += `</div>
+    <button class="sed-btn sed-btn--add" id="sed-add-tpl">+ Ny mall</button>
+  </div>`;
+
+  // Sections
+  html += `<div id="sed-sections">`;
+  s.sections.forEach((sec, si) => {
+    html += renderEditorSection(s, sec, si, tplNames);
+  });
+  html += `</div>
+  <div class="sed-section-actions">
+    <button class="sed-btn sed-btn--add sed-add-section">+ Ny del</button>
+  </div>`;
+
+  // Save bar
+  html += `<div class="sed-save-bar">
+    <button class="sed-save-btn"${isLocal ? '' : ' disabled'}>💾 Spara till fil</button>
+    <span class="sed-save-note">${isLocal ? `songs/${escHtml(s._filename || '?')}` : 'Sparning fungerar bara på localhost'}</span>
+    <span class="sed-save-error" id="sed-save-error"></span>
+  </div>`;
+
+  html += `</div>`;
+  return html;
+}
+
+function renderEditorSection(s, sec, si, tplNames) {
+  let html = `<div class="sed-song-section" data-si="${si}">
+    <div class="sed-section-header">
+      <input class="sed-input sed-section-label" data-si="${si}" value="${escHtml(sec.label || '')}">
+      <button class="sed-btn sed-btn--danger sed-del-section" data-si="${si}">✕ Ta bort</button>
+    </div>
+    <div class="sed-line-list">`;
+  sec.lines.forEach((line, li) => {
+    html += renderEditorLine(s, line, si, li, tplNames);
+  });
+  html += `</div>
+    <button class="sed-btn sed-btn--add sed-add-line" data-si="${si}">+ Ny rad</button>
+  </div>`;
+  return html;
+}
+
+function renderEditorLine(s, line, si, li, tplNames) {
+  const rawC = line.c || '';
+  const isTemplate = rawC.startsWith('@') && s.chordTemplates;
+  const tplKey = isTemplate ? rawC.slice(1) : '';
+
+  let chordHtml = `<div class="sed-chord-cell">`;
+  if (tplNames.length > 0) {
+    chordHtml += `<select class="sed-select sed-chord-sel" data-si="${si}" data-li="${li}">`;
+    tplNames.forEach(name => {
+      chordHtml += `<option value="@${escHtml(name)}"${tplKey === name ? ' selected' : ''}>@${escHtml(name)}</option>`;
+    });
+    chordHtml += `<option value="__custom__"${!isTemplate ? ' selected' : ''}>Eget…</option></select>`;
+  }
+  const showCustom = !isTemplate || tplNames.length === 0;
+  chordHtml += `<input class="sed-input sed-chord-custom" data-si="${si}" data-li="${li}"
+    value="${escHtml(showCustom ? rawC : '')}" placeholder="C|F|G|Am"
+    style="${showCustom ? '' : 'display:none'}">`;
+  if (isTemplate) {
+    chordHtml += `<span class="sed-tpl-resolved">${escHtml(s.chordTemplates[tplKey] || '')}</span>`;
+  }
+  chordHtml += `</div>`;
+
+  return `<div class="sed-line-row" data-si="${si}" data-li="${li}">
+    ${chordHtml}
+    <input class="sed-input sed-input--wide sed-lyric" data-si="${si}" data-li="${li}"
+      value="${escHtml(line.l || '')}" placeholder="Text… använd | för taktstreck">
+    <button class="sed-btn sed-btn--danger sed-del-line" data-si="${si}" data-li="${li}">✕</button>
+  </div>`;
+}
+
+function attachEditorHandlers() {
+  const s = songs[currentSong];
+
+  // Metadata
+  document.querySelectorAll('.sed-input[data-prop]').forEach(el => {
+    el.addEventListener('change', () => { s[el.dataset.prop] = el.value; });
+  });
+
+  // Template name rename
+  document.querySelectorAll('.sed-tpl-name').forEach(el => {
+    el.addEventListener('change', () => {
+      const origName = el.dataset.orig;
+      const newName = el.value.trim();
+      if (!newName || newName === origName) { el.value = origName; return; }
+      if (s.chordTemplates[newName] !== undefined) {
+        el.value = origName;
+        el.style.borderColor = '#f88';
+        setTimeout(() => el.style.borderColor = '', 1500);
+        return;
+      }
+      s.chordTemplates[newName] = s.chordTemplates[origName];
+      delete s.chordTemplates[origName];
+      s.sections.forEach(sec => sec.lines.forEach(line => {
+        if (line.c === '@' + origName) line.c = '@' + newName;
+      }));
+      renderSong();
+    });
+  });
+
+  // Template value change (live — updates resolved preview inline)
+  document.querySelectorAll('.sed-tpl-val').forEach(el => {
+    el.addEventListener('input', () => {
+      const name = el.dataset.name;
+      if (s.chordTemplates) s.chordTemplates[name] = el.value;
+      document.querySelectorAll('.sed-chord-sel').forEach(sel => {
+        if (sel.value === '@' + name) {
+          const resolved = sel.closest('.sed-chord-cell')?.querySelector('.sed-tpl-resolved');
+          if (resolved) resolved.textContent = el.value;
+        }
+      });
+    });
+  });
+
+  // Delete template (expand references inline first)
+  document.querySelectorAll('.sed-del-tpl').forEach(el => {
+    el.addEventListener('click', () => {
+      const name = el.dataset.name;
+      const val = s.chordTemplates?.[name] || '';
+      s.sections.forEach(sec => sec.lines.forEach(line => {
+        if (line.c === '@' + name) line.c = val;
+      }));
+      if (s.chordTemplates) delete s.chordTemplates[name];
+      renderSong();
+    });
+  });
+
+  // Add template
+  document.getElementById('sed-add-tpl')?.addEventListener('click', () => {
+    if (!s.chordTemplates) s.chordTemplates = {};
+    let newName = 'ny_mall'; let i = 2;
+    while (s.chordTemplates[newName] !== undefined) newName = 'ny_mall_' + (i++);
+    s.chordTemplates[newName] = '';
+    renderSong();
+  });
+
+  // Section label
+  document.querySelectorAll('.sed-section-label').forEach(el => {
+    el.addEventListener('change', () => {
+      s.sections[+el.dataset.si].label = el.value || 'Del';
+    });
+  });
+
+  // Delete section
+  document.querySelectorAll('.sed-del-section').forEach(el => {
+    el.addEventListener('click', () => {
+      const si = +el.dataset.si;
+      if (s.sections.length <= 1) return;
+      s.sections.splice(si, 1);
+      renderSong();
+    });
+  });
+
+  // Add section
+  document.querySelector('.sed-add-section')?.addEventListener('click', () => {
+    const tplNames = s.chordTemplates ? Object.keys(s.chordTemplates) : [];
+    s.sections.push({ label: 'Ny del', lines: [{ c: tplNames.length ? '@' + tplNames[0] : '', l: '' }] });
+    renderSong();
+  });
+
+  // Chord selector
+  document.querySelectorAll('.sed-chord-sel').forEach(el => {
+    el.addEventListener('change', () => {
+      const si = +el.dataset.si, li = +el.dataset.li;
+      const line = s.sections[si].lines[li];
+      const cell = el.closest('.sed-chord-cell');
+      const customInput = cell?.querySelector('.sed-chord-custom');
+      const resolvedSpan = cell?.querySelector('.sed-tpl-resolved');
+      if (el.value === '__custom__') {
+        line.c = customInput?.value || '';
+        if (customInput) customInput.style.display = '';
+        if (resolvedSpan) resolvedSpan.style.display = 'none';
+      } else {
+        line.c = el.value;
+        if (customInput) customInput.style.display = 'none';
+        const resolved = s.chordTemplates?.[el.value.slice(1)] || '';
+        if (resolvedSpan) { resolvedSpan.textContent = resolved; resolvedSpan.style.display = ''; }
+        else {
+          const span = document.createElement('span');
+          span.className = 'sed-tpl-resolved';
+          span.textContent = resolved;
+          cell.appendChild(span);
+        }
+      }
+    });
+  });
+
+  // Custom chord input
+  document.querySelectorAll('.sed-chord-custom').forEach(el => {
+    el.addEventListener('input', () => {
+      const sel = el.closest('.sed-chord-cell')?.querySelector('.sed-chord-sel');
+      if (!sel || sel.value === '__custom__') {
+        s.sections[+el.dataset.si].lines[+el.dataset.li].c = el.value;
+      }
+    });
+  });
+
+  // Lyric input
+  document.querySelectorAll('.sed-lyric').forEach(el => {
+    el.addEventListener('change', () => {
+      s.sections[+el.dataset.si].lines[+el.dataset.li].l = el.value;
+    });
+  });
+
+  // Delete line
+  document.querySelectorAll('.sed-del-line').forEach(el => {
+    el.addEventListener('click', () => {
+      const si = +el.dataset.si, li = +el.dataset.li;
+      if (s.sections[si].lines.length <= 1) return;
+      s.sections[si].lines.splice(li, 1);
+      renderSong();
+    });
+  });
+
+  // Add line
+  document.querySelectorAll('.sed-add-line').forEach(el => {
+    el.addEventListener('click', () => {
+      const si = +el.dataset.si;
+      const tplNames = s.chordTemplates ? Object.keys(s.chordTemplates) : [];
+      s.sections[si].lines.push({ c: tplNames.length ? '@' + tplNames[0] : '', l: '' });
+      renderSong();
+    });
+  });
+
+  // Save
+  document.querySelector('.sed-save-btn')?.addEventListener('click', saveSongEditorToFile);
+}
+
+async function saveSongEditorToFile() {
+  if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+  const s = songs[currentSong];
+  if (!s._filename) return;
+  const { _filename, ...exportSong } = s;
+  if (exportSong.chordTemplates && Object.keys(exportSong.chordTemplates).length === 0) {
+    delete exportSong.chordTemplates;
+  }
+  const errEl = document.getElementById('sed-save-error');
+  try {
+    const resp = await fetch('/save-song', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: _filename, content: exportSong })
+    });
+    if (!resp.ok) throw new Error(await resp.text());
+    if (errEl) errEl.textContent = '';
+    flashSaveIndicator();
+  } catch (e) {
+    if (errEl) errEl.textContent = 'Fel: ' + e.message;
+    console.error('saveSongEditorToFile:', e);
   }
 }
 

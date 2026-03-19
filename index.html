@@ -41,9 +41,13 @@
         <button class="ctrl-btn" onclick="toggleColumns()" id="colBtn">2 kolumner</button>
         <button class="ctrl-btn" onclick="transpose(-1)">♭</button>
         <button class="ctrl-btn" onclick="transpose(1)">♯</button>
-        <button class="ctrl-btn" onclick="toggleEditMode()" id="editBtn">✎ Justera ackord</button>
-        <button class="ctrl-btn" onclick="toggleListen()" id="listenBtn">🎤 Följ med</button>
-        <button class="ctrl-btn" onclick="resetPositions()" id="resetBtn" style="display:none">↺ Återställ</button>
+        <button class="ctrl-btn" onclick="toggleSongEditor()" id="songEditorBtn">✎ Redigera låt</button>
+        <div class="font-ctrl" id="scrollCtrl">
+          <button onclick="changeScrollSpeed(-1)">−</button>
+          <span id="scrollSpeedLabel">3</span>
+          <button onclick="changeScrollSpeed(1)">+</button>
+        </div>
+        <button class="ctrl-btn" onclick="toggleAutoScroll()" id="scrollBtn">▶ Scrolla</button>
       </div>
     </div>
     <div class="song-display" id="songDisplay">
@@ -56,7 +60,6 @@
 </div>
 
 <script src="chords.js"></script>
-<script src="listener.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

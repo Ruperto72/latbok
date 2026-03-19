@@ -5,33 +5,30 @@ En modern webbapp för körsånger med ackord, byggd som en ren statisk sida fö
 ## Funktioner
 
 ### Visning
-- **Taktbaserad layout** — med `timeSignature: "4/4"` visas varje rad som 4 lika breda taktkolumner, ackord och text hålls ihop per takt
+- **Taktbaserad layout** — varje rad visas som lika breda taktkolumner; ackord och text hålls ihop per takt
 - **Ackorddiagram** — SVG-genererade gitarrgrepp visas automatiskt för varje låts unika ackord
-- **Responsiv layout** — ackord och text wrappas naturligt på mobil, ingen horisontell scrollning
-- **2-kolumnläge** — komprimera långa låtar med balanserade kolumner
+- **Responsiv layout** — på mobil wrappas 4-taktsrader om till 2+2 utan att text pressas ihop
+- **2-kolumnläge** — komprimera långa låtar med balanserade kolumner (desktop)
 - **Justerbar textstorlek** — versrubriker och avstånd skalas proportionellt
 
 ### Transponering
 - **Tonartsbyte** med ♭/♯-knappar
 - Ackorddiagrammen uppdateras automatiskt vid transponering
 
-### Redigering (Justera ackord-läge)
-- **Dra ackord** horisontellt för att finjustera placeringen inom en takt
-- **Redigera låttext** direkt i webbläsaren — klicka på en textrad för att ändra
-- **Lägg till/ta bort taktstreck** — klicka på ett taktstreck för att ta bort det, eller använd `+|` för att lägga till ett nytt
-- **Sparas automatiskt** i webbläsaren (localStorage) per användare
-- **Exportfunktion** — ladda ner justerade ackordpositioner som JSON för att baka in permanent
-- **Återställ** — nollställ justeringar per låt
+### Autoscroll
+- **Jämnt flöde** — scrolla sidan automatiskt med ▶ Scrolla-knappen
+- **Hastighetskontroll** — skala 1–9 justerar scrollhastigheten
 
-### Följ med-läge (experimentellt)
-- **Taligenkänning** via Web Speech API — appen lyssnar på kören och scrollar automatiskt till rätt vers
-- **Automatisk språkdetektering** — stöd för svenska, engelska, italienska m.fl.
-- **Fuzzy matching** — tolerant matchning som hanterar taligenkänningens brister
-- Kräver Chrome/Edge och HTTPS (GitHub Pages ger det automatiskt)
+### Låtredaktör (desktop)
+Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i webbläsaren:
+- **Metadata** — titel, artist, tonart, taktart, svårighet
+- **Ackordmallar** — skapa, byt namn på och ta bort mallar; alla rader som refererar till en mall uppdateras automatiskt
+- **Delar & rader** — lägg till/ta bort delar och rader; välj ackordmall per rad eller skriv ackord fritt
+- **Texteditering** — redigera lyrics direkt; använd `|` för att markera taktgränser
+- **Spara till fil** — skriver ändringarna tillbaka till JSON-filen via en lokal server (fungerar på localhost)
 
 ### Övrigt
 - **Döljbar sidopanel** — hamburgaremenyn fungerar både på mobil och desktop
-- **Mobilanpassad** med sidopanel och hamburgaremeny
 - **Utskriftsvänlig** — skriv ut direkt från webbläsaren
 - **Mörkt tema** med guldiga ackord
 
@@ -41,9 +38,8 @@ En modern webbapp för körsånger med ackord, byggd som en ren statisk sida fö
 korhaftet/
 ├── index.html          ← Huvudsida (HTML-skelett)
 ├── style.css           ← All styling
-├── app.js              ← Huvudlogik (rendering, transponering, drag, export)
+├── app.js              ← Huvudlogik (rendering, transponering, redaktör, autoscroll)
 ├── chords.js           ← Ackordbibliotek och SVG-diagramgenerator
-├── listener.js         ← Taligenkänning och "Följ med"-funktionen
 ├── README.md
 └── songs/              ← Låtfiler (en JSON-fil per låt)
     ├── index.json      ← Lista med alla låtfiler (styr menyn)
@@ -61,9 +57,9 @@ korhaftet/
 
 ### 1. Skapa en JSON-fil i `songs/`
 
-#### Taktbaserat format (rekommenderat för 4/4-låtar)
+#### Med ackordmallar (rekommenderat)
 
-Separera takter med `|` i både `"c"` (ackord) och `"l"` (text). Varje rad bör ha exakt 4 takter (3 `|`-tecken).
+Definiera återkommande ackordföljder i `chordTemplates` och referera till dem med `@mallnamn` i `"c"`-fältet. Separera takter med `|` i både ackord och text.
 
 ```json
 {
@@ -81,7 +77,7 @@ Separera takter med `|` i både `"c"` (ackord) och `"l"` (text). Varje rad bör 
       "label": "Vers 1",
       "lines": [
         { "c": "@vers", "l": "Här skrivs |texten uppdelad |i fyra |takter." },
-        { "c": "Am|F|G|Am", "l": "Eller ange |ackorden |direkt per |takt." }
+        { "c": "@vers", "l": "Andra raden |med samma |ackord|följd." }
       ]
     },
     {
@@ -94,15 +90,13 @@ Separera takter med `|` i både `"c"` (ackord) och `"l"` (text). Varje rad bör 
 }
 ```
 
-**Ackordmallar** (`chordTemplates`) låter dig namnge återkommande ackordföljder och referera till dem med `@mallnamn` i `"c"`-fältet. Webbsidan visar ackorden som vanligt.
-
 Varje rad har två fält:
-- `"c"` — ackordrad, antingen `@mallnamn` eller ackord separerade med `|` (ett ackord per takt)
-- `"l"` — textrad separerad med `|` (en takt per segment)
+- `"c"` — ackordrad: antingen `@mallnamn` eller ackord separerade med `|`
+- `"l"` — textrad separerad med `|` (ett segment per takt)
 
-**Obs:** Om ett ord delas av ett taktstreck (t.ex. `"än|då"`) hanterar appen detta automatiskt — hela ordet visas i rätt takt.
+**Obs:** Om ett ord delas av ett taktstreck hanterar appen detta automatiskt — hela ordet visas i rätt takt.
 
-#### Fritt format (för låtar utan taktstruktur)
+#### Utan ackordmallar (fritt format)
 
 ```json
 {
@@ -135,7 +129,7 @@ Ordningen i listan styr ordningen i menyn.
 
 ### 3. Pusha till GitHub — klart!
 
-Appen läser `songs/index.json` vid laddning och hämtar varje låtfil dynamiskt. Nya låtar dyker upp automatiskt i menyn.
+Appen läser `songs/index.json` vid laddning och hämtar varje låtfil dynamiskt.
 
 ## Ackordbibliotek
 
@@ -148,6 +142,16 @@ För att lägga till ett nytt ackord, utöka `CHORD_LIB` i `chords.js`:
 ```
 
 Format: `frets` = greppet per sträng (E A D G B e), där -1 = dämpad, 0 = öppen.
+
+## Lokal låtserver
+
+Låtredaktörens sparfunktion kräver en lokal server som hanterar `POST /save-song`. Starta med:
+
+```bash
+node server.js
+```
+
+På GitHub Pages (produktion) är sparknappen inaktiverad — redigera JSON-filerna lokalt och pusha.
 
 ## Publicering
 
@@ -165,8 +169,8 @@ Sidan hostas gratis via GitHub Pages:
 | Grundfunktioner | ✅ | ✅ | ✅ |
 | Ackorddiagram | ✅ | ✅ | ✅ |
 | Taktbaserad layout | ✅ | ✅ | ✅ |
-| Ackordjustering (drag) | ✅ | ✅ | ✅ |
-| Följ med (taligenkänning) | ✅ | ❌ | ❌ |
+| Autoscroll | ✅ | ✅ | ✅ |
+| Låtredaktör | ✅ | ✅ | ✅ |
 
 ## Låtlista
 
