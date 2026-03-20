@@ -290,6 +290,15 @@ function stopListening() {
   if (indicator) indicator.remove();
 }
 
+// ─── Exports for testing ───
+if (typeof exports !== 'undefined') {
+  exports.normalizeText = normalizeText;
+  exports.buildLyricIndex = buildLyricIndex;
+  exports.findBestMatch = findBestMatch;
+  exports.levenshteinLight = levenshteinLight;
+  exports.detectLanguage = detectLanguage;
+}
+
 function toggleListen() {
   if (listenActive) {
     stopListening();

@@ -208,6 +208,13 @@ function getUniqueChords(song, transposeSemitones) {
   return chords;
 }
 
+// ─── Exports for testing ───
+if (typeof exports !== 'undefined') {
+  exports.CHORD_LIB = CHORD_LIB;
+  exports.lookupChord = lookupChord;
+  exports.getUniqueChords = getUniqueChords;
+}
+
 // Render chord diagram strip for a song
 function renderChordDiagrams(song, transposeSemitones) {
   const chordNames = getUniqueChords(song, transposeSemitones);

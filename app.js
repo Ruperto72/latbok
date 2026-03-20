@@ -493,4 +493,13 @@ function toggleSidebar() {
 }
 
 // ─── Start ───
-init();
+if (typeof document !== 'undefined') init();
+
+// ─── Exports for testing ───
+if (typeof exports !== 'undefined') {
+  exports.NOTES_SHARP = NOTES_SHARP;
+  exports.NOTES_FLAT = NOTES_FLAT;
+  exports.parseChordLine = parseChordLine;
+  exports.transposeChordName = transposeChordName;
+  exports.escHtml = escHtml;
+}

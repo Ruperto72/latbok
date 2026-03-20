@@ -1,0 +1,12 @@
+{
+  "name": "korhaftet",
+  "version": "1.0.0",
+  "description": "Körhäftet — ackord & text för kör",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  }
+}
