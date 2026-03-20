@@ -493,7 +493,8 @@ function toggleSidebar() {
 }
 
 // ─── Start ───
-if (typeof document !== 'undefined') init();
+// process is defined in Node/Vitest — skip init() during tests
+if (typeof document !== 'undefined' && typeof process === 'undefined') init();
 
 // ─── Exports for testing ───
 if (typeof exports !== 'undefined') {
@@ -502,4 +503,15 @@ if (typeof exports !== 'undefined') {
   exports.parseChordLine = parseChordLine;
   exports.transposeChordName = transposeChordName;
   exports.escHtml = escHtml;
+  exports.renderSong = renderSong;
+  // Lets tests inject global state without triggering DOM side-effects
+  exports.__setAppState = function(state) {
+    if ('songs'             in state) songs             = state.songs;
+    if ('currentSong'       in state) currentSong       = state.currentSong;
+    if ('transposeSemitones' in state) transposeSemitones = state.transposeSemitones;
+    if ('fontSize'          in state) fontSize          = state.fontSize;
+    if ('twoColumns'        in state) twoColumns        = state.twoColumns;
+    if ('editMode'          in state) editMode          = state.editMode;
+    if ('chordOffsets'      in state) chordOffsets      = state.chordOffsets;
+  };
 }
