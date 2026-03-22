@@ -18,35 +18,35 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Endast | en gång | såg jag den | man |*"
+          "l": "Endast |en gång |såg jag den |man |"
         },
         {
           "c": "@vers_b",
-          "l": "mina |ögon |blev som |förvända|*"
+          "l": "mina |ögon |blev som |förvän-|da"
         },
         {
           "c": "@vers_a",
-          "l": "Såsom |vinden |gångade |han|*"
+          "l": "Såsom |vinden |gångade |han|"
         },
         {
           "c": "@vers_b",
-          "l": "Rask och |orädd, |säker att |segra|*"
+          "l": "Rask och |orädd, |säker att |se-|gra"
         },
         {
           "c": "@vers_e",
-          "l": "Han |såg på |mig och han |log|*"
+          "l": "Han |såg på |mig och han |log|"
         },
         {
           "c": "@vers_f",
-          "l": "Han |såg min |ros och |log|*"
+          "l": "Han |såg min |ros och |log|"
         },
         {
           "c": "@vers_g",
-          "l": "Sen han |ångade |mig för|bi|*"
+          "l": "Sen han |ångade |mig för|bi|"
         },
         {
           "c": "@vers_h",
-          "l": "Men han |gångade |mig för|bi|*"
+          "l": "Men han |gångade |mig för|bi|"
         }
       ]
     },
@@ -55,35 +55,35 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Endast |en gång |såg jag den |man|*"
+          "l": "Endast |en gång |såg jag den |man|"
         },
         {
           "c": "@vers_b",
-          "l": "Mina |ögon |blev som |förvända|*"
+          "l": "Mina |ögon |blev som |förvän-|da"
         },
         {
           "c": "@vers_a",
-          "l": "Såsom |solen |strålade |han|*"
+          "l": "Såsom |solen |strålade |han|"
         },
         {
           "c": "@vers_b",
-          "l": "All min |levnad |kom han att |ändra|*"
+          "l": "All min |levnad |kom han att |än-|dra"
         },
         {
           "c": "@vers_e",
-          "l": "Han |tog på |mig och han |log|*"
+          "l": "Han |tog på |mig och han |log|"
         },
         {
           "c": "@vers_f",
-          "l": "Han |tog min |ros och |log|*"
+          "l": "Han |tog min |ros och |log|"
         },
         {
           "c": "@vers_g",
-          "l": "Sen han |gångade |mig för|bi.|*"
+          "l": "Sen han |gångade |mig|förbi.|"
         },
         {
           "c": "@vers_h",
-          "l": "Men han |gångade |mig för|bi|*"
+          "l": "Men han |gångade |mig|förbi|"
         }
       ]
     },
@@ -92,35 +92,35 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Endast |en gång |såg jag den |man|*"
+          "l": "Endast |en gång |såg jag den |man|"
         },
         {
           "c": "@vers_b",
-          "l": "Mina |ögon |blev som för|vända|*"
+          "l": "Mina |ögon |blev som för|vän-|da"
         },
         {
           "c": "@vers_a",
-          "l": "Sådan |man, sån |man är |han|*"
+          "l": "Sådan |man, sån |man är |han|"
         },
         {
           "c": "@vers_b",
-          "l": "Att hans |hand kan |livet full|ända.|*"
+          "l": "Att hans |hand kan |livet |fullän-|da."
         },
         {
           "c": "@vers_e",
-          "l": "Han |bröt mitt |motstånd, han |log.|*"
+          "l": "Han |bröt mitt |motstånd, han |log.|"
         },
         {
           "c": "@vers_f",
-          "l": "Han |bröt min |ros och |log|*"
+          "l": "Han |bröt min |ros och |log|"
         },
         {
           "c": "@vers_g",
-          "l": "Sen han |gångade |mig för|bi|*"
+          "l": "Sen han |gångade |mig|förbi|"
         },
         {
           "c": "@vers_h",
-          "l": "Men han |gångade |mig för|bi|*"
+          "l": "Men han |gångade |mig|förbi|"
         }
       ]
     }

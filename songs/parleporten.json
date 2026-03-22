@@ -5,9 +5,9 @@
   "timeSignature": "4/4",
   "difficulty": "medel",
   "chordTemplates": {
-    "vers_a": "G D7|G|C G|Dsus4",
-    "vers_b": "G G/B|C|G/D D7|G",
-    "refr_a": "D|G G7|C G|A D"
+    "vers_a": "G       D7|G|C       G|Dsus4",
+    "vers_b": "G       G/B|C|G/D     D7|G",
+    "refr_a": "D|G       G7|C       G|A       D"
   },
   "sections": [
     {

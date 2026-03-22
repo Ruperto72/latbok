@@ -354,9 +354,10 @@ function renderSong() {
 
         if (isMultiMeasure) {
           html += `<div class="cl-abs-pair${isPickup ? ' cl-pickup' : ''}" data-mi="${mi}">`;
+          const hyphenClass = lyric.trimEnd().endsWith('-') ? ' cl-lyric--hyphen' : '';
           if (isPickup) {
             html += `<div class="cl-abs-chord-row"></div>`;
-            if (lyric.trim()) html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+            if (lyric.trim()) html += `<div class="cl-display-lyric${hyphenClass}">${escHtml(lyric)}</div>`;
           } else {
             if (chords.length > 0) {
               html += `<div class="cl-abs-chord-row">`;
@@ -368,7 +369,7 @@ function renderSong() {
               html += `</div>`;
             }
             if (lyric.trim()) {
-              html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+              html += `<div class="cl-display-lyric${hyphenClass}">${escHtml(lyric)}</div>`;
             }
           }
           html += `</div>`;
@@ -517,10 +518,20 @@ function renderSongEditor() {
     <div class="sed-card-title">Ackordmallar</div>
     <div class="sed-tpl-list">`;
   tplNames.forEach(name => {
+    const tplMeasures = (s.chordTemplates[name] || '').split('|');
     html += `<div class="sed-tpl-row">
       <input class="sed-input sed-tpl-name" data-orig="${escHtml(name)}" value="${escHtml(name)}" placeholder="mallnamn">
       <span class="sed-colon">:</span>
-      <input class="sed-input sed-input--wide sed-tpl-val" data-name="${escHtml(name)}" value="${escHtml(s.chordTemplates[name])}" placeholder="C|F|G|Am">
+      <div class="sed-tpl-measures">`;
+    tplMeasures.forEach((m, mi) => {
+      const ms = Math.max(4, m.length + 2);
+      html += `<input class="sed-input sed-tpl-measure" data-name="${escHtml(name)}" data-mi="${mi}" value="${escHtml(m)}" size="${ms}" placeholder="ackord">`;
+      if (tplMeasures.length > 1) {
+        html += `<button class="sed-btn sed-btn--danger sed-del-tpl-measure" data-name="${escHtml(name)}" data-mi="${mi}">✕</button>`;
+      }
+    });
+    html += `<button class="sed-btn sed-btn--add sed-add-tpl-measure" data-name="${escHtml(name)}">+ Takt</button>`;
+    html += `</div>
       <button class="sed-btn sed-btn--danger sed-del-tpl" data-name="${escHtml(name)}">✕</button>
     </div>`;
   });
@@ -567,32 +578,59 @@ function renderEditorSection(s, sec, si, tplNames) {
 
 function renderEditorLine(s, line, si, li, tplNames) {
   const rawC = line.c || '';
-  const isTemplate = rawC.startsWith('@') && s.chordTemplates;
+  const isTemplate = rawC.startsWith('@') && s.chordTemplates && tplNames.length > 0;
   const tplKey = isTemplate ? rawC.slice(1) : '';
+  const cStr = isTemplate ? (s.chordTemplates[tplKey] || '') : rawC;
+  const cMeasures = cStr.split('|');
+  const lMeasures = (line.l || '').split('|');
+  const origLCount = lMeasures.length;
+  const mismatch = isTemplate && origLCount !== cMeasures.length;
+  while (lMeasures.length < cMeasures.length) lMeasures.push('');
 
-  let chordHtml = `<div class="sed-chord-cell">`;
+  let html = `<div class="sed-line-row" data-si="${si}" data-li="${li}">`;
+
+  // Header: mall-väljare + ta bort rad
+  html += `<div class="sed-line-header">`;
   if (tplNames.length > 0) {
-    chordHtml += `<select class="sed-select sed-chord-sel" data-si="${si}" data-li="${li}">`;
+    html += `<select class="sed-select sed-chord-sel" data-si="${si}" data-li="${li}">`;
     tplNames.forEach(name => {
-      chordHtml += `<option value="@${escHtml(name)}"${tplKey === name ? ' selected' : ''}>@${escHtml(name)}</option>`;
+      html += `<option value="@${escHtml(name)}"${tplKey === name ? ' selected' : ''}>@${escHtml(name)}</option>`;
     });
-    chordHtml += `<option value="__custom__"${!isTemplate ? ' selected' : ''}>Eget…</option></select>`;
+    html += `<option value="__custom__"${!isTemplate ? ' selected' : ''}>Eget ackord…</option>`;
+    html += `</select>`;
   }
-  const showCustom = !isTemplate || tplNames.length === 0;
-  chordHtml += `<input class="sed-input sed-chord-custom" data-si="${si}" data-li="${li}"
-    value="${escHtml(showCustom ? rawC : '')}" placeholder="C|F|G|Am"
-    style="${showCustom ? '' : 'display:none'}">`;
-  if (isTemplate) {
-    chordHtml += `<span class="sed-tpl-resolved">${escHtml(s.chordTemplates[tplKey] || '')}</span>`;
+  if (mismatch) {
+    html += `<span class="sed-mismatch-badge">⚠ ${origLCount} text / ${cMeasures.length} takt</span>`;
+    html += `<button class="sed-btn sed-sync-measures" data-si="${si}" data-li="${li}">Synka</button>`;
   }
-  chordHtml += `</div>`;
+  html += `<button class="sed-btn sed-btn--danger sed-del-line" data-si="${si}" data-li="${li}">✕ Rad</button>`;
+  html += `</div>`;
 
-  return `<div class="sed-line-row" data-si="${si}" data-li="${li}">
-    ${chordHtml}
-    <input class="sed-input sed-input--wide sed-lyric" data-si="${si}" data-li="${li}"
-      value="${escHtml(line.l || '')}" placeholder="Text… använd | för taktstreck">
-    <button class="sed-btn sed-btn--danger sed-del-line" data-si="${si}" data-li="${li}">✕</button>
-  </div>`;
+  // En cell per takt
+  html += `<div class="sed-measures-row">`;
+  cMeasures.forEach((cPart, mi) => {
+    const isPickup = mi === 0 && cPart.trim() === '.';
+    html += `<div class="sed-measure-cell${isPickup ? ' sed-measure-cell--pickup' : ''}">`;
+    if (isTemplate) {
+      html += `<div class="sed-chord-readonly">${isPickup ? '(anakrus)' : (escHtml(cPart) || '—')}</div>`;
+    } else {
+      const cs = Math.max(6, cPart.length + 2);
+      html += `<input class="sed-input sed-chord-measure" data-si="${si}" data-li="${li}" data-mi="${mi}" value="${escHtml(cPart)}" placeholder="ackord" size="${cs}">`;
+    }
+    const ls = Math.max(6, (lMeasures[mi] || '').length + 2);
+    html += `<input class="sed-input sed-lyric-measure" data-si="${si}" data-li="${li}" data-mi="${mi}" value="${escHtml(lMeasures[mi] || '')}" placeholder="text" size="${ls}">`;
+    if (!isTemplate && cMeasures.length > 1) {
+      html += `<button class="sed-btn sed-btn--danger sed-del-measure" data-si="${si}" data-li="${li}" data-mi="${mi}">✕</button>`;
+    }
+    html += `</div>`;
+  });
+  if (!isTemplate) {
+    html += `<button class="sed-btn sed-btn--add sed-add-measure" data-si="${si}" data-li="${li}">+ Takt</button>`;
+  }
+  html += `</div>`; // measures-row
+
+  html += `</div>`; // line-row
+  return html;
 }
 
 function attachEditorHandlers() {
@@ -624,17 +662,51 @@ function attachEditorHandlers() {
     });
   });
 
-  // Template value change (live — updates resolved preview inline)
-  document.querySelectorAll('.sed-tpl-val').forEach(el => {
+  // Ackord per takt i mall (live)
+  document.querySelectorAll('.sed-tpl-measure').forEach(el => {
     el.addEventListener('input', () => {
+      el.size = Math.max(4, el.value.length + 2);
       const name = el.dataset.name;
-      if (s.chordTemplates) s.chordTemplates[name] = el.value;
-      document.querySelectorAll('.sed-chord-sel').forEach(sel => {
-        if (sel.value === '@' + name) {
-          const resolved = sel.closest('.sed-chord-cell')?.querySelector('.sed-tpl-resolved');
-          if (resolved) resolved.textContent = el.value;
-        }
-      });
+      if (!s.chordTemplates) return;
+      const parts = (s.chordTemplates[name] || '').split('|');
+      while (parts.length <= +el.dataset.mi) parts.push('');
+      parts[+el.dataset.mi] = el.value;
+      s.chordTemplates[name] = parts.join('|');
+    });
+  });
+
+  // Lägg till takt i mall
+  document.querySelectorAll('.sed-add-tpl-measure').forEach(el => {
+    el.addEventListener('click', () => {
+      const name = el.dataset.name;
+      if (s.chordTemplates) s.chordTemplates[name] = (s.chordTemplates[name] || '') + '|';
+      renderSong();
+    });
+  });
+
+  // Ta bort takt från mall
+  document.querySelectorAll('.sed-del-tpl-measure').forEach(el => {
+    el.addEventListener('click', () => {
+      const name = el.dataset.name, mi = +el.dataset.mi;
+      if (!s.chordTemplates) return;
+      const parts = (s.chordTemplates[name] || '').split('|');
+      parts.splice(mi, 1);
+      s.chordTemplates[name] = parts.join('|');
+      renderSong();
+    });
+  });
+
+  // Synka textantal till mallens taktantal
+  document.querySelectorAll('.sed-sync-measures').forEach(el => {
+    el.addEventListener('click', () => {
+      const si = +el.dataset.si, li = +el.dataset.li;
+      const line = s.sections[si].lines[li];
+      const tplKey = line.c.startsWith('@') ? line.c.slice(1) : '';
+      const tplCount = (s.chordTemplates?.[tplKey] || '').split('|').length;
+      const lParts = (line.l || '').split('|');
+      while (lParts.length < tplCount) lParts.push('');
+      line.l = lParts.slice(0, tplCount).join('|');
+      renderSong();
     });
   });
 
@@ -684,47 +756,76 @@ function attachEditorHandlers() {
     renderSong();
   });
 
-  // Chord selector
+  // Mall-väljare: byt mellan template och eget ackord
   document.querySelectorAll('.sed-chord-sel').forEach(el => {
     el.addEventListener('change', () => {
       const si = +el.dataset.si, li = +el.dataset.li;
       const line = s.sections[si].lines[li];
-      const cell = el.closest('.sed-chord-cell');
-      const customInput = cell?.querySelector('.sed-chord-custom');
-      const resolvedSpan = cell?.querySelector('.sed-tpl-resolved');
       if (el.value === '__custom__') {
-        line.c = customInput?.value || '';
-        if (customInput) customInput.style.display = '';
-        if (resolvedSpan) resolvedSpan.style.display = 'none';
+        const oldKey = line.c.startsWith('@') ? line.c.slice(1) : '';
+        line.c = s.chordTemplates?.[oldKey] || '';
       } else {
+        const tplKey = el.value.slice(1);
+        const tplStr = s.chordTemplates?.[tplKey] || '';
+        const tplCount = tplStr.split('|').length;
+        const lParts = (line.l || '').split('|');
+        while (lParts.length < tplCount) lParts.push('');
+        line.l = lParts.slice(0, tplCount).join('|');
         line.c = el.value;
-        if (customInput) customInput.style.display = 'none';
-        const resolved = s.chordTemplates?.[el.value.slice(1)] || '';
-        if (resolvedSpan) { resolvedSpan.textContent = resolved; resolvedSpan.style.display = ''; }
-        else {
-          const span = document.createElement('span');
-          span.className = 'sed-tpl-resolved';
-          span.textContent = resolved;
-          cell.appendChild(span);
-        }
       }
+      renderSong();
     });
   });
 
-  // Custom chord input
-  document.querySelectorAll('.sed-chord-custom').forEach(el => {
+  // Ackord per takt (eget läge)
+  document.querySelectorAll('.sed-chord-measure').forEach(el => {
     el.addEventListener('input', () => {
-      const sel = el.closest('.sed-chord-cell')?.querySelector('.sed-chord-sel');
-      if (!sel || sel.value === '__custom__') {
-        s.sections[+el.dataset.si].lines[+el.dataset.li].c = el.value;
-      }
+      el.size = Math.max(6, el.value.length + 2);
+      const si = +el.dataset.si, li = +el.dataset.li, mi = +el.dataset.mi;
+      const line = s.sections[si].lines[li];
+      const parts = (line.c || '').split('|');
+      while (parts.length <= mi) parts.push('');
+      parts[mi] = el.value;
+      line.c = parts.join('|');
     });
   });
 
-  // Lyric input
-  document.querySelectorAll('.sed-lyric').forEach(el => {
-    el.addEventListener('change', () => {
-      s.sections[+el.dataset.si].lines[+el.dataset.li].l = el.value;
+  // Text per takt
+  document.querySelectorAll('.sed-lyric-measure').forEach(el => {
+    el.addEventListener('input', () => {
+      el.size = Math.max(6, el.value.length + 2);
+      const si = +el.dataset.si, li = +el.dataset.li, mi = +el.dataset.mi;
+      const line = s.sections[si].lines[li];
+      const parts = (line.l || '').split('|');
+      while (parts.length <= mi) parts.push('');
+      parts[mi] = el.value;
+      line.l = parts.join('|');
+    });
+  });
+
+  // Lägg till takt
+  document.querySelectorAll('.sed-add-measure').forEach(el => {
+    el.addEventListener('click', () => {
+      const si = +el.dataset.si, li = +el.dataset.li;
+      const line = s.sections[si].lines[li];
+      line.c = (line.c || '') + '|';
+      line.l = (line.l || '') + '|';
+      renderSong();
+    });
+  });
+
+  // Ta bort takt
+  document.querySelectorAll('.sed-del-measure').forEach(el => {
+    el.addEventListener('click', () => {
+      const si = +el.dataset.si, li = +el.dataset.li, mi = +el.dataset.mi;
+      const line = s.sections[si].lines[li];
+      const cParts = (line.c || '').split('|');
+      const lParts = (line.l || '').split('|');
+      cParts.splice(mi, 1);
+      lParts.splice(mi, 1);
+      line.c = cParts.join('|');
+      line.l = lParts.join('|');
+      renderSong();
     });
   });
 

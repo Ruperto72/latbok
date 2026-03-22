@@ -9,20 +9,20 @@
       "label": "Vers 1",
       "lines": [
         {
-          "c": "G            C/G|         G",
-          "l": "Amazing Grace, |how sweet the sound,"
+          "c": "@vers_a",
+          "l": "Amazing |Grace, how |sweet, the| sound"
         },
         {
-          "c": "             |        D7",
-          "l": "that saved a |wretch like me."
+          "c": "@vers_b",
+          "l": "that saved a |wretch like |me|"
         },
         {
-          "c": "G    G7       C  |       G",
-          "l": "I once was lost, |but now am found,"
+          "c": "@vers_c",
+          "l": "I once was  |lost but |now am |found"
         },
         {
-          "c": "Em       D7|      G   C/D",
-          "l": "was blind, |but now I see."
+          "c": "@vers_d",
+          "l": "was blind, but |now    I |see|"
         }
       ]
     },
@@ -30,20 +30,20 @@
       "label": "Vers 2",
       "lines": [
         {
-          "c": "G            C|         G",
-          "l": "'Twas grace that |taught my heart to fear,"
+          "c": "@vers_a",
+          "l": "'Twas grace that |taught my |heart to |fear"
         },
         {
-          "c": "             |        D7",
-          "l": "and grace my |fears relieved."
+          "c": "@vers_b",
+          "l": "and grace my |fears|relieved|"
         },
         {
-          "c": "G    G7       C  |       G",
-          "l": "How precious did |that grace appear,"
+          "c": "@vers_c",
+          "l": "How precious |did that |grace |appear"
         },
         {
-          "c": "Em   D7|      G       E7",
-          "l": "the hour|I first believed."
+          "c": "@vers_e",
+          "l": "the hour I |first |believed | "
         }
       ]
     },
@@ -114,5 +114,12 @@
         }
       ]
     }
-  ]
+  ],
+  "chordTemplates": {
+    "vers_a": "G|G|C/G|G",
+    "vers_b": "G|G|D7|D7",
+    "vers_c": "G|G7|C|G",
+    "vers_d": "Em|D7|G|C/D",
+    "vers_e": "Em|D7|G|E7"
+  }
 }

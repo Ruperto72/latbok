@@ -5,7 +5,7 @@
   "timeSignature": "4/4",
   "difficulty": "nybörjare",
   "chordTemplates": {
-    "vers_a": ".|Am|Am|Am|Am7",
+    "vers_a": ".|Am|Am|Am|A7",
     "vers_b": ".|Dm|Am|E7|Am"
   },
   "sections": [
@@ -14,7 +14,7 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Una |mattina mi sono |alzato, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "l": "Una |mattina mi sono |alzato, O bella,|ciao! Bella, ciao! Bella,|ciao, ciao, ciao!"
         },
         {
           "c": "@vers_b",
