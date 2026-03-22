@@ -10,7 +10,7 @@ let songs = [];
 let currentSong = 0;
 let transposeSemitones = 0;
 let fontSize = 13;
-let twoColumns = false;
+let columnsMode = 0; // 0=1 smal, 1=1 bred, 2=2 smal, 3=2 bred
 let sidebarHidden = false;
 let songEditorMode = false;
 let storageReady = false;
@@ -24,16 +24,17 @@ let scrollLastTime = null;
 const PREFS_KEY = 'korhaftet-preferences';
 
 // ─── Song Loading ───
-async function loadSongs() {
+async function loadSongs(bustCache = false) {
+  const qs = bustCache ? `?t=${Date.now()}` : '';
   try {
-    const indexResp = await fetch('songs/index.json');
+    const indexResp = await fetch(`songs/index.json${qs}`);
     if (!indexResp.ok) throw new Error('Could not load songs/index.json');
     const songFiles = await indexResp.json();
 
     const loaded = await Promise.all(
       songFiles.map(async (filename) => {
         try {
-          const resp = await fetch(`songs/${filename}`);
+          const resp = await fetch(`songs/${filename}${qs}`);
           if (!resp.ok) return null;
           const song = await resp.json();
           song._filename = filename;
@@ -71,7 +72,8 @@ async function loadFromStorage() {
     if (raw) {
       const p = JSON.parse(raw);
       if (p.fontSize) fontSize = p.fontSize;
-      if (p.twoColumns !== undefined) twoColumns = p.twoColumns;
+      if (p.columnsMode !== undefined) columnsMode = p.columnsMode;
+      else if (p.twoColumns !== undefined) columnsMode = p.twoColumns ? 1 : 0; // bakåtkompatibilitet
       if (p.sidebarHidden !== undefined) sidebarHidden = p.sidebarHidden;
       if (p.currentSong !== undefined) currentSong = p.currentSong;
     }
@@ -82,7 +84,7 @@ async function loadFromStorage() {
 async function savePrefs() {
   if (!storageReady) return;
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, twoColumns, sidebarHidden, currentSong }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, columnsMode, sidebarHidden, currentSong }));
   } catch (e) {
     console.error('Failed to save prefs:', e);
   }
@@ -128,7 +130,7 @@ async function init() {
     });
 
     document.getElementById('fontLabel').textContent = fontSize;
-    document.getElementById('colBtn').className = 'ctrl-btn' + (twoColumns ? ' active' : '');
+    updateColBtn();
     if (sidebarHidden && window.innerWidth > 768) {
       document.querySelector('.app').classList.add('sidebar-hidden');
     }
@@ -138,6 +140,59 @@ async function init() {
     document.getElementById('songDisplay').innerHTML =
       `<div style="padding:40px;color:#f66;font-family:monospace">Startfel: ${e.message}<br><pre style="font-size:11px;margin-top:8px;opacity:.7">${e.stack}</pre></div>`;
   }
+}
+
+async function reloadSongs() {
+  const btn = document.getElementById('reloadSongsBtn');
+  if (btn) btn.disabled = true;
+  try {
+    await loadSongs(true);
+    if (currentSong >= songs.length) currentSong = 0;
+    const list = document.getElementById('songList');
+    list.innerHTML = '';
+    songs.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'song-item' + (i === currentSong ? ' active' : '');
+      div.innerHTML = `
+        <div class="song-title">${s.title}</div>
+        <div class="song-artist">${s.artist}</div>
+        <div class="song-meta">
+          <span class="tag">${s.key}</span>
+          <span class="tag">${s.difficulty}</span>
+          ${s.bpm ? `<span class="tag">${s.bpm} bpm</span>` : ''}
+        </div>
+      `;
+      div.onclick = () => selectSong(i);
+      list.appendChild(div);
+    });
+    renderSong();
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function alignMeasureColumns() {
+  document.querySelectorAll('.song-block').forEach(block => {
+    const cells = block.querySelectorAll('.cl-abs-pair[data-mi]');
+    // Sätt flex: 0 0 auto så varje cell mäter sitt eget innehåll (inte flex:1-medelvärdet)
+    cells.forEach(c => { c.style.flex = '0 0 auto'; c.style.minWidth = ''; });
+    const colWidths = {};
+    cells.forEach(c => {
+      const mi = c.dataset.mi;
+      const w = c.getBoundingClientRect().width;
+      colWidths[mi] = Math.max(colWidths[mi] || 0, w);
+    });
+    cells.forEach(c => {
+      c.style.flex = `0 0 ${colWidths[c.dataset.mi]}px`;
+    });
+  });
+}
+
+function clearMeasureColumnAlignment() {
+  document.querySelectorAll('.cl-abs-pair[data-mi]').forEach(c => {
+    c.style.flex = '';
+    c.style.minWidth = '';
+  });
 }
 
 function toggleAutoScroll() {
@@ -288,23 +343,31 @@ function renderSong() {
 
         if (isMultiMeasure && mi % 2 === 0) html += `<div class="cl-measure-row">`;
 
-        if (mi > 0 && (!isMultiMeasure || mi % 2 !== 0)) {
+        const isPickup = isMultiMeasure && mi === 0 && cPart.trim() === '.';
+        const prevWasPickup = isMultiMeasure && mi === 1 && cMeasures[0].trim() === '.';
+
+        if (mi > 0 && (!isMultiMeasure || mi % 2 !== 0) && !prevWasPickup) {
           html += `<div class="cl-measure-bar"></div>`;
         }
 
         if (isMultiMeasure) {
-          html += `<div class="cl-abs-pair">`;
-          if (chords.length > 0) {
-            html += `<div class="cl-abs-chord-row">`;
-            chords.forEach(ch => {
-              const name = transposeSemitones !== 0
-                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-              html += `<span class="chord-tag" style="left:${ch.pos}ch">${escHtml(name)}</span>`;
-            });
-            html += `</div>`;
-          }
-          if (lyric.trim()) {
-            html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+          html += `<div class="cl-abs-pair${isPickup ? ' cl-pickup' : ''}" data-mi="${mi}">`;
+          if (isPickup) {
+            html += `<div class="cl-abs-chord-row"></div>`;
+            if (lyric.trim()) html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+          } else {
+            if (chords.length > 0) {
+              html += `<div class="cl-abs-chord-row">`;
+              chords.forEach(ch => {
+                const name = transposeSemitones !== 0
+                  ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+                html += `<span class="chord-tag" style="left:${ch.pos}ch">${escHtml(name)}</span>`;
+              });
+              html += `</div>`;
+            }
+            if (lyric.trim()) {
+              html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+            }
           }
           html += `</div>`;
         } else {
@@ -360,7 +423,13 @@ function renderSong() {
 
   html += `</div>`;
   display.innerHTML = html;
-  display.className = 'song-display' + (twoColumns ? ' columns-2' : '');
+  const colClass = [' columns-1c', '', ' columns-2c', ' columns-2'][columnsMode] || '';
+  display.className = 'song-display' + colClass;
+  if (columnsMode === 0 || columnsMode === 2) {
+    alignMeasureColumns();
+  } else {
+    clearMeasureColumnAlignment();
+  }
   } catch (e) {
     console.error('renderSong crash:', e);
     document.getElementById('songDisplay').innerHTML =
@@ -388,9 +457,16 @@ function changeFontSize(dir) {
   savePrefs();
 }
 
+function updateColBtn() {
+  const btn = document.getElementById('colBtn');
+  const labels = ['1 smal', '1 bred', '2 smal', '2 bred'];
+  btn.textContent = labels[columnsMode];
+  btn.className = 'ctrl-btn active';
+}
+
 function toggleColumns() {
-  twoColumns = !twoColumns;
-  document.getElementById('colBtn').className = 'ctrl-btn' + (twoColumns ? ' active' : '');
+  columnsMode = (columnsMode + 1) % 4;
+  updateColBtn();
   renderSong();
   savePrefs();
 }

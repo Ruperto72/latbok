@@ -5,12 +5,12 @@
   "timeSignature": "3/4",
   "difficulty": "medel",
   "chordTemplates": {
-    "vers_a": "Am E7|Am B7",
-    "vers_b": "Em E7|Am E7",
-    "vers_e": "Am E7|C C/B",
-    "vers_f": "C/A C/F|Bm7b5 E7",
-    "vers_g": "Am E7|Am",
-    "vers_h": "C Em|Am"
+    "vers_a": ".|Am|E7|Am|B7",
+    "vers_b": ".|Em|E7|Am|E7",
+    "vers_e": ".|Am|E7|C|C/B",
+    "vers_f": ".|C/A|C/F|Bm7b5|E7",
+    "vers_g": ".|Am|E7|Am|Am",
+    "vers_h": ".|C|Em|Am|Am"
   },
   "sections": [
     {
@@ -18,35 +18,35 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Endast en gång |såg jag den man"
+          "l": "Endast | en gång | såg jag den | man |"
         },
         {
           "c": "@vers_b",
-          "l": "mina ögon blev |som förvända."
+          "l": "mina |ögon |blev som |förvända. |"
         },
         {
-          "c": "Am E7|Am",
-          "l": "Såsom vinden |gångade han,"
+          "c": "@vers_a",
+          "l": "Såsom |vinden |gångade |han, |"
         },
         {
           "c": "@vers_b",
-          "l": "rask och orädd, |säker att segra."
+          "l": "rask och |orädd, |säker att |segra.|"
         },
         {
           "c": "@vers_e",
-          "l": "Han såg på mig |och han log."
+          "l": "Han |såg på |mig och han |log. |"
         },
         {
           "c": "@vers_f",
-          "l": "Han såg min ros |och log,"
+          "l": "Han |såg min |ros och |log,|"
         },
         {
           "c": "@vers_g",
-          "l": "sen han gångade |mig förbi."
+          "l": "sen han |ångade |mig för|bi.|"
         },
         {
           "c": "@vers_h",
-          "l": "Men han gångade |mig förbi."
+          "l": "Men han |gångade |mig för|bi.|"
         }
       ]
     },
@@ -55,35 +55,35 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Endast en gång |såg jag den man,"
+          "l": "Endast |en gång |såg jag den |man,|"
         },
         {
           "c": "@vers_b",
-          "l": "mina ögon blev |som förvända."
+          "l": "mina |ögon |blev som |förvända. |"
         },
         {
-          "c": "Am E7+|Am B7",
-          "l": "Såsom solen |strålade han,"
+          "c": "@vers_a",
+          "l": "Såsom |solen |strålade |han,|"
         },
         {
           "c": "@vers_b",
-          "l": "all min levnad |kom han att ändra."
+          "l": "all min |levnad |kom han att |ändra.|"
         },
         {
           "c": "@vers_e",
-          "l": "Han tog på mig |och han log."
+          "l": "Han |tog på |mig och han |log. |"
         },
         {
           "c": "@vers_f",
-          "l": "Han tog min ros |och log,"
+          "l": "Han |tog min |ros och |log,|"
         },
         {
           "c": "@vers_g",
-          "l": "sen han gångade |mig förbi."
+          "l": "sen han |gångade |mig för|bi. |"
         },
         {
           "c": "@vers_h",
-          "l": "Men han gångade |mig förbi"
+          "l": "Men han |gångade |mig för|bi"
         }
       ]
     },
@@ -92,35 +92,35 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Endast en gång |såg jag den man,"
+          "l": "Endast |en gång |såg jag den |man,|"
         },
         {
           "c": "@vers_b",
-          "l": "mina ögon blev |som förvända."
+          "l": "mina |ögon |blev som för|vända. |"
         },
         {
-          "c": "Am E7|Am B7",
-          "l": "Sådan man, |sån man är han,"
+          "c": "@vers_a",
+          "l": "Sådan |man, sån |man är |han, |"
         },
         {
           "c": "@vers_b",
-          "l": "Att hans hand |kan livet fullända."
+          "l": "Att hans |hand kan |livet full|ända. |"
         },
         {
           "c": "@vers_e",
-          "l": "Han bröt mitt |motstånd, han log."
+          "l": "Han |bröt mitt |motstånd, han |log. |"
         },
         {
           "c": "@vers_f",
-          "l": "Han bröt min ros |och log,"
+          "l": "Han |bröt min |ros och |log, |"
         },
         {
           "c": "@vers_g",
-          "l": "sen han gångade |mig förbi."
+          "l": "sen han |gångade |mig för|bi. |"
         },
         {
           "c": "@vers_h",
-          "l": "Men han gångade |mig förbi"
+          "l": "Men han |gångade |mig för|bi |"
         }
       ]
     }

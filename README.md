@@ -96,6 +96,128 @@ Varje rad har två fält:
 
 **Obs:** Om ett ord delas av ett taktstreck hanterar appen detta automatiskt — hela ordet visas i rätt takt.
 
+### Förslag (anakrus) — text som börjar före första takten
+
+Många visor börjar med en eller några stavelser innan första taktslaget. Markera detta med `.` (punkt) som första takt i ackordmallen — cellen renderas då kursivt med streckad taktlinje och utan ackordnamn.
+
+**Tumregler:**
+
+| | Förklaring |
+|---|---|
+| `.` som första takt | Förslag — texten visas kursivt med streckad kant |
+| Antal `\|` i `c` och `l` | Måste vara lika — varje takt matchar ett lyrikavsnitt |
+| `chordTemplates` | Återanvänd ackordföljder med `@mallnamn` |
+| Avslutande `\|` | Ok att ha — sista cellen lämnas tom |
+
+---
+
+#### Exempel 1 — 4/4 utan förslag
+
+Texten börjar direkt på ettan.
+
+```json
+{
+  "title": "En enkel visa",
+  "artist": "Trad.",
+  "key": "G",
+  "timeSignature": "4/4",
+  "difficulty": "nybörjare",
+  "chordTemplates": {
+    "vers":    "G|D|Em|C",
+    "refräng": "C|G|D|G"
+  },
+  "sections": [
+    {
+      "label": "Vers",
+      "lines": [
+        { "c": "@vers",    "l": "Solen skiner |över skog och |mark i dag |och det är |" },
+        { "c": "@refräng", "l": "skönt att |vara här till |sist nu |äntligen." }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        { "c": "@refräng", "l": "Sjung nu |alla med |oss här i |kväll, |" },
+        { "c": "@vers",    "l": "höj din |röst mot |himlen klar |och varm." }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+#### Exempel 2 — 4/4 med förslag
+
+Texten börjar med en eller ett par stavelser före ettan. `.` i mallen ger en smal förslags­cell utan ackord.
+
+```json
+{
+  "title": "Sommarpsalm",
+  "artist": "Trad.",
+  "key": "C",
+  "timeSignature": "4/4",
+  "difficulty": "nybörjare",
+  "chordTemplates": {
+    "vers_a": ".|C|Am|F|G",
+    "vers_b": ".|F|G|C|C"
+  },
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        { "c": "@vers_a", "l": "Nu är det |dags att |sjunga vår |sommarvisa |" },
+        { "c": "@vers_b", "l": "för dig och |mig och |alla vi |känner. |" },
+        { "c": "@vers_a", "l": "Himlen är |blå och |fåglarna |sjunger fritt |" },
+        { "c": "@vers_b", "l": "en sång om |ljus och |glädje som |bränner." }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+#### Exempel 3 — 3/4 (valstakt) med förslag
+
+Vanligt i svenska folkvisor — ett eller två förslags­stavelser, sedan tre slag per takt.
+
+```json
+{
+  "title": "Vallvisa",
+  "artist": "Trad.",
+  "key": "Am",
+  "timeSignature": "3/4",
+  "difficulty": "nybörjare",
+  "chordTemplates": {
+    "vers_a": ".|Am|Am|E7|E7",
+    "vers_b": ".|Am|E7|Am|Am"
+  },
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        { "c": "@vers_a", "l": "Långt i |skogen |bortom |stigen |" },
+        { "c": "@vers_b", "l": "hördes |klockor |klinga |sakta. |" },
+        { "c": "@vers_a", "l": "Där gick |herden |med sin |hjord |" },
+        { "c": "@vers_b", "l": "mot den |kvällens |röda |himmel." }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        { "c": "@vers_a", "l": "Stilla |sjöng han |gamla |visor |" },
+        { "c": "@vers_b", "l": "om en |sommar |som var |borta. |" },
+        { "c": "@vers_a", "l": "Och hans |röst bar |ut i |natten |" },
+        { "c": "@vers_b", "l": "över |dalar |mörka |djupa." }
+      ]
+    }
+  ]
+}
+```
+
+---
+
 #### Utan ackordmallar (fritt format)
 
 ```json
