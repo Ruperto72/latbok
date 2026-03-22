@@ -5,8 +5,8 @@
   "timeSignature": "4/4",
   "difficulty": "nybörjare",
   "chordTemplates": {
-    "vers_a": "Am|Am|Am|Am7",
-    "vers_b": "Dm|Am|E7|Am"
+    "vers_a": ".|Am|Am|Am|Am7",
+    "vers_b": ".|Dm|Am|E7|Am"
   },
   "sections": [
     {
@@ -14,11 +14,11 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Una mattina mi sono |alzato, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "l": "Una |mattina mi sono |alzato, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
         },
         {
           "c": "@vers_b",
-          "l": "Una mattina mi sono |alzato e ho |trovato |l'invasor."
+          "l": "Una |mattina mi sono |alzato e ho |trovato l'inva|sor."
         }
       ]
     },
@@ -27,11 +27,11 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "O partigiano, |portami via, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "l": "O parti|giano, portami |via, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
         },
         {
           "c": "@vers_b",
-          "l": "O partigiano, |portami via, |ché mi sento di |morir."
+          "l": "O parti|giano, portami |via, |ché mi sento di |morir."
         }
       ]
     },
@@ -40,11 +40,11 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "E se io muoio da |partigiano, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "l": "E se io |muoio da |partigiano, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
         },
         {
           "c": "@vers_b",
-          "l": "E se io muoio da |partigiano, tu mi |devi |seppellir."
+          "l": "E se io |muoio da |partigiano, tu mi |devi |seppellir."
         }
       ]
     },
@@ -53,11 +53,11 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "E seppellire lassù in |montagna, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "l": "E |seppellire lassù in |montagna, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
         },
         {
           "c": "@vers_b",
-          "l": "E seppellire lassù in |montagna, sotto |l'ombra di un bel |fior."
+          "l": "E |seppellire lassù in |montagna, sotto |l'ombra di un bel |fior."
         }
       ]
     },
@@ -66,11 +66,11 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "E le genti che |passeranno, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "l": "E le |genti che |passeranno, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
         },
         {
           "c": "@vers_b",
-          "l": "E le genti che |passeranno, ti |diranno: Che bel |fior!"
+          "l": "E le |genti che |passeranno, ti |diranno: Che bel |fior!"
         }
       ]
     },
@@ -79,11 +79,11 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "È questo il fiore del |partigiano, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "l": "È questo il |fiore del |partigiano, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
         },
         {
           "c": "@vers_b",
-          "l": "È questo il fiore del |partigiano, |morto per la |libertà!"
+          "l": "È questo il |fiore del |partigiano, |morto per la |libertà!"
         }
       ]
     }

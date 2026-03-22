@@ -131,6 +131,8 @@ async function init() {
 
     document.getElementById('fontLabel').textContent = fontSize;
     updateColBtn();
+    const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!isLocal) document.getElementById('songEditorBtn').style.display = 'none';
     if (sidebarHidden && window.innerWidth > 768) {
       document.querySelector('.app').classList.add('sidebar-hidden');
     }
