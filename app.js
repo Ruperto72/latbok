@@ -310,7 +310,7 @@ function renderSong() {
     html += `<div class="song-block" data-section="${si}">`;
     html += `<div class="section-label">${escHtml(sec.label)}</div>`;
 
-    sec.lines.forEach((line, li) => {
+    sec.lines.forEach((line) => {
       const rawC = line.c || '';
       const cStr = rawC.startsWith('@') && s.chordTemplates
         ? (s.chordTemplates[rawC.slice(1)] || '')
@@ -425,7 +425,7 @@ function renderSong() {
   display.innerHTML = html;
   const colClass = [' columns-1c', '', ' columns-2c', ' columns-2'][columnsMode] || '';
   display.className = 'song-display' + colClass;
-  if (columnsMode === 0 || columnsMode === 2) {
+  if (columnsMode === 0 || columnsMode === 2 || window.innerWidth <= 768) {
     alignMeasureColumns();
   } else {
     clearMeasureColumnAlignment();

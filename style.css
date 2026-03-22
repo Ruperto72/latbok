@@ -410,7 +410,7 @@ body {
   font-family: 'JetBrains Mono', monospace;
   margin-bottom: 1px;
   line-height: 1.15;
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 /* Row groups: transparent on desktop (flat flex), flex items on mobile */
@@ -502,13 +502,13 @@ body {
 
   #colBtn, #songEditorBtn { display: none !important; }
 
-  /* 4 takter → 2+2 på mobil: varje radgrupp tar full bredd */
-  .cl-measure-row {
-    display: flex;
-    flex: 1 1 100%;
-    align-items: flex-start;
-  }
-  /* Dölj taktstreck mellan radgrupperna (visas bara på desktop) */
+  /* Mobil: kompakt layout (som "1 smal") — takter flödar och justeras i kolumner */
+  .song-display .song-body { width: fit-content; max-width: 100%; }
+  .song-display .cl-line-measures { width: fit-content; }
+  .song-display .cl-line-measures .cl-abs-pair { min-width: max-content; overflow-x: hidden; padding-right: 4px; }
+  .song-display .cl-line-measures .cl-display-lyric { width: auto; }
+  .song-display .cl-line-measures .cl-abs-chord-row { height: auto; min-height: 1.4em; }
+  .song-display .cl-line-measures .chord-tag { position: static; display: inline-block; }
   .cl-measure-bar--between { display: none; }
 }
 
