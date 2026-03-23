@@ -11,6 +11,7 @@ let currentSong = 0;
 let transposeSemitones = 0;
 let fontSize = 13;
 let columnsMode = 0; // 0=1 smal, 1=1 bred, 2=2 smal, 3=2 bred
+let hideChords = false;
 let sidebarHidden = false;
 let songEditorMode = false;
 let storageReady = false;
@@ -74,6 +75,7 @@ async function loadFromStorage() {
       if (p.fontSize) fontSize = p.fontSize;
       if (p.columnsMode !== undefined) columnsMode = p.columnsMode;
       else if (p.twoColumns !== undefined) columnsMode = p.twoColumns ? 1 : 0; // bakåtkompatibilitet
+      if (p.hideChords !== undefined) hideChords = p.hideChords;
       if (p.sidebarHidden !== undefined) sidebarHidden = p.sidebarHidden;
       if (p.currentSong !== undefined) currentSong = p.currentSong;
     }
@@ -84,7 +86,7 @@ async function loadFromStorage() {
 async function savePrefs() {
   if (!storageReady) return;
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, columnsMode, sidebarHidden, currentSong }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, columnsMode, hideChords, sidebarHidden, currentSong }));
   } catch (e) {
     console.error('Failed to save prefs:', e);
   }
@@ -131,6 +133,8 @@ async function init() {
 
     document.getElementById('fontLabel').textContent = fontSize;
     updateColBtn();
+    document.getElementById('hideChordsBtn').className = 'ctrl-btn' + (hideChords ? '' : ' active');
+    if (hideChords) document.getElementById('songDisplay').classList.add('hide-chords');
     const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (!isLocal) document.getElementById('songEditorBtn').style.display = 'none';
     if (sidebarHidden && window.innerWidth > 768) {
@@ -343,12 +347,17 @@ function renderSong() {
         const chords = parseChordLine(cPart);
         const lyric = displayLyrics[mi] || '';
 
-        if (isMultiMeasure && mi % 2 === 0) html += `<div class="cl-measure-row">`;
+        const hasPickup = isMultiMeasure && cMeasures[0].trim() === '.';
+        const isPickup = isMultiMeasure && mi === 0 && hasPickup;
+        const realMi = hasPickup ? mi - 1 : mi; // -1 för pickup, 0+ för riktiga takter
 
-        const isPickup = isMultiMeasure && mi === 0 && cPart.trim() === '.';
-        const prevWasPickup = isMultiMeasure && mi === 1 && cMeasures[0].trim() === '.';
+        // Öppna taktgrupp om 2 (anakrus räknas inte)
+        if (isMultiMeasure && !isPickup && realMi % 2 === 0) {
+          html += `<div class="cl-measure-row">`;
+        }
 
-        if (mi > 0 && (!isMultiMeasure || mi % 2 !== 0) && !prevWasPickup) {
+        // Taktstreck inuti grupp (ej före första takten i gruppen)
+        if (isMultiMeasure && !isPickup && realMi % 2 !== 0) {
           html += `<div class="cl-measure-bar"></div>`;
         }
 
@@ -410,11 +419,9 @@ function renderSong() {
           }
         }
 
-        if (isMultiMeasure && (mi % 2 === 1 || mi === cMeasures.length - 1)) {
+        // Stäng taktgrupp
+        if (isMultiMeasure && !isPickup && (realMi % 2 === 1 || mi === cMeasures.length - 1)) {
           html += `</div>`;
-          if (mi < cMeasures.length - 1) {
-            html += `<div class="cl-measure-bar cl-measure-bar--between"></div>`;
-          }
         }
       });
 
@@ -474,6 +481,13 @@ function toggleColumns() {
   savePrefs();
 }
 
+function toggleHideChords() {
+  hideChords = !hideChords;
+  document.getElementById('hideChordsBtn').className = 'ctrl-btn' + (hideChords ? '' : ' active');
+  document.getElementById('songDisplay').classList.toggle('hide-chords', hideChords);
+  savePrefs();
+}
+
 function toggleSongEditor() {
   songEditorMode = !songEditorMode;
   if (songEditorMode && scrollActive) toggleAutoScroll();
@@ -490,6 +504,25 @@ function toggleSidebar() {
     document.querySelector('.app').classList.toggle('sidebar-hidden', sidebarHidden);
     savePrefs();
   }
+}
+
+// ─── Editor: transponera sångdata ───
+function transposeSongData(semitones) {
+  const s = songs[currentSong];
+  s.key = transposeChordName(s.key, semitones);
+  if (s.chordTemplates) {
+    Object.keys(s.chordTemplates).forEach(name => {
+      s.chordTemplates[name] = transposeChordName(s.chordTemplates[name], semitones);
+    });
+  }
+  s.sections.forEach(sec => {
+    sec.lines.forEach(line => {
+      if (line.c && !line.c.startsWith('@')) {
+        line.c = transposeChordName(line.c, semitones);
+      }
+    });
+  });
+  renderSong();
 }
 
 // ─── Song Editor ───
@@ -551,6 +584,11 @@ function renderSongEditor() {
 
   // Save bar
   html += `<div class="sed-save-bar">
+    <div class="sed-transpose-group">
+      <span class="sed-save-note">Transponera:</span>
+      <button class="sed-btn sed-transpose-btn" onclick="transposeSongData(-1)">♭</button>
+      <button class="sed-btn sed-transpose-btn" onclick="transposeSongData(1)">♯</button>
+    </div>
     <button class="sed-save-btn"${isLocal ? '' : ' disabled'}>💾 Spara till fil</button>
     <span class="sed-save-note">${isLocal ? `songs/${escHtml(s._filename || '?')}` : 'Sparning fungerar bara på localhost'}</span>
     <span class="sed-save-error" id="sed-save-error"></span>

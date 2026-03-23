@@ -295,6 +295,12 @@ body {
   width: fit-content;
 }
 
+/* Smal-läge: grupper radbryts som block (bred-läge: flex: 1 → fyller raden) */
+.columns-1c .cl-measure-row,
+.columns-2c .cl-measure-row {
+  flex: 0 0 auto;
+}
+
 /* ─── Sheet Music Layout ─── */
 
 /* Multi-measure line wrapper: opening + closing barlines */
@@ -413,9 +419,11 @@ body {
   overflow: hidden;
 }
 
-/* Row groups: transparent on desktop (flat flex), flex items on mobile */
+/* Taktgrupper om 2 — radbrytning sker alltid mellan grupper, aldrig mitt i */
 .cl-measure-row {
-  display: contents;
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
 }
 
 .cl-line-measures .cl-abs-pair {
@@ -428,12 +436,17 @@ body {
 .cl-pickup {
   flex: 0 0 auto;
   text-align: right;
-  padding-right: 8px;
-  border-right: 2px dashed rgba(232,200,106,0.5);
+  padding-right: 6px;
+  border-right: 2px solid rgba(232,200,106,0.5);
   margin-right: 6px;
 }
 .cl-pickup .cl-abs-chord-row { border-bottom: none; }
-.cl-pickup .cl-display-lyric { color: var(--text-muted, rgba(255,255,255,0.55)); font-style: italic; }
+
+/* Pickup sitter utanför vänster taktram — dölj ramens vänstra kantlinje */
+.cl-line-measures:has(.cl-pickup) {
+  border-left: none;
+  padding-left: 0;
+}
 
 .cl-abs-chord-row {
   position: relative;
@@ -452,6 +465,12 @@ body {
 
 /* Ord som löper till nästa takt — högerjustera så bindestreck hamnar nära taktgränsen */
 .cl-lyric--hyphen { text-align: right; }
+
+/* Göm ackord — behåll höjd på ackord-raden så texterna inte hoppar */
+.hide-chords .cl-abs-chord-row { visibility: hidden; }
+.hide-chords .chord-name { visibility: hidden; }
+.hide-chords .cl-chord-only { display: none; }
+.hide-chords .chord-diagrams-strip { display: none; }
 
 .chord-tag {
   position: absolute;
@@ -512,7 +531,7 @@ body {
   .song-display .cl-line-measures .cl-display-lyric { width: auto; }
   .song-display .cl-line-measures .cl-abs-chord-row { height: auto; min-height: 1.4em; }
   .song-display .cl-line-measures .chord-tag { position: static; display: inline-block; }
-  .cl-measure-bar--between { display: none; }
+  .song-display .cl-measure-row { flex: 0 0 auto; }
 }
 
 /* ─── Song Editor ─── */
@@ -696,6 +715,17 @@ body {
 }
 
 .sed-section-actions { margin-bottom: 8px; }
+
+.sed-transpose-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 16px;
+  border-right: 1px solid var(--border);
+  margin-right: 4px;
+}
+
+.sed-transpose-btn { font-size: 15px; padding: 4px 14px; }
 
 .sed-save-bar {
   position: sticky;
