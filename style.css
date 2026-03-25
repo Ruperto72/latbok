@@ -139,6 +139,8 @@ body {
 
 .controls { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
 
+.scroll-group { display: flex; align-items: center; gap: 5px; }
+
 .ctrl-btn {
   background: var(--surface);
   border: 1px solid var(--border);

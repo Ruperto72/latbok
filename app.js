@@ -134,7 +134,7 @@ async function init() {
     document.getElementById('fontLabel').textContent = fontSize;
     updateColBtn();
     document.getElementById('hideChordsBtn').className = 'ctrl-btn' + (hideChords ? '' : ' active');
-    if (hideChords) document.getElementById('songDisplay').classList.add('hide-chords');
+    if (hideChords) document.getElementById('transposeBtns').style.display = 'none';
     const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (!isLocal) document.getElementById('songEditorBtn').style.display = 'none';
     if (sidebarHidden && window.innerWidth > 768) {
@@ -491,6 +491,7 @@ function toggleColumns() {
 function toggleHideChords() {
   hideChords = !hideChords;
   document.getElementById('hideChordsBtn').className = 'ctrl-btn' + (hideChords ? '' : ' active');
+  document.getElementById('transposeBtns').style.display = hideChords ? 'none' : '';
   renderSong();
   savePrefs();
 }
