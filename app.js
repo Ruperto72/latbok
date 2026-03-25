@@ -630,7 +630,8 @@ function renderEditorLine(s, line, si, li, tplNames) {
   const cMeasures = cStr.split('|');
   const lMeasures = (line.l || '').split('|');
   const origLCount = lMeasures.length;
-  const mismatch = isTemplate && origLCount !== cMeasures.length;
+  const hasMultipleMeasures = cMeasures.length > 1 || lMeasures.length > 1;
+  const mismatch = hasMultipleMeasures && origLCount !== cMeasures.length;
   while (lMeasures.length < cMeasures.length) lMeasures.push('');
 
   let html = `<div class="sed-line-row" data-si="${si}" data-li="${li}">`;
@@ -742,13 +743,14 @@ function attachEditorHandlers() {
     });
   });
 
-  // Synka textantal till mallens taktantal
+  // Synka textantal till ackordantal
   document.querySelectorAll('.sed-sync-measures').forEach(el => {
     el.addEventListener('click', () => {
       const si = +el.dataset.si, li = +el.dataset.li;
       const line = s.sections[si].lines[li];
       const tplKey = line.c.startsWith('@') ? line.c.slice(1) : '';
-      const tplCount = (s.chordTemplates?.[tplKey] || '').split('|').length;
+      const cStr = tplKey ? (s.chordTemplates?.[tplKey] || '') : (line.c || '');
+      const tplCount = cStr.split('|').length;
       const lParts = (line.l || '').split('|');
       while (lParts.length < tplCount) lParts.push('');
       line.l = lParts.slice(0, tplCount).join('|');
