@@ -329,10 +329,12 @@ body {
 
 .cl-pair {
   font-family: 'JetBrains Mono', monospace;
-  margin-bottom: 4px;
-  line-height: 1.15;
+  margin-bottom: 10px;
+  line-height: 1.5;
   display: flex;
   flex-wrap: wrap;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Staff line: horizontal divider at chord/lyric boundary */
@@ -390,7 +392,8 @@ body {
 /* Spacer segment: just text with no chord above */
 .cl-segment-plain {
   display: inline;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-word;
   color: var(--text);
 }
 
