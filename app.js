@@ -341,6 +341,12 @@ function renderSong() {
         }
       }
 
+      if (isMultiMeasure && hideChords) {
+        const joinedLyric = lMeasures.join('').replace(/\s+/g, ' ').trim();
+        if (joinedLyric) html += `<div class="cl-pair"><span class="cl-segment-plain">${escHtml(joinedLyric)}</span></div>`;
+        return;
+      }
+
       if (isMultiMeasure) html += `<div class="cl-line-measures">`;
 
       cMeasures.forEach((cPart, mi) => {
@@ -435,6 +441,7 @@ function renderSong() {
   display.innerHTML = html;
   const colClass = [' columns-1c', '', ' columns-2c', ' columns-2'][columnsMode] || '';
   display.className = 'song-display' + colClass;
+  if (hideChords) display.classList.add('hide-chords');
   if (columnsMode === 0 || columnsMode === 2 || window.innerWidth <= 768) {
     alignMeasureColumns();
   } else {
@@ -484,7 +491,7 @@ function toggleColumns() {
 function toggleHideChords() {
   hideChords = !hideChords;
   document.getElementById('hideChordsBtn').className = 'ctrl-btn' + (hideChords ? '' : ' active');
-  document.getElementById('songDisplay').classList.toggle('hide-chords', hideChords);
+  renderSong();
   savePrefs();
 }
 
