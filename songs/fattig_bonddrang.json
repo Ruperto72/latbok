@@ -1,13 +1,14 @@
 {
   "title": "Fattig Bonddräng",
   "artist": "Astrid Lindgren / Georg Riedel",
-  "key": "G",
+  "key": "C",
   "timeSignature": "4/4",
   "difficulty": "nybörjare",
   "chordTemplates": {
-    "vers_a": "G|C|D|G",
-    "vers_b": "G|Am7|D|Bm",
-    "vers_c": "Em|C|D|G"
+    "vers_a": "C|F|G|G",
+    "vers_b": "Am|Dm7|G|Em",
+    "vers_c": "Am|F|G|C",
+    "vers_a2": "C|F|G|C"
   },
   "sections": [
     {
@@ -18,7 +19,7 @@
           "l": "Jag är fattig |bonddräng, men jag |lever än|då."
         },
         {
-          "c": "@vers_a",
+          "c": "@vers_a2",
           "l": "Dagar går och |kommer, medan |jag knogar |på."
         },
         {
@@ -39,7 +40,7 @@
           "l": "Jag är fattig |bonddräng, och jag |tuggar mitt |snus."
         },
         {
-          "c": "@vers_a",
+          "c": "@vers_a2",
           "l": "Och när lörda'n |kommer, vill jag |ta mig ett |rus."
         },
         {
@@ -60,7 +61,7 @@
           "l": "Sen, då kommer |sönda'n, och då |vill våran |präst"
         },
         {
-          "c": "@vers_a",
+          "c": "@vers_a2",
           "l": "att jag ska i |kyrkan, men då |sover jag |mest."
         },
         {
@@ -81,7 +82,7 @@
           "l": "Så går hela |veckan, alla |dagar och |år."
         },
         {
-          "c": "@vers_a",
+          "c": "@vers_a2",
           "l": "Jag går med min |lie, och jag |plöjer och |sår."
         },
         {
@@ -102,7 +103,7 @@
           "l": "Står där, fattig |bonddräng invid |Himmelens |port."
         },
         {
-          "c": "@vers_a",
+          "c": "@vers_a2",
           "l": "Lite rädd och |ledsen för de |synder jag |gjort."
         },
         {
@@ -123,7 +124,7 @@
           "l": "Men, då säger |Herren: Fattig |bonddräng, kom |hit."
         },
         {
-          "c": "@vers_a",
+          "c": "@vers_a2",
           "l": "Jag har sett din |strävan och ditt |eviga |slit."
         },
         {
@@ -144,7 +145,7 @@
           "l": "Åh, jag, fattig |bonddräng står så |still inför |Gud."
         },
         {
-          "c": "@vers_a",
+          "c": "@vers_a2",
           "l": "Och sen klär han |på mig den mest |snövita |skrud."
         },
         {
