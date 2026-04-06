@@ -163,6 +163,7 @@ async function reloadSongs() {
   if (btn) btn.disabled = true;
   try {
     await loadSongs(true);
+    if (currentSong >= songs.length) currentSong = 0;
     renderSongList();
     renderSong();
   } finally {
@@ -516,11 +517,7 @@ function renderSong() {
   const colClass = [' columns-1c', '', ' columns-2c', ' columns-2'][columnsMode] || '';
   display.className = 'song-display' + colClass;
   if (hideChords) display.classList.add('hide-chords');
-  if (columnsMode <= 3 || window.innerWidth <= 768) {
-    alignMeasureColumns();
-  } else {
-    clearMeasureColumnAlignment();
-  }
+  alignMeasureColumns();
   } catch (e) {
     console.error('renderSong crash:', e);
     document.getElementById('songDisplay').innerHTML =
@@ -612,9 +609,9 @@ function syncLyricsToChords(line, s) {
   const cStr = line.c.startsWith('@') ? (s.chordTemplates?.[line.c.slice(1)] || '') : (line.c || '');
   const cCount = cStr.split('|').length;
   const lParts = (line.l || '').split('|');
-  if (lParts.length < cCount) {
+  if (lParts.length !== cCount) {
     while (lParts.length < cCount) lParts.push('');
-    line.l = lParts.join('|');
+    line.l = lParts.slice(0, cCount).join('|');
     return true;
   }
   return false;
