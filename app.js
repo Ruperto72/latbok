@@ -21,6 +21,7 @@ let scrollLevel = 3;       // 1–9, visas i knappen
 let scrollActive = false;
 let scrollRAF = null;
 let scrollLastTime = null;
+let wakeLock = null;
 
 const PREFS_KEY = 'korhaftet-preferences';
 
@@ -113,23 +114,8 @@ async function init() {
     // Clamp currentSong to valid range
     if (currentSong >= songs.length) currentSong = 0;
 
-    const list = document.getElementById('songList');
-    list.innerHTML = '';
-    songs.forEach((s, i) => {
-      const div = document.createElement('div');
-      div.className = 'song-item' + (i === currentSong ? ' active' : '');
-      div.innerHTML = `
-        <div class="song-title">${s.title}</div>
-        <div class="song-artist">${s.artist}</div>
-        <div class="song-meta">
-          <span class="tag">${s.key}</span>
-          <span class="tag">${s.difficulty}</span>
-          ${s.bpm ? `<span class="tag">${s.bpm} bpm</span>` : ''}
-        </div>
-      `;
-      div.onclick = () => selectSong(i);
-      list.appendChild(div);
-    });
+    renderSongList();
+    setupGlobalEvents();
 
     document.getElementById('fontLabel').textContent = fontSize;
     updateColBtn();
@@ -148,33 +134,73 @@ async function init() {
   }
 }
 
+function renderSongList(filter = '') {
+  const list = document.getElementById('songList');
+  list.innerHTML = '';
+  const f = filter.toLowerCase();
+
+  songs.forEach((s, i) => {
+    if (f && !s.title.toLowerCase().includes(f) && !s.artist.toLowerCase().includes(f)) return;
+    
+    const div = document.createElement('div');
+    div.className = 'song-item' + (i === currentSong ? ' active' : '');
+    div.innerHTML = `
+      <div class="song-title">${s.title}</div>
+      <div class="song-artist">${s.artist}</div>
+      <div class="song-meta">
+        <span class="tag">${s.key}</span>
+        <span class="tag">${s.difficulty}</span>
+        ${s.bpm ? `<span class="tag">${s.bpm} bpm</span>` : ''}
+      </div>
+    `;
+    div.onclick = () => selectSong(i);
+    list.appendChild(div);
+  });
+}
+
 async function reloadSongs() {
   const btn = document.getElementById('reloadSongsBtn');
   if (btn) btn.disabled = true;
   try {
     await loadSongs(true);
-    if (currentSong >= songs.length) currentSong = 0;
-    const list = document.getElementById('songList');
-    list.innerHTML = '';
-    songs.forEach((s, i) => {
-      const div = document.createElement('div');
-      div.className = 'song-item' + (i === currentSong ? ' active' : '');
-      div.innerHTML = `
-        <div class="song-title">${s.title}</div>
-        <div class="song-artist">${s.artist}</div>
-        <div class="song-meta">
-          <span class="tag">${s.key}</span>
-          <span class="tag">${s.difficulty}</span>
-          ${s.bpm ? `<span class="tag">${s.bpm} bpm</span>` : ''}
-        </div>
-      `;
-      div.onclick = () => selectSong(i);
-      list.appendChild(div);
-    });
+    renderSongList();
     renderSong();
   } finally {
     if (btn) btn.disabled = false;
   }
+}
+
+function setupGlobalEvents() {
+  // Tangentbordsgenvägar
+  window.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    
+    if (e.code === 'Space') {
+      e.preventDefault();
+      toggleAutoScroll();
+    } else if (e.key === '+' || e.key === '=') {
+      changeFontSize(1);
+    } else if (e.key === '-') {
+      changeFontSize(-1);
+    } else if (e.code === 'ArrowUp') {
+      if (scrollActive) changeScrollSpeed(1);
+    } else if (e.code === 'ArrowDown') {
+      if (scrollActive) changeScrollSpeed(-1);
+    }
+  });
+
+  // Sökfilter (vi antar att index.html har fått en .search-input i sidebar)
+  const searchInput = document.querySelector('.search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => renderSongList(e.target.value));
+  }
+
+  // Återaktivera Wake Lock om fliken blir synlig igen under scroll
+  document.addEventListener('visibilitychange', async () => {
+    if (scrollActive && document.visibilityState === 'visible') {
+      await requestWakeLock();
+    }
+  });
 }
 
 function alignMeasureColumns() {
@@ -182,14 +208,24 @@ function alignMeasureColumns() {
     const cells = block.querySelectorAll('.cl-abs-pair[data-mi]');
     // Sätt flex: 0 0 auto så varje cell mäter sitt eget innehåll (inte flex:1-medelvärdet)
     cells.forEach(c => { c.style.flex = '0 0 auto'; c.style.minWidth = ''; });
+    
     const colWidths = {};
+    let maxMi = -1;
     cells.forEach(c => {
-      const mi = c.dataset.mi;
+      const mi = parseInt(c.dataset.mi);
       const w = c.getBoundingClientRect().width;
       colWidths[mi] = Math.max(colWidths[mi] || 0, w);
+      if (mi > maxMi) maxMi = mi;
     });
+
     cells.forEach(c => {
-      c.style.flex = `0 0 ${colWidths[c.dataset.mi]}px`;
+      const mi = parseInt(c.dataset.mi);
+      // I bred-lägen (1 och 3) låter vi den sista takten i varje block expandera för att fylla ut raden/kolumnen
+      if ((columnsMode === 1 || columnsMode === 3) && mi === maxMi) {
+        c.style.flex = `1 0 ${colWidths[mi]}px`;
+      } else {
+        c.style.flex = `0 0 ${colWidths[mi]}px`;
+      }
     });
   });
 }
@@ -201,15 +237,33 @@ function clearMeasureColumnAlignment() {
   });
 }
 
-function toggleAutoScroll() {
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+    } catch (err) {
+      console.warn('Screen Wake Lock kunde inte aktiveras:', err);
+    }
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release().then(() => { wakeLock = null; });
+  }
+}
+
+async function toggleAutoScroll() {
   scrollActive = !scrollActive;
   document.getElementById('scrollBtn').className = 'ctrl-btn' + (scrollActive ? ' active' : '');
   if (scrollActive) {
     scrollLastTime = null;
     scrollRAF = requestAnimationFrame(autoScrollStep);
+    await requestWakeLock();
   } else {
     cancelAnimationFrame(scrollRAF);
     scrollRAF = null;
+    releaseWakeLock();
   }
 }
 
@@ -281,6 +335,9 @@ function escHtml(s) {
 function renderSong() {
   if (songs.length === 0) return;
   try {
+  const controls = document.querySelector('.controls');
+  if (controls) controls.style.display = songEditorMode ? 'none' : '';
+
   if (songEditorMode) {
     const display = document.getElementById('songDisplay');
     display.className = 'song-display song-display--editor';
@@ -325,6 +382,15 @@ function renderSong() {
       const lMeasures = (line.l || '').split('|');
       const isMultiMeasure = cMeasures.length > 1;
 
+      // Validera att antalet takter matchar mellan ackord och text
+      if (cMeasures.length !== lMeasures.length && (isMultiMeasure || lMeasures.length > 1)) {
+        html += `
+          <div class="render-error-tag">
+            ⚠️ Takt-mismatch: ${cMeasures.length} ackord / ${lMeasures.length} text
+          </div>
+        `;
+      }
+
       // If a measure boundary falls mid-word, move the trailing fragment
       // to the next measure so the full word appears together.
       const displayLyrics = [...lMeasures];
@@ -347,7 +413,10 @@ function renderSong() {
         return;
       }
 
-      if (isMultiMeasure) html += `<div class="cl-line-measures">`;
+      if (isMultiMeasure) {
+        const hasPickup = cMeasures[0].trim() === '.';
+        html += `<div class="cl-line-measures${hasPickup ? ' cl-has-pickup' : ''}">`;
+      }
 
       cMeasures.forEach((cPart, mi) => {
         const chords = parseChordLine(cPart);
@@ -357,18 +426,23 @@ function renderSong() {
         const isPickup = isMultiMeasure && mi === 0 && hasPickup;
         const realMi = hasPickup ? mi - 1 : mi; // -1 för pickup, 0+ för riktiga takter
 
+        // Taktstreck mellan grupper (om vi inte är vid en pickup eller första takten)
+        if (isMultiMeasure && !isPickup && realMi > 0 && realMi % 2 === 0) {
+          html += `<div class="cl-measure-bar"></div>`;
+        }
+
         // Öppna taktgrupp om 2 (anakrus räknas inte)
         if (isMultiMeasure && !isPickup && realMi % 2 === 0) {
           html += `<div class="cl-measure-row">`;
         }
 
-        // Taktstreck inuti grupp (ej före första takten i gruppen)
-        if (isMultiMeasure && !isPickup && realMi % 2 !== 0) {
+        // Taktstreck inuti grupp (ej före första takten i gruppen, och ej direkt efter pickup)
+        if (isMultiMeasure && !isPickup && realMi % 2 !== 0 && !(hasPickup && mi === 1)) {
           html += `<div class="cl-measure-bar"></div>`;
         }
 
         if (isMultiMeasure) {
-          html += `<div class="cl-abs-pair${isPickup ? ' cl-pickup' : ''}" data-mi="${mi}">`;
+          html += `<div class="cl-abs-pair${isPickup ? ' cl-pickup' : ''}" data-mi="${realMi}">`;
           const hyphenClass = lyric.trimEnd().endsWith('-') ? ' cl-lyric--hyphen' : '';
           if (isPickup) {
             html += `<div class="cl-abs-chord-row"></div>`;
@@ -379,7 +453,7 @@ function renderSong() {
               chords.forEach(ch => {
                 const name = transposeSemitones !== 0
                   ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-                html += `<span class="chord-tag" style="left:${ch.pos}ch">${escHtml(name)}</span>`;
+                html += `<span class="chord-tag" style="left:${ch.pos}ch"><span>${escHtml(name)}</span></span>`;
               });
               html += `</div>`;
             }
@@ -391,23 +465,23 @@ function renderSong() {
         } else {
           if (chords.length > 0 && lyric.trim()) {
             html += `<div class="cl-pair cl-pair--chords">`;
-            const snappedStarts = chords.map(ch => {
-              let pos = Math.max(0, ch.pos);
-              while (pos > 0 && lyric[pos - 1] !== ' ') pos--;
-              return pos;
-            });
+
+            let lastPos = 0;
             chords.forEach((ch, ci) => {
-              const startPos = snappedStarts[ci];
-              const nextPos = ci < chords.length - 1 ? snappedStarts[ci + 1] : lyric.length;
-              const textSlice = lyric.substring(startPos, Math.max(startPos, nextPos));
-              if (ci === 0 && startPos > 0) {
-                const pre = lyric.substring(0, startPos);
+              if (ci === 0 && ch.pos > 0) {
+                const pre = lyric.substring(0, ch.pos);
                 html += `<span class="cl-segment-chord"><span class="chord-name">&nbsp;</span><span class="chord-text">${escHtml(pre)}</span></span>`;
               }
+              const nextPos = ci < chords.length - 1 ? chords[ci + 1].pos : lyric.length;
+              const textSlice = lyric.substring(ch.pos, nextPos);
               const name = transposeSemitones !== 0
                 ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-              html += `<span class="cl-segment-chord"><span class="chord-name">${escHtml(name)}</span><span class="chord-text">${escHtml(textSlice)}</span></span>`;
+              html += `<span class="cl-segment-chord"><span class="chord-name">${escHtml(name)}</span><span class="chord-text">${escHtml(textSlice || ' ')}</span></span>`;
+              lastPos = nextPos;
             });
+            if (lastPos < lyric.length) {
+              html += `<span class="cl-segment-plain">${escHtml(lyric.substring(lastPos))}</span>`;
+            }
             html += `</div>`;
           } else if (chords.length > 0 && !lyric.trim()) {
             html += `<div class="cl-chord-only">`;
@@ -442,7 +516,7 @@ function renderSong() {
   const colClass = [' columns-1c', '', ' columns-2c', ' columns-2'][columnsMode] || '';
   display.className = 'song-display' + colClass;
   if (hideChords) display.classList.add('hide-chords');
-  if (columnsMode === 0 || columnsMode === 2 || window.innerWidth <= 768) {
+  if (columnsMode <= 3 || window.innerWidth <= 768) {
     alignMeasureColumns();
   } else {
     clearMeasureColumnAlignment();
@@ -533,6 +607,19 @@ function transposeSongData(semitones) {
   renderSong();
 }
 
+// Hjälpfunktion för att reparera rader där texten saknar taktstreck (|)
+function syncLyricsToChords(line, s) {
+  const cStr = line.c.startsWith('@') ? (s.chordTemplates?.[line.c.slice(1)] || '') : (line.c || '');
+  const cCount = cStr.split('|').length;
+  const lParts = (line.l || '').split('|');
+  if (lParts.length < cCount) {
+    while (lParts.length < cCount) lParts.push('');
+    line.l = lParts.join('|');
+    return true;
+  }
+  return false;
+}
+
 // ─── Song Editor ───
 
 function renderSongEditor() {
@@ -551,6 +638,9 @@ function renderSongEditor() {
       <label class="sed-field">Tonart<input class="sed-input sed-input--sm" data-prop="key" value="${escHtml(s.key || '')}"></label>
       <label class="sed-field">Taktart<input class="sed-input sed-input--sm" data-prop="timeSignature" value="${escHtml(s.timeSignature || '')}"></label>
       <label class="sed-field">Svårigh.<input class="sed-input sed-input--sm" data-prop="difficulty" value="${escHtml(s.difficulty || '')}"></label>
+    </div>
+    <div style="margin-top:12px">
+      <button class="sed-btn" id="sed-fix-all-pipes">🛠 Reparera alla saknade taktstreck i texten</button>
     </div>
   </div>`;
 
@@ -747,14 +837,9 @@ function attachEditorHandlers() {
   document.querySelectorAll('.sed-sync-measures').forEach(el => {
     el.addEventListener('click', () => {
       const si = +el.dataset.si, li = +el.dataset.li;
-      const line = s.sections[si].lines[li];
-      const tplKey = line.c.startsWith('@') ? line.c.slice(1) : '';
-      const cStr = tplKey ? (s.chordTemplates?.[tplKey] || '') : (line.c || '');
-      const tplCount = cStr.split('|').length;
-      const lParts = (line.l || '').split('|');
-      while (lParts.length < tplCount) lParts.push('');
-      line.l = lParts.slice(0, tplCount).join('|');
-      renderSong();
+      if (syncLyricsToChords(s.sections[si].lines[li], s)) {
+        renderSong();
+      }
     });
   });
 
@@ -895,6 +980,17 @@ function attachEditorHandlers() {
       s.sections[si].lines.push({ c: tplNames.length ? '@' + tplNames[0] : '', l: '' });
       renderSong();
     });
+  });
+
+  // Reparera alla rader i hela låten
+  document.getElementById('sed-fix-all-pipes')?.addEventListener('click', () => {
+    let fixedCount = 0;
+    s.sections.forEach(sec => {
+      sec.lines.forEach(line => {
+        if (syncLyricsToChords(line, s)) fixedCount++;
+      });
+    });
+    if (fixedCount > 0) renderSong();
   });
 
   // Save

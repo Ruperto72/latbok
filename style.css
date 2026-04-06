@@ -40,6 +40,25 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.sidebar-search {
+  padding: 12px 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.search-input:focus { border-color: var(--accent); }
+
 .sidebar-header h1 {
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
@@ -203,6 +222,7 @@ body {
 .song-display {
   padding: 28px 32px;
   width: 100%;
+  overflow-x: hidden;
 }
 
 .song-display .header {
@@ -233,6 +253,17 @@ body {
   padding: 1px 8px;
   margin-top: 1.6em;
   margin-bottom: 0.55em;
+}
+
+.render-error-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #ff8080;
+  background: rgba(255, 128, 128, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  width: fit-content;
 }
 
 .song-block { margin-bottom: 2.8em; }
@@ -271,13 +302,15 @@ body {
 .columns-1c .cl-abs-pair,
 .columns-2c .cl-abs-pair {
   min-width: max-content;
-  overflow-x: hidden;
+  max-width: 100%;
+  overflow-x: clip;
   padding-right: 4px;
 }
 
 .columns-1c .cl-display-lyric,
 .columns-2c .cl-display-lyric {
   width: auto;
+  white-space: normal;
 }
 
 .columns-1c .cl-abs-chord-row,
@@ -343,7 +376,7 @@ body {
 .cl-pair.cl-pair--chords {
   background-image: linear-gradient(rgba(232,200,106,0.15), rgba(232,200,106,0.15));
   background-size: 100% 1px;
-  background-position: 0 1.4em;
+  background-position: 0 1.25em;
   background-repeat: no-repeat;
 }
 
@@ -380,8 +413,9 @@ body {
 .cl-segment-chord .chord-name {
   color: var(--chord);
   font-weight: 700;
-  height: 1.4em;
-  line-height: 1.4em;
+  font-size: 0.85em;
+  height: 1.45em;
+  line-height: 1.45em;
   white-space: nowrap;
   position: relative;
 }
@@ -403,8 +437,8 @@ body {
 .cl-chord-only {
   display: flex;
   flex-wrap: wrap;
-  height: 1.4em;
-  line-height: 1.4em;
+  height: 1.25em;
+  line-height: 1.25em;
   white-space: pre;
   user-select: none;
 }
@@ -412,6 +446,7 @@ body {
 .cl-chord-only .chord-name {
   color: var(--chord);
   font-weight: 700;
+  font-size: 0.85em;
   white-space: pre;
   position: relative;
 }
@@ -438,7 +473,7 @@ body {
   overflow-x: visible;
 }
 
-.cl-pickup {
+.cl-line-measures .cl-abs-pair.cl-pickup {
   flex: 0 0 auto;
   text-align: right;
   padding-right: 6px;
@@ -448,15 +483,14 @@ body {
 .cl-pickup .cl-abs-chord-row { border-bottom: none; }
 
 /* Pickup sitter utanför vänster taktram — dölj ramens vänstra kantlinje */
-.cl-line-measures:has(.cl-pickup) {
+.cl-line-measures.cl-has-pickup {
   border-left: none;
   padding-left: 0;
 }
 
 .cl-abs-chord-row {
   position: relative;
-  height: 1.4em;
-  white-space: pre;
+  height: 1.25em;
   user-select: none;
   border-bottom: 1px solid rgba(232,200,106,0.15);
 }
@@ -464,7 +498,8 @@ body {
 /* Display-mode lyric in measure context: fills full measure width */
 .cl-display-lyric {
   color: var(--text);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: break-word;
   width: 100%;
 }
 
@@ -481,12 +516,16 @@ body {
   position: absolute;
   top: 0;
   color: var(--chord);
-  font-weight: 700;
   cursor: default;
   white-space: nowrap;
   padding: 0 1px;
   border-radius: 2px;
   transition: background 0.1s;
+}
+
+.chord-tag span {
+  font-size: 0.85em;
+  font-weight: 700;
 }
 
 .menu-toggle {
@@ -776,6 +815,7 @@ body {
   .sidebar, .topbar, .menu-toggle, .overlay { display: none !important; }
   .main { margin-left: 0; }
   body { background: #fff; color: #000; }
+  .song-block { break-inside: avoid; margin-bottom: 2em; }
   .song-display .header h2 { color: #000; }
   .song-display .header .artist { color: #555; }
   .chord-tag { color: #b8860b !important; border-bottom: none !important; }
