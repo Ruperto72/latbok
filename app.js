@@ -214,7 +214,13 @@ function alignMeasureColumns() {
     let maxMi = -1;
     cells.forEach(c => {
       const mi = parseInt(c.dataset.mi);
-      const w = c.getBoundingClientRect().width;
+      const cellRect = c.getBoundingClientRect();
+      let w = cellRect.width;
+      // Räkna in absolut-positionerade chord-tags som kan sticka ut bortom cellens textbredd
+      c.querySelectorAll('.chord-tag').forEach(tag => {
+        const tagRight = tag.getBoundingClientRect().right - cellRect.left;
+        if (tagRight > w) w = tagRight;
+      });
       colWidths[mi] = Math.max(colWidths[mi] || 0, w);
       if (mi > maxMi) maxMi = mi;
     });
@@ -449,55 +455,31 @@ function renderSong() {
             html += `<div class="cl-abs-chord-row"></div>`;
             if (lyric.trim()) html += `<div class="cl-display-lyric${hyphenClass}">${escHtml(lyric)}</div>`;
           } else {
-            if (chords.length > 0) {
-              html += `<div class="cl-abs-chord-row">`;
-              chords.forEach(ch => {
-                const name = transposeSemitones !== 0
-                  ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-                html += `<span class="chord-tag" style="left:${ch.pos}ch"><span>${escHtml(name)}</span></span>`;
-              });
-              html += `</div>`;
-            }
+            html += `<div class="cl-abs-chord-row">`;
+            chords.forEach(ch => {
+              const name = transposeSemitones !== 0
+                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+              html += `<span class="chord-tag" style="left:${ch.pos}ch"><span>${escHtml(name)}</span></span>`;
+            });
+            html += `</div>`;
             if (lyric.trim()) {
               html += `<div class="cl-display-lyric${hyphenClass}">${escHtml(lyric)}</div>`;
             }
           }
           html += `</div>`;
         } else {
-          if (chords.length > 0 && lyric.trim()) {
-            html += `<div class="cl-pair cl-pair--chords">`;
-
-            let lastPos = 0;
-            chords.forEach((ch, ci) => {
-              if (ci === 0 && ch.pos > 0) {
-                const pre = lyric.substring(0, ch.pos);
-                html += `<span class="cl-segment-chord"><span class="chord-name">&nbsp;</span><span class="chord-text">${escHtml(pre)}</span></span>`;
-              }
-              const nextPos = ci < chords.length - 1 ? chords[ci + 1].pos : lyric.length;
-              const textSlice = lyric.substring(ch.pos, nextPos);
-              const name = transposeSemitones !== 0
-                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-              html += `<span class="cl-segment-chord"><span class="chord-name">${escHtml(name)}</span><span class="chord-text">${escHtml(textSlice || ' ')}</span></span>`;
-              lastPos = nextPos;
-            });
-            if (lastPos < lyric.length) {
-              html += `<span class="cl-segment-plain">${escHtml(lyric.substring(lastPos))}</span>`;
-            }
-            html += `</div>`;
-          } else if (chords.length > 0 && !lyric.trim()) {
-            html += `<div class="cl-chord-only">`;
-            chords.forEach((ch, ci) => {
-              const nextPos = ci < chords.length - 1 ? chords[ci+1].pos : ch.pos + ch.name.length + 2;
-              const spacing = ' '.repeat(Math.max(1, nextPos - ch.pos - ch.name.length));
-              const name = transposeSemitones !== 0
-                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-              html += `<span class="chord-name">${escHtml(name)}</span>`;
-              if (ci < chords.length - 1) html += `<span>${escHtml(spacing)}</span>`;
-            });
-            html += `</div>`;
-          } else if (lyric.trim()) {
-            html += `<div class="cl-pair"><span class="cl-segment-plain">${escHtml(lyric)}</span></div>`;
+          html += `<div class="cl-abs-pair">`;
+          html += `<div class="cl-abs-chord-row">`;
+          chords.forEach(ch => {
+            const name = transposeSemitones !== 0
+              ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+            html += `<span class="chord-tag" style="left:${ch.pos}ch"><span>${escHtml(name)}</span></span>`;
+          });
+          html += `</div>`;
+          if (lyric.trim()) {
+            html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
           }
+          html += `</div>`;
         }
 
         // Stäng taktgrupp

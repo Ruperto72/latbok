@@ -444,7 +444,6 @@ body {
   font-family: 'JetBrains Mono', monospace;
   margin-bottom: 1px;
   line-height: 1.15;
-  overflow: hidden;
 }
 
 /* Taktgrupper om 2 — radbrytning sker alltid mellan grupper, aldrig mitt i */
@@ -559,7 +558,7 @@ body {
   /* Mobil: kompakt layout (som "1 smal") — takter flödar och justeras i kolumner */
   .song-display .song-body { width: fit-content; max-width: 100%; }
   .song-display .cl-line-measures { width: fit-content; }
-  .song-display .cl-line-measures .cl-abs-pair { min-width: max-content; overflow-x: visible; padding-right: 4px; }
+  .song-display .cl-line-measures .cl-abs-pair { min-width: max-content; overflow-x: clip; padding-right: 4px; }
   .song-display .cl-line-measures .cl-display-lyric { width: auto; }
   .song-display .cl-measure-row { flex: 0 0 auto; }
 }
