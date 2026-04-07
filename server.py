@@ -5,7 +5,7 @@ Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till 
 
 import json
 import os
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):
@@ -48,4 +48,4 @@ class Handler(SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     port = 8000
     print(f'Körhäftet-server startar på http://localhost:{port}')
-    HTTPServer(('', port), Handler).serve_forever()
+    ThreadingHTTPServer(('', port), Handler).serve_forever()

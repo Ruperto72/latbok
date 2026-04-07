@@ -303,7 +303,7 @@ body {
 .columns-2c .cl-abs-pair {
   min-width: max-content;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: visible;
   padding-right: 4px;
 }
 
@@ -311,18 +311,6 @@ body {
 .columns-2c .cl-display-lyric {
   width: auto;
   white-space: normal;
-}
-
-.columns-1c .cl-abs-chord-row,
-.columns-2c .cl-abs-chord-row {
-  height: auto;
-  min-height: 1.4em;
-}
-
-.columns-1c .chord-tag,
-.columns-2c .chord-tag {
-  position: static;
-  display: inline-block;
 }
 
 .columns-1c .cl-line-measures,
@@ -571,10 +559,8 @@ body {
   /* Mobil: kompakt layout (som "1 smal") — takter flödar och justeras i kolumner */
   .song-display .song-body { width: fit-content; max-width: 100%; }
   .song-display .cl-line-measures { width: fit-content; }
-  .song-display .cl-line-measures .cl-abs-pair { min-width: max-content; overflow-x: hidden; padding-right: 4px; }
+  .song-display .cl-line-measures .cl-abs-pair { min-width: max-content; overflow-x: visible; padding-right: 4px; }
   .song-display .cl-line-measures .cl-display-lyric { width: auto; }
-  .song-display .cl-line-measures .cl-abs-chord-row { height: auto; min-height: 1.4em; }
-  .song-display .cl-line-measures .chord-tag { position: static; display: inline-block; }
   .song-display .cl-measure-row { flex: 0 0 auto; }
 }
 
