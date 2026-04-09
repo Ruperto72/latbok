@@ -5,17 +5,17 @@
   "timeSignature": "4/4",
   "difficulty": "nybörjare",
   "chordTemplates": {
-    "vers_a": "C|F|G|G",
+    "vers_a1": "C|F|G|G",
+    "vers_a2": "C|F|G|C",
     "vers_b": "Am|Dm7|G|Em",
-    "vers_c": "Am|F|G|C",
-    "vers_a2": "C|F|G|C"
+    "vers_c": "Am|F|G|C"
   },
   "sections": [
     {
       "label": "Vers 1",
       "lines": [
         {
-          "c": "@vers_a",
+          "c": "@vers_a1",
           "l": "Jag är fattig |bonddräng, men jag |lever än|då."
         },
         {
@@ -36,7 +36,7 @@
       "label": "Vers 2",
       "lines": [
         {
-          "c": "@vers_a",
+          "c": "@vers_a1",
           "l": "Jag är fattig |bonddräng, och jag |tuggar mitt |snus."
         },
         {
@@ -57,7 +57,7 @@
       "label": "Vers 3",
       "lines": [
         {
-          "c": "@vers_a",
+          "c": "@vers_a1",
           "l": "Sen, då kommer |sönda'n, och då |vill våran |präst"
         },
         {
@@ -78,7 +78,7 @@
       "label": "Vers 4",
       "lines": [
         {
-          "c": "@vers_a",
+          "c": "@vers_a1",
           "l": "Så går hela |veckan, alla |dagar och |år."
         },
         {
@@ -99,7 +99,7 @@
       "label": "Vers 5",
       "lines": [
         {
-          "c": "@vers_a",
+          "c": "@vers_a1",
           "l": "Står där, fattig |bonddräng invid |Himmelens |port."
         },
         {
@@ -120,7 +120,7 @@
       "label": "Vers 6",
       "lines": [
         {
-          "c": "@vers_a",
+          "c": "@vers_a1",
           "l": "Men, då säger |Herren: Fattig |bonddräng, kom |hit."
         },
         {
@@ -141,7 +141,7 @@
       "label": "Vers 7",
       "lines": [
         {
-          "c": "@vers_a",
+          "c": "@vers_a1",
           "l": "Åh, jag, fattig |bonddräng står så |still inför |Gud."
         },
         {

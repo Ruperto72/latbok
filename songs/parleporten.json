@@ -5,9 +5,9 @@
   "timeSignature": "4/4",
   "difficulty": "medel",
   "chordTemplates": {
-    "vers_a": "G       D7|G|C       G|Dsus4",
-    "vers_b": "G       G/B|C|G/D     D7|G",
-    "refr_a": "D|G       G7|C       G|A       D"
+    "vers_a": "G      D7|G|C      G|Dsus4",
+    "vers_b": "G      G/B|C      G/D|D7|G",
+    "refr_a": "D|G       G7|C      G|A      D"
   },
   "sections": [
     {
@@ -24,11 +24,11 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Som en härlig |gudomskälla, |rik och mäktig, |djup och stor"
+          "l": "Som en härlig |gudomskälla, |rik och mäktig, djup och |stor"
         },
         {
           "c": "@vers_b",
-          "l": "är den kärlek, |nåd och sanning |som i Jesu |hjärta bor."
+          "l": "är den kärlek, nåd och |sanning som i |Jesu hjärta |bor."
         }
       ]
     },
@@ -37,11 +37,11 @@
       "lines": [
         {
           "c": "@refr_a",
-          "l": "Han har öppnat |pärleporten |så att jag |kan komma in."
+          "l": "Han har öppnat |pärleporten |så att jag kan komma |in."
         },
         {
           "c": "@vers_b",
-          "l": "Genom blodet |har han frälst mig |och bevarat |mig som sin."
+          "l": "Genom blodet har han |frälst mig och |bevarat mig som |sin."
         }
       ]
     },
@@ -50,11 +50,24 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "En gång som |en jagad duva, |som en sårad |hjort jag var,"
+          "l": "En gång som en jagad |duva, |som en sårad hjort jag |var,"
         },
         {
           "c": "@vers_b",
-          "l": "men ett djupt |förkrossat hjärta |Jesus ej |förskjutit har."
+          "l": "men ett djupt förkrossat |hjärta Jesus ej |förskjutit |har."
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "@refr_a",
+          "l": "Han har öppnat |pärleporten |så att jag kan komma |in."
+        },
+        {
+          "c": "@vers_b",
+          "l": "Genom blodet har han |frälst mig och |bevarat mig som |sin."
         }
       ]
     },
@@ -63,11 +76,24 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Under över |alla under, |allt förlåt |han mig en gång."
+          "l": "Under över alla |under, |allt förlåt han mig en |gång."
         },
         {
           "c": "@vers_b",
-          "l": "Om hans underbara |godhet |glad jag sjunger |nu min sång."
+          "l": "Om hans underbara |godhet glad jag |sjunger nu min |sång."
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "@refr_a",
+          "l": "Han har öppnat |pärleporten |så att jag kan komma |in."
+        },
+        {
+          "c": "@vers_b",
+          "l": "Genom blodet har han |frälst mig och |bevarat mig som |sin."
         }
       ]
     },
@@ -76,11 +102,24 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "När en gång |i livets morgon |till den gyllne |port jag når,"
+          "l": "När en gång i livets |morgon |till den gyllne port jag |når,"
         },
         {
           "c": "@vers_b",
-          "l": "då för Jesus |stora kärlek |och för mig |den öppen står."
+          "l": "då för Jesus stora |kärlek och för |mig den öppen |står."
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "@refr_a",
+          "l": "Han har öppnat |pärleporten |så att jag kan komma |in."
+        },
+        {
+          "c": "@vers_b",
+          "l": "Genom blodet har han |frälst mig och |bevarat mig som |sin."
         }
       ]
     }
