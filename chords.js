@@ -1,8 +1,32 @@
-// ─── chords.js — SVG Guitar Chord Diagrams ───
+// ─── chords.js — SVG Guitar Chord Diagrams & Music Theory ───
+
+export const NOTES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+export const NOTES_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+
+export function transposeChordName(chord, semitones) {
+  if (semitones === 0) return chord;
+  return chord.replace(/(?<![A-Za-z])([A-G])(#|b)?/g, (match, note, acc) => {
+    let idx = NOTES_SHARP.indexOf(note + (acc || ''));
+    if (idx === -1) idx = NOTES_FLAT.indexOf(note + (acc || ''));
+    if (idx === -1) return match;
+    let newIdx = (idx + semitones + 12) % 12;
+    return semitones >= 0 ? NOTES_SHARP[newIdx] : NOTES_FLAT[newIdx];
+  });
+}
+
+export function parseChordLine(chordStr) {
+  const chords = [];
+  const regex = /(\S+)/g;
+  let m;
+  while ((m = regex.exec(chordStr)) !== null) {
+    chords.push({ name: m[1], pos: m.index });
+  }
+  return chords;
+}
 
 // Chord library: [strings low E to high E] = fret number, 0=open, -1=muted
 // Format: { frets: [E,A,D,G,B,e], fingers: [f,f,f,f,f,f], baseFret: 1 }
-const CHORD_LIB = {
+export const CHORD_LIB = {
   // ─── Major ───
   'C':     { frets: [-1,3,2,0,1,0], fingers: [0,3,2,0,1,0] },
   'D':     { frets: [-1,-1,0,2,3,2], fingers: [0,0,0,1,3,2] },
@@ -82,9 +106,73 @@ const CHORD_LIB = {
   'Bbsus4':{ frets: [-1,1,3,3,4,1], fingers: [0,1,3,3,4,1], barre: 1 },
   'Bsus4': { frets: [7,9,9,9,7,7], fingers: [1,3,4,4,1,1], baseFret: 7, barre: 7 },
 
-  // ─── Augmented / Diminished ───
+  // ─── sus2 — alla 12 grundtoner ───
+  'Csus2': { frets: [-1,3,0,0,1,0], fingers: [0,3,0,0,1,0] },
+  'C#sus2':{ frets: [-1,4,6,6,4,4], fingers: [0,1,3,4,1,1], baseFret: 4, barre: 4 },
+  'Dsus2': { frets: [-1,-1,0,2,3,0], fingers: [0,0,0,1,3,0] },
+  'Ebsus2':{ frets: [-1,-1,1,3,4,1], fingers: [0,0,1,3,4,1] },
+  'Esus2': { frets: [0,2,4,4,0,0], fingers: [0,1,3,4,0,0] },
+  'Fsus2': { frets: [-1,-1,3,0,1,1], fingers: [0,0,3,0,1,1] },
+  'F#sus2':{ frets: [-1,-1,4,1,2,2], fingers: [0,0,4,1,2,3] },
+  'Gsus2': { frets: [3,0,0,0,3,3], fingers: [1,0,0,0,3,4] },
+  'Absus2':{ frets: [4,6,6,3,4,4], fingers: [1,3,4,1,1,1], baseFret: 4, barre: 4 },
+  'Asus2': { frets: [-1,0,2,2,0,0], fingers: [0,0,2,3,0,0] },
+  'Bbsus2':{ frets: [-1,1,3,3,1,1], fingers: [0,1,3,4,1,1], barre: 1 },
+  'Bsus2': { frets: [-1,2,4,4,2,2], fingers: [0,1,3,4,1,1], baseFret: 2, barre: 2 },
+
+  // ─── add9 ───
+  'Cadd9': { frets: [-1,3,2,0,3,0], fingers: [0,2,1,0,3,0] },
+  'Dadd9': { frets: [-1,-1,0,2,3,0], fingers: [0,0,0,1,3,0] },
+  'Eadd9': { frets: [0,2,2,1,0,2], fingers: [0,2,3,1,0,4] },
+  'Fadd9': { frets: [1,0,3,2,1,0], fingers: [1,0,4,3,2,0] },
+  'Gadd9': { frets: [3,2,0,2,0,3], fingers: [3,1,0,2,0,4] },
+  'Aadd9': { frets: [-1,0,2,4,2,0], fingers: [0,0,1,3,2,0] },
+
+  // ─── Diminished ───
+  'Cdim':  { frets: [-1,3,4,2,4,-1], fingers: [0,2,3,1,4,0] },
+  'Ddim':  { frets: [-1,-1,0,1,3,1], fingers: [0,0,0,1,3,2] },
+  'Edim':  { frets: [0,1,2,0,2,-1], fingers: [0,1,2,0,3,0] },
+  'Fdim':  { frets: [-1,-1,3,4,3,4], fingers: [0,0,1,3,2,4] },
+  'Gdim':  { frets: [3,4,5,3,5,-1], fingers: [1,2,3,1,4,0], baseFret: 3, barre: 3 },
+  'Adim':  { frets: [-1,0,1,2,1,-1], fingers: [0,0,1,3,2,0] },
   'Bdim':  { frets: [-1,2,3,4,3,-1], fingers: [0,1,2,4,3,0] },
+
+  // ─── Diminished 7th ───
+  'Cdim7': { frets: [-1,3,4,2,4,2], fingers: [0,2,3,1,4,1] },
+  'C#dim7':{ frets: [-1,4,2,3,2,-1], fingers: [0,4,1,3,2,0] },
+  'Ddim7': { frets: [-1,-1,0,1,0,1], fingers: [0,0,0,1,0,2] },
+  'Ebdim7':{ frets: [-1,-1,1,2,1,2], fingers: [0,0,1,3,2,4] },
+  'Edim7': { frets: [0,1,2,0,2,0], fingers: [0,1,3,0,4,0] },
+  'Fdim7': { frets: [1,2,3,1,3,1], fingers: [1,2,3,1,4,1], barre: 1 },
+  'Gdim7': { frets: [3,4,2,3,2,-1], fingers: [2,3,1,4,1,0] },
+  'Adim7': { frets: [-1,0,1,2,1,2], fingers: [0,0,1,3,2,4] },
+  'Bdim7': { frets: [-1,2,0,1,0,1], fingers: [0,2,0,1,0,1] },
+
+  // ─── Augmented ───
+  'Caug':  { frets: [-1,3,2,1,1,0], fingers: [0,4,3,1,2,0] },
+  'Daug':  { frets: [-1,-1,0,3,3,2], fingers: [0,0,0,2,3,1] },
+  'Eaug':  { frets: [0,3,2,1,1,0], fingers: [0,4,3,1,2,0] },
+  'Faug':  { frets: [1,0,3,2,2,1], fingers: [1,0,4,3,2,1], barre: 1 },
+  'Gaug':  { frets: [3,2,1,0,0,3], fingers: [3,2,1,0,0,4] },
+  'Aaug':  { frets: [-1,0,3,2,2,1], fingers: [0,0,4,3,2,1] },
+  'Baug':  { frets: [-1,2,1,0,0,3], fingers: [0,2,1,0,0,3] },
+
+  // ─── 9th (dominant) ───
+  'A9':    { frets: [-1,0,2,1,2,0], fingers: [0,0,2,1,3,0] },
+  'B9':    { frets: [-1,2,1,2,2,2], fingers: [0,2,1,3,3,3], baseFret: 2, barre: 2 },
+  'C9':    { frets: [-1,3,2,3,3,3], fingers: [0,2,1,3,4,4] },
+  'D9':    { frets: [-1,-1,0,2,1,0], fingers: [0,0,0,2,1,0] },
+  'E9':    { frets: [0,2,0,1,0,2], fingers: [0,2,0,1,0,3] },
+  'G9':    { frets: [3,0,0,0,0,1], fingers: [3,0,0,0,0,1] },
+
+  // ─── m7b5 (half-diminished) ───
   'Bm7b5': { frets: [-1,2,3,2,3,-1], fingers: [0,1,3,2,4,0] },
+  'Am7b5': { frets: [-1,0,1,0,1,3], fingers: [0,0,1,0,2,4] },
+  'C#m7b5':{ frets: [-1,4,2,4,5,-1], fingers: [0,2,1,3,4,0], baseFret: 4 },
+  'Dm7b5': { frets: [-1,-1,0,1,1,1], fingers: [0,0,0,1,2,3] },
+  'Em7b5': { frets: [0,1,2,0,3,0], fingers: [0,1,2,0,3,0] },
+  'F#m7b5':{ frets: [2,0,2,2,1,0], fingers: [2,0,3,4,1,0] },
+  'Gm7b5': { frets: [3,4,3,3,6,-1], fingers: [1,2,1,1,4,0], baseFret: 3, barre: 3 },
 
   // ─── Slash chords (show base chord) ───
   'C/G':   { frets: [3,3,2,0,1,0], fingers: [3,4,2,0,1,0] },
@@ -104,12 +192,12 @@ const CHORD_LIB = {
 };
 
 // Enharmonic equivalents: C#=Db, D#=Eb, F#=Gb, G#=Ab, A#=Bb (and reverse)
-const ENHARMONIC = {
+export const ENHARMONIC = {
   'C#':'Db','Db':'C#','D#':'Eb','Eb':'D#',
   'F#':'Gb','Gb':'F#','G#':'Ab','Ab':'G#','A#':'Bb','Bb':'A#'
 };
 
-function toEnharmonic(name) {
+export function toEnharmonic(name) {
   const m = name.match(/^([A-G][#b]?)(.*)$/);
   if (!m) return null;
   const alt = ENHARMONIC[m[1]];
@@ -117,7 +205,7 @@ function toEnharmonic(name) {
 }
 
 // Try to find a chord, including enharmonic equivalents and slash chord fallback
-function lookupChord(name) {
+export function lookupChord(name) {
   // Direct match
   if (CHORD_LIB[name]) return { ...CHORD_LIB[name], name };
 
@@ -136,8 +224,12 @@ function lookupChord(name) {
   return null;
 }
 
+export function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 // Generate SVG chord diagram
-function chordSVG(chordData, size = 60) {
+export function chordSVG(chordData, size = 60) {
   if (!chordData) return '';
 
   const { frets, name, baseFret = 1, barre } = chordData;
@@ -152,7 +244,7 @@ function chordSVG(chordData, size = 60) {
   const dotR = stringSpacing * 0.28;
   const nutH = fretSpacing * 0.12;
 
-  let svg = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ackorddiagram för ${escHtml(name)}">`;
 
   // Title
   const fontSize = size * 0.19;
@@ -219,7 +311,7 @@ function chordSVG(chordData, size = 60) {
 }
 
 // Extract unique chords from a song, respecting transpose
-function getUniqueChords(song, transposeSemitones) {
+export function getUniqueChords(song, transposeSemitones) {
   const seen = new Set();
   const chords = [];
 
@@ -257,7 +349,7 @@ function getUniqueChords(song, transposeSemitones) {
 }
 
 // Render chord diagram strip for a song
-function renderChordDiagrams(song, transposeSemitones) {
+export function renderChordDiagrams(song, transposeSemitones) {
   const chordNames = getUniqueChords(song, transposeSemitones);
   const diagrams = chordNames
     .map(name => {

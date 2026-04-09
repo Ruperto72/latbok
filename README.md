@@ -1,6 +1,6 @@
 # Körhäftet — Ackord & Text
 
-En modern webbapp för körsånger med ackord, byggd som en ren statisk sida för GitHub Pages. Ingen server, inga beroenden — bara HTML, CSS och JavaScript.
+En modern webbapp för körsånger med ackord, byggd som en PWA för GitHub Pages. ES-moduler, offline-stöd via Service Worker och valfritt byggsystem med esbuild.
 
 ## Funktioner
 
@@ -26,6 +26,18 @@ Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i
 - **Delar & rader** — lägg till/ta bort delar och rader; välj ackordmall per rad eller skriv ackord fritt
 - **Texteditering** — redigera lyrics direkt; använd `|` för att markera taktgränser
 - **Spara till fil** — skriver ändringarna tillbaka till JSON-filen via en lokal server (fungerar på localhost)
+- **Validering** — visar varningar för saknade fält, ogiltig taktart och okända ackord i realtid
+
+### Tillgänglighet
+- **Skip-link** — hoppa direkt till innehåll med tangentbordet
+- **ARIA-attribut** — roller, etiketter och live-regioner för skärmläsare
+- **Tangentbordsnavigering** — alla kontroller och låtlistan nåbara via Tab/Enter
+- **Focus-visible** — tydlig fokusindikator
+
+### Offline & PWA
+- **Service Worker** — cache-first för statiska filer, network-first för låtdata
+- **Installerbar** — lägg till på hemskärmen via webbläsaren
+- **Fungerar utan nät** — alla låtar cachas vid första besöket
 
 ### Övrigt
 - **Döljbar sidopanel** — hamburgaremenyn fungerar både på mobil och desktop
@@ -38,19 +50,18 @@ Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i
 korhaftet/
 ├── index.html          ← Huvudsida (HTML-skelett)
 ├── style.css           ← All styling
-├── app.js              ← Huvudlogik (rendering, transponering, redaktör, autoscroll)
-├── chords.js           ← Ackordbibliotek och SVG-diagramgenerator
+├── app.js              ← Huvudlogik (rendering, redaktör, autoscroll) — ES-modul
+├── chords.js           ← Ackordbibliotek, transponering, SVG-diagram — ES-modul
+├── sw.js               ← Service Worker (offline-caching)
+├── package.json        ← npm-skript och devDependencies
+├── scripts/
+│   └── build.js        ← Fullständigt dist-bygge (esbuild + kopiera assets)
+├── tests/
+│   └── chords.test.js  ← Enhetstester (Node.js test runner)
 ├── README.md
 └── songs/              ← Låtfiler (en JSON-fil per låt)
     ├── index.json      ← Lista med alla låtfiler (styr menyn)
-    ├── amazing_grace.json
-    ├── bella_ciao.json
-    ├── fattig_bonddrang.json
-    ├── fran_djursholm_till_danvikstull.json
-    ├── parleporten.json
-    ├── sang_till_friheten.json
-    ├── uti_var_hage.json
-    └── visa_fran_utanmyra.json
+    └── *.json          ← En fil per låt
 ```
 
 ## Lägga till en ny låt
@@ -255,7 +266,26 @@ Appen läser `songs/index.json` vid laddning och hämtar varje låtfil dynamiskt
 
 ## Ackordbibliotek
 
-Filen `chords.js` innehåller ~80 vanliga gitarrackord med fingersättningar. Diagram genereras som SVG direkt i webbläsaren. Ackord som saknas i biblioteket hoppas över.
+Filen `chords.js` innehåller ~170 gitarrackord med fingersättningar, uppdelat i kategorier:
+
+| Kategori | Täckning |
+|---|---|
+| Dur | Alla 12 grundtoner |
+| Moll | Alla vanliga (Am, Bm, Cm, Dm, Em, Fm, Gm, F#m, G#m, Bbm, C#m, Ebm) |
+| 7 (dominant) | Alla 12 grundtoner |
+| m7 (moll 7) | Alla 12 grundtoner |
+| maj7 | C, D, G |
+| sus4 | Alla 12 grundtoner |
+| sus2 | Alla 12 grundtoner |
+| add9 | C, D, E, F, G, A |
+| dim | C, D, E, F, G, A, B |
+| dim7 | C, C#, D, Eb, E, F, G, A, B |
+| aug | C, D, E, F, G, A, B |
+| 9 (dominant) | A, B, C, D, E, G |
+| m7b5 (halvförminskad) | A, B, C#, D, E, F#, G |
+| Slash-ackord | C/G, C/B, C/E, G/B, Am/E m.fl. |
+
+Diagram genereras som SVG direkt i webbläsaren. Ackord som saknas i biblioteket hoppas över (och visas som varning i redaktören).
 
 För att lägga till ett nytt ackord, utöka `CHORD_LIB` i `chords.js`:
 
@@ -265,12 +295,42 @@ För att lägga till ett nytt ackord, utöka `CHORD_LIB` i `chords.js`:
 
 Format: `frets` = greppet per sträng (E A D G B e), där -1 = dämpad, 0 = öppen.
 
-## Lokal låtserver
+## Utveckling
+
+### Installera beroenden
+
+```bash
+npm install
+```
+
+### Byggsystem
+
+| Kommando | Beskrivning |
+|---|---|
+| `npm run build` | Bundla och minifiera JS till `dist/app.bundle.js` (esbuild) |
+| `npm run build:dev` | Bundla utan minifiering (med sourcemap) |
+| `npm run watch` | Bundla vid filändringar |
+| `npm run dist` | Bygg komplett dist-mapp (JS + assets + songs) |
+| `npm test` | Kör enhetstester (33 st, Node.js test runner) |
+
+Byggsystemet är valfritt — appen fungerar direkt utan bygge tack vare ES-moduler (`type="module"`).
+
+### Tester
+
+Testerna finns i `tests/chords.test.js` och täcker:
+- Transponering (upp, ner, oktavhopp, slash-ackord, komplexa suffix)
+- Chord-parsing (positioner, tomma strängar)
+- Ackorduppslag (direkt, enharmoniskt, slash-fallback)
+- Enharmoniska konverteringar
+- HTML-escaping
+- Ackordbibliotekens fullständighet (alla 12 grundtoner för dur, 7, sus4, sus2)
+
+### Lokal låtserver
 
 Låtredaktörens sparfunktion kräver en lokal server som hanterar `POST /save-song`. Starta med:
 
 ```bash
-node server.js
+python server.py
 ```
 
 På GitHub Pages (produktion) är sparknappen inaktiverad — redigera JSON-filerna lokalt och pusha.

@@ -1,0 +1,17 @@
+{
+  "name": "korhaftet",
+  "version": "1.0.0",
+  "description": "Körhäftet — Ackord & Text för kören",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild app.js --bundle --outfile=dist/app.bundle.js --format=esm --minify --sourcemap",
+    "build:dev": "esbuild app.js --bundle --outfile=dist/app.bundle.js --format=esm --sourcemap",
+    "watch": "esbuild app.js --bundle --outfile=dist/app.bundle.js --format=esm --sourcemap --watch",
+    "dist": "node scripts/build.js",
+    "test": "node --test tests/chords.test.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

@@ -1,7 +1,21 @@
 // ─── Körhäftet — app.js ───
 
-const NOTES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const NOTES_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+import {
+  transposeChordName, parseChordLine,
+  escHtml, renderChordDiagrams, lookupChord,
+} from './chords.js';
+
+// Column layout modes
+const COL = {
+  NARROW_1: 0,  // 1 kolumn, smal
+  WIDE_1:   1,  // 1 kolumn, bred
+  NARROW_2: 2,  // 2 kolumner, smal
+  WIDE_2:   3,  // 2 kolumner, bred
+  COUNT:    4,   // antal lägen (för cykling)
+};
+
+const COL_LABELS = ['1 smal', '1 bred', '2 smal', '2 bred'];
+const COL_CLASSES = [' columns-1c', '', ' columns-2c', ' columns-2'];
 
 // Songs loaded dynamically from songs/ folder
 let songs = [];
@@ -10,7 +24,7 @@ let songs = [];
 let currentSong = 0;
 let transposeSemitones = 0;
 let fontSize = 13;
-let columnsMode = 0; // 0=1 smal, 1=1 bred, 2=2 smal, 3=2 bred
+let columnsMode = COL.NARROW_1;
 let hideChords = false;
 let sidebarHidden = false;
 let songEditorMode = false;
@@ -144,6 +158,9 @@ function renderSongList(filter = '') {
     
     const div = document.createElement('div');
     div.className = 'song-item' + (i === currentSong ? ' active' : '');
+    div.setAttribute('role', 'listitem');
+    div.setAttribute('tabindex', '0');
+    div.setAttribute('aria-current', i === currentSong ? 'true' : 'false');
     div.innerHTML = `
       <div class="song-title">${s.title}</div>
       <div class="song-artist">${s.artist}</div>
@@ -154,6 +171,7 @@ function renderSongList(filter = '') {
       </div>
     `;
     div.onclick = () => selectSong(i);
+    div.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectSong(i); } };
     list.appendChild(div);
   });
 }
@@ -228,7 +246,7 @@ function alignMeasureColumns() {
     cells.forEach(c => {
       const mi = parseInt(c.dataset.mi);
       // I bred-lägen (1 och 3) låter vi den sista takten i varje block expandera för att fylla ut raden/kolumnen
-      if ((columnsMode === 1 || columnsMode === 3) && mi === maxMi) {
+      if ((columnsMode === COL.WIDE_1 || columnsMode === COL.WIDE_2) && mi === maxMi) {
         c.style.flex = `1 0 ${colWidths[mi]}px`;
       } else {
         c.style.flex = `0 0 ${colWidths[mi]}px`;
@@ -262,7 +280,9 @@ function releaseWakeLock() {
 
 async function toggleAutoScroll() {
   scrollActive = !scrollActive;
-  document.getElementById('scrollBtn').className = 'ctrl-btn' + (scrollActive ? ' active' : '');
+  const scrollBtn = document.getElementById('scrollBtn');
+  scrollBtn.className = 'ctrl-btn' + (scrollActive ? ' active' : '');
+  scrollBtn.setAttribute('aria-pressed', scrollActive);
   if (scrollActive) {
     scrollLastTime = null;
     scrollRAF = requestAnimationFrame(autoScrollStep);
@@ -311,31 +331,7 @@ function selectSong(idx) {
   }
 }
 
-// ─── Chord parsing ───
-function parseChordLine(chordStr) {
-  const chords = [];
-  const regex = /(\S+)/g;
-  let m;
-  while ((m = regex.exec(chordStr)) !== null) {
-    chords.push({ name: m[1], pos: m.index });
-  }
-  return chords;
-}
-
-function transposeChordName(chord, semitones) {
-  if (semitones === 0) return chord;
-  return chord.replace(/(?<![A-Za-z])([A-G])(#|b)?/g, (match, note, acc) => {
-    let idx = NOTES_SHARP.indexOf(note + (acc || ''));
-    if (idx === -1) idx = NOTES_FLAT.indexOf(note + (acc || ''));
-    if (idx === -1) return match;
-    let newIdx = (idx + semitones + 12) % 12;
-    return semitones >= 0 ? NOTES_SHARP[newIdx] : NOTES_FLAT[newIdx];
-  });
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+// ─── Chord parsing (imported from chords.js) ───
 
 // ─── Render ───
 
@@ -370,9 +366,7 @@ function renderSong() {
     </div>
   `;
 
-  if (typeof renderChordDiagrams === 'function') {
-    html += renderChordDiagrams(s, transposeSemitones);
-  }
+  html += renderChordDiagrams(s, transposeSemitones);
 
   html += `<div class="song-body" style="font-size:${fontSize}px">`;
 
@@ -496,7 +490,7 @@ function renderSong() {
 
   html += `</div>`;
   display.innerHTML = html;
-  const colClass = [' columns-1c', '', ' columns-2c', ' columns-2'][columnsMode] || '';
+  const colClass = COL_CLASSES[columnsMode] || '';
   display.className = 'song-display' + colClass;
   if (hideChords) display.classList.add('hide-chords');
   alignMeasureColumns();
@@ -529,13 +523,12 @@ function changeFontSize(dir) {
 
 function updateColBtn() {
   const btn = document.getElementById('colBtn');
-  const labels = ['1 smal', '1 bred', '2 smal', '2 bred'];
-  btn.textContent = labels[columnsMode];
+  btn.textContent = COL_LABELS[columnsMode];
   btn.className = 'ctrl-btn active';
 }
 
 function toggleColumns() {
-  columnsMode = (columnsMode + 1) % 4;
+  columnsMode = (columnsMode + 1) % COL.COUNT;
   updateColBtn();
   renderSong();
   savePrefs();
@@ -543,7 +536,9 @@ function toggleColumns() {
 
 function toggleHideChords() {
   hideChords = !hideChords;
-  document.getElementById('hideChordsBtn').className = 'ctrl-btn' + (hideChords ? '' : ' active');
+  const btn = document.getElementById('hideChordsBtn');
+  btn.className = 'ctrl-btn' + (hideChords ? '' : ' active');
+  btn.setAttribute('aria-pressed', !hideChords);
   document.getElementById('transposeBtns').style.display = hideChords ? 'none' : '';
   renderSong();
   savePrefs();
@@ -552,7 +547,9 @@ function toggleHideChords() {
 function toggleSongEditor() {
   songEditorMode = !songEditorMode;
   if (songEditorMode && scrollActive) toggleAutoScroll();
-  document.getElementById('songEditorBtn').className = 'ctrl-btn' + (songEditorMode ? ' active' : '');
+  const btn = document.getElementById('songEditorBtn');
+  btn.className = 'ctrl-btn' + (songEditorMode ? ' active' : '');
+  btn.setAttribute('aria-pressed', songEditorMode);
   renderSong();
 }
 
@@ -597,6 +594,41 @@ function syncLyricsToChords(line, s) {
     return true;
   }
   return false;
+}
+
+// ─── Editor Validation ───
+
+const VALID_TIME_SIGNATURES = ['2/4','3/4','4/4','5/4','6/8','3/8','7/8','12/8'];
+const VALID_DIFFICULTIES = ['Lätt','Medel','Svår'];
+
+function validateSong(s) {
+  const errors = [];
+  if (!s.title || !s.title.trim()) errors.push('Titel saknas');
+  if (!s.artist || !s.artist.trim()) errors.push('Artist saknas');
+  if (!s.key || !s.key.trim()) errors.push('Tonart saknas');
+  else if (!lookupChord(s.key)) errors.push(`Okänd tonart: "${s.key}"`);
+  if (s.timeSignature && !VALID_TIME_SIGNATURES.includes(s.timeSignature))
+    errors.push(`Ogiltig taktart: "${s.timeSignature}" (giltiga: ${VALID_TIME_SIGNATURES.join(', ')})`);
+  if (s.difficulty && !VALID_DIFFICULTIES.includes(s.difficulty))
+    errors.push(`Okänd svårighetsgrad: "${s.difficulty}" (giltiga: ${VALID_DIFFICULTIES.join(', ')})`);
+  if (!s.sections || s.sections.length === 0) errors.push('Inga sektioner');
+  return errors;
+}
+
+function validateChordString(chordStr) {
+  if (!chordStr || chordStr.trim() === '') return [];
+  const warnings = [];
+  const parts = chordStr.split('|');
+  parts.forEach(part => {
+    if (part.trim() === '.') return; // anakrus-markör, inte ett ackord
+    const regex = /(\S+)/g;
+    let m;
+    while ((m = regex.exec(part)) !== null) {
+      if (m[1] === '.') continue;
+      if (!lookupChord(m[1])) warnings.push(m[1]);
+    }
+  });
+  return warnings;
 }
 
 // ─── Song Editor ───
@@ -659,6 +691,35 @@ function renderSongEditor() {
     <button class="sed-btn sed-btn--add sed-add-section">+ Ny del</button>
   </div>`;
 
+  // Validation panel
+  const songErrors = validateSong(s);
+  const allUnknownChords = new Set();
+  s.sections.forEach(sec => {
+    sec.lines.forEach(line => {
+      const rawC = line.c || '';
+      const cStr = rawC.startsWith('@') && s.chordTemplates
+        ? (s.chordTemplates[rawC.slice(1)] || '') : rawC;
+      validateChordString(cStr).forEach(c => allUnknownChords.add(c));
+    });
+  });
+  if (s.chordTemplates) {
+    Object.values(s.chordTemplates).forEach(tpl => {
+      validateChordString(tpl).forEach(c => allUnknownChords.add(c));
+    });
+  }
+
+  if (songErrors.length > 0 || allUnknownChords.size > 0) {
+    html += `<div class="sed-card sed-validation-panel">
+      <div class="sed-card-title">Validering</div>`;
+    songErrors.forEach(err => {
+      html += `<div class="sed-validation-error">${escHtml(err)}</div>`;
+    });
+    if (allUnknownChords.size > 0) {
+      html += `<div class="sed-validation-warn">Okända ackord (saknas i biblioteket): <strong>${[...allUnknownChords].map(c => escHtml(c)).join(', ')}</strong></div>`;
+    }
+    html += `</div>`;
+  }
+
   // Save bar
   html += `<div class="sed-save-bar">
     <div class="sed-transpose-group">
@@ -666,7 +727,7 @@ function renderSongEditor() {
       <button class="sed-btn sed-transpose-btn" onclick="transposeSongData(-1)">♭</button>
       <button class="sed-btn sed-transpose-btn" onclick="transposeSongData(1)">♯</button>
     </div>
-    <button class="sed-save-btn"${isLocal ? '' : ' disabled'}>💾 Spara till fil</button>
+    <button class="sed-save-btn"${isLocal ? '' : ' disabled'}${songErrors.length > 0 ? ' title="Åtgärda valideringsfel först"' : ''}>Spara till fil</button>
     <span class="sed-save-note">${isLocal ? `songs/${escHtml(s._filename || '?')}` : 'Sparning fungerar bara på localhost'}</span>
     <span class="sed-save-error" id="sed-save-error"></span>
   </div>`;
@@ -998,6 +1059,20 @@ async function saveSongEditorToFile() {
     if (errEl) errEl.textContent = 'Fel: ' + e.message;
     console.error('saveSongEditorToFile:', e);
   }
+}
+
+// ─── Expose to HTML onclick handlers ───
+Object.assign(window, {
+  toggleSidebar, reloadSongs, changeFontSize, toggleColumns,
+  toggleHideChords, transpose, toggleSongEditor, toggleAutoScroll,
+  changeScrollSpeed, transposeSongData, selectSong, renderSongList,
+});
+
+// ─── Service Worker ───
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(err => {
+    console.warn('SW registration failed:', err);
+  });
 }
 
 // ─── Start ───

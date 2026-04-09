@@ -14,60 +14,60 @@
 </head>
 <body>
 
-<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<a class="skip-link" href="#songDisplay">Hoppa till innehåll</a>
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Öppna/stäng meny" aria-expanded="false" aria-controls="sidebar">☰</button>
+<div class="overlay" id="overlay" onclick="toggleSidebar()" role="presentation"></div>
 
 <div class="app">
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Låtlista">
     <div class="sidebar-header">
       <h1>Körhäftet</h1>
-      <p>Laddar låtar...</p>
+      <p aria-live="polite">Laddar låtar...</p>
     </div>
-    <div class="song-list" id="songList"></div>
+    <div class="song-list" id="songList" role="list" aria-label="Låtar"></div>
     <div class="sidebar-footer">
       <button class="reload-btn" id="reloadSongsBtn" onclick="reloadSongs()">↺ Ladda om låtar</button>
     </div>
   </aside>
 
-  <main class="main">
-    <div class="topbar">
+  <main class="main" id="mainContent">
+    <div class="topbar" role="toolbar" aria-label="Verktyg">
       <div class="topbar-left">
-<span class="transpose-badge" id="transposeBadge" style="display:none"></span>
-        <span class="save-indicator" id="saveIndicator">✓ Sparat</span>
+<span class="transpose-badge" id="transposeBadge" style="display:none" aria-live="polite"></span>
+        <span class="save-indicator" id="saveIndicator" aria-live="polite" role="status">✓ Sparat</span>
       </div>
       <div class="controls">
-        <div class="font-ctrl">
-          <button onclick="changeFontSize(-1)">−</button>
-          <span id="fontLabel">13</span>
-          <button onclick="changeFontSize(1)">+</button>
+        <div class="font-ctrl" role="group" aria-label="Textstorlek">
+          <button onclick="changeFontSize(-1)" aria-label="Minska textstorlek">−</button>
+          <span id="fontLabel" aria-label="Textstorlek">13</span>
+          <button onclick="changeFontSize(1)" aria-label="Öka textstorlek">+</button>
         </div>
-        <button class="ctrl-btn" onclick="toggleColumns()" id="colBtn">2 kolumner</button>
-        <button class="ctrl-btn" onclick="toggleHideChords()" id="hideChordsBtn">Ackord</button>
-        <span id="transposeBtns">
-          <button class="ctrl-btn" onclick="transpose(-1)">♭</button>
-          <button class="ctrl-btn" onclick="transpose(1)">♯</button>
+        <button class="ctrl-btn" onclick="toggleColumns()" id="colBtn" aria-label="Byt kolumnläge">2 kolumner</button>
+        <button class="ctrl-btn" onclick="toggleHideChords()" id="hideChordsBtn" aria-pressed="true">Ackord</button>
+        <span id="transposeBtns" role="group" aria-label="Transponera">
+          <button class="ctrl-btn" onclick="transpose(-1)" aria-label="Transponera ner ett halvsteg">♭</button>
+          <button class="ctrl-btn" onclick="transpose(1)" aria-label="Transponera upp ett halvsteg">♯</button>
         </span>
-        <button class="ctrl-btn" onclick="toggleSongEditor()" id="songEditorBtn">✎ Redigera låt</button>
-        <div class="scroll-group">
-          <button class="ctrl-btn" onclick="toggleAutoScroll()" id="scrollBtn">▶ Scrolla</button>
-          <div class="font-ctrl" id="scrollCtrl">
-            <button onclick="changeScrollSpeed(-1)">−</button>
-            <span id="scrollSpeedLabel">3</span>
-            <button onclick="changeScrollSpeed(1)">+</button>
+        <button class="ctrl-btn" onclick="toggleSongEditor()" id="songEditorBtn" aria-pressed="false">✎ Redigera låt</button>
+        <div class="scroll-group" role="group" aria-label="Autoscroll">
+          <button class="ctrl-btn" onclick="toggleAutoScroll()" id="scrollBtn" aria-pressed="false">▶ Scrolla</button>
+          <div class="font-ctrl" id="scrollCtrl" role="group" aria-label="Scrollhastighet">
+            <button onclick="changeScrollSpeed(-1)" aria-label="Minska scrollhastighet">−</button>
+            <span id="scrollSpeedLabel" aria-label="Scrollhastighet">3</span>
+            <button onclick="changeScrollSpeed(1)" aria-label="Öka scrollhastighet">+</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="song-display" id="songDisplay">
+    <div class="song-display" id="songDisplay" role="region" aria-label="Låtvisning" aria-live="polite">
       <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
-        <p style="font-size:40px;margin-bottom:12px">🎸</p>
+        <p style="font-size:40px;margin-bottom:12px" aria-hidden="true">🎸</p>
         <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Laddar...</p>
       </div>
     </div>
   </main>
 </div>
 
-<script src="chords.js"></script>
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
