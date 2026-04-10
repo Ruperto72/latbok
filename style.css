@@ -310,8 +310,13 @@ body {
 }
 
 .chord-diagram:hover,
-.chord-diagram:focus-visible {
+.chord-diagram:focus-visible,
+.chord-diagram:active {
   background: rgba(232,200,106,0.08);
+}
+.chord-diagram {
+  -webkit-tap-highlight-color: rgba(232,200,106,0.15);
+  touch-action: manipulation;
 }
 
 /* ─── Chord voicing popup ─── */

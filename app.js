@@ -564,7 +564,9 @@ function showChordPopup(chordName, anchorEl) {
   }
 
   popup.querySelector('.chord-popup-close').addEventListener('click', closeChordPopup);
+  popup.querySelector('.chord-popup-close').addEventListener('touchend', (e) => { e.preventDefault(); closeChordPopup(); });
   backdrop.addEventListener('click', closeChordPopup);
+  backdrop.addEventListener('touchend', (e) => { e.preventDefault(); closeChordPopup(); });
 
   // Close on click outside or Escape
   setTimeout(() => {
@@ -593,10 +595,19 @@ function onEscapePopup(e) {
 
 function attachChordDiagramListeners() {
   document.querySelectorAll('.chord-diagram[data-chord]').forEach(el => {
-    const handler = () => showChordPopup(el.dataset.chord, el);
+    const handler = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showChordPopup(el.dataset.chord, el);
+    };
     el.addEventListener('click', handler);
+    // Touch support for mobile (fires before click; prevents ghost-click via preventDefault)
+    el.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler(e);
+    }, { passive: false });
     el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(e); }
     });
   });
 }
