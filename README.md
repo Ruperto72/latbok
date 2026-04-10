@@ -364,3 +364,8 @@ Sidan hostas gratis via GitHub Pages:
 6. Sång till Friheten — Björn Afzelius
 7. Uti Vår Hage — Traditionell (svensk)
 8. Visa Från Utanmyra — Trad. / Monica Zetterlund
+
+
+
+
+https://www.infoom.se/gitarr-ackord/ackord.php?ackord=E&ackord_namn=E

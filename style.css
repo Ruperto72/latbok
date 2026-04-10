@@ -303,6 +303,90 @@ body {
 
 .chord-diagram {
   flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.chord-diagram:hover,
+.chord-diagram:focus-visible {
+  background: rgba(232,200,106,0.08);
+}
+
+/* ─── Chord voicing popup ─── */
+.chord-popup {
+  position: fixed;
+  z-index: 500;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.chord-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chord-popup-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.chord-popup-close {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.chord-popup-close:hover { color: var(--text); }
+
+.chord-popup-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.chord-popup-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+  transition: border-color 0.15s;
+}
+
+.chord-popup-item--active {
+  border-color: var(--accent);
+  background: rgba(232,200,106,0.06);
+}
+
+.chord-popup-item:hover {
+  border-color: var(--accent);
+}
+
+.chord-popup-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 2px;
+  white-space: nowrap;
 }
 
 .columns-2 .song-body { column-count: 2; column-gap: 40px; column-fill: balance; }

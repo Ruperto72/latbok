@@ -3,6 +3,7 @@
 import {
   transposeChordName, parseChordLine,
   escHtml, renderChordDiagrams, lookupChord,
+  getAllVoicings, chordSVG,
 } from './chords.js';
 
 // Column layout modes
@@ -494,11 +495,96 @@ function renderSong() {
   display.className = 'song-display' + colClass;
   if (hideChords) display.classList.add('hide-chords');
   alignMeasureColumns();
+  attachChordDiagramListeners();
   } catch (e) {
     console.error('renderSong crash:', e);
     document.getElementById('songDisplay').innerHTML =
       `<div style="padding:40px;color:#f66;font-family:monospace">FEL: ${e.message}</div>`;
   }
+}
+
+// ─── Chord voicing popup ───
+
+function showChordPopup(chordName, anchorEl) {
+  closeChordPopup();
+  const voicings = getAllVoicings(chordName);
+  if (voicings.length === 0) return;
+
+  const popup = document.createElement('div');
+  popup.className = 'chord-popup';
+  popup.setAttribute('role', 'dialog');
+  popup.setAttribute('aria-label', `Greppvarianter för ${chordName}`);
+
+  let html = `<div class="chord-popup-header">
+    <span class="chord-popup-title">${escHtml(chordName)} — ${voicings.length} variant${voicings.length > 1 ? 'er' : ''}</span>
+    <button class="chord-popup-close" aria-label="Stäng">&times;</button>
+  </div><div class="chord-popup-grid">`;
+
+  voicings.forEach((v, i) => {
+    const highlight = i === 0 ? ' chord-popup-item--active' : '';
+    // Extract short description from label (part in parentheses)
+    const labelMatch = (v.label || '').match(/\((.+)\)/);
+    const desc = labelMatch ? labelMatch[1] : (i === 0 ? 'standard' : '');
+    html += `<div class="chord-popup-item${highlight}">
+      ${chordSVG({ ...v, name: chordName }, 72)}
+      <div class="chord-popup-label">${escHtml(desc)}</div>
+    </div>`;
+  });
+
+  html += `</div>`;
+  popup.innerHTML = html;
+
+  document.body.appendChild(popup);
+
+  // Position near the clicked diagram
+  const rect = anchorEl.getBoundingClientRect();
+  const popupRect = popup.getBoundingClientRect();
+  let left = rect.left + rect.width / 2 - popupRect.width / 2;
+  let top = rect.bottom + 8;
+
+  // Keep within viewport
+  if (left < 8) left = 8;
+  if (left + popupRect.width > window.innerWidth - 8) left = window.innerWidth - popupRect.width - 8;
+  if (top + popupRect.height > window.innerHeight - 8) top = rect.top - popupRect.height - 8;
+
+  popup.style.left = `${left}px`;
+  popup.style.top = `${top}px`;
+
+  popup.querySelector('.chord-popup-close').addEventListener('click', closeChordPopup);
+
+  // Close on click outside or Escape
+  setTimeout(() => {
+    document.addEventListener('click', onClickOutsidePopup);
+    document.addEventListener('keydown', onEscapePopup);
+  }, 0);
+}
+
+function closeChordPopup() {
+  const existing = document.querySelector('.chord-popup');
+  if (existing) existing.remove();
+  document.removeEventListener('click', onClickOutsidePopup);
+  document.removeEventListener('keydown', onEscapePopup);
+}
+
+function onClickOutsidePopup(e) {
+  const popup = document.querySelector('.chord-popup');
+  if (popup && !popup.contains(e.target) && !e.target.closest('.chord-diagram')) {
+    closeChordPopup();
+  }
+}
+
+function onEscapePopup(e) {
+  if (e.key === 'Escape') closeChordPopup();
+}
+
+function attachChordDiagramListeners() {
+  document.querySelectorAll('.chord-diagram[data-chord]').forEach(el => {
+    const handler = () => showChordPopup(el.dataset.chord, el);
+    el.addEventListener('click', handler);
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }
+    });
+  });
 }
 
 // ─── Controls ───
