@@ -315,70 +315,85 @@ export const CHORD_VOICINGS = {
   ],
 
   // ─── Dominant 7 ───
+  // CAGED-former: E7=[n,n+2,n,n+1,n,n]  A7=[x,n,n+2,n,n+2,n]  D7=[x,x,n,n+2,n+1,n+2]
   'A7': [
     { label: 'A7 (E-form, 5:e bandet)', frets: [5,7,5,6,5,5], fingers: [1,3,1,2,1,1], baseFret: 5, barre: 5 },
-    { label: 'A7 (utan bas, D–e)', frets: [-1,-1,-1,2,2,3], fingers: [0,0,0,1,1,2] },
-    { label: 'A7 (D-form, D–e)', frets: [-1,0,2,0,2,0], fingers: [0,0,2,0,3,0] },
+    { label: 'A7 (A-form, öppen)', frets: [-1,0,2,0,2,0], fingers: [0,0,2,0,3,0] },
+    { label: 'A7 (D-form, 7:e bandet)', frets: [-1,-1,7,9,8,9], fingers: [0,0,1,3,2,4], baseFret: 7 },
+    { label: 'A7 (utan bas, G–e)', frets: [-1,-1,-1,2,2,3], fingers: [0,0,0,1,1,2] },
   ],
   'B7': [
     { label: 'B7 (E-form, 7:e bandet)', frets: [7,9,7,8,7,7], fingers: [1,3,1,2,1,1], baseFret: 7, barre: 7 },
     { label: 'B7 (A-form, 2:a bandet)', frets: [-1,2,4,2,4,2], fingers: [0,1,3,1,4,1], baseFret: 2, barre: 2 },
+    { label: 'B7 (D-form, 9:e bandet)', frets: [-1,-1,9,11,10,11], fingers: [0,0,1,3,2,4], baseFret: 9 },
     { label: 'B7 (utan bas, D–e)', frets: [-1,-1,1,2,0,2], fingers: [0,0,1,3,0,4] },
   ],
   'C7': [
-    { label: 'C7 (A-form, 3:e bandet)', frets: [-1,3,5,3,5,3], fingers: [0,1,3,1,4,1], baseFret: 3, barre: 3 },
     { label: 'C7 (E-form, 8:e bandet)', frets: [8,10,8,9,8,8], fingers: [1,3,1,2,1,1], baseFret: 8, barre: 8 },
+    { label: 'C7 (A-form, 3:e bandet)', frets: [-1,3,5,3,5,3], fingers: [0,1,3,1,4,1], baseFret: 3, barre: 3 },
+    { label: 'C7 (D-form, 10:e bandet)', frets: [-1,-1,10,12,11,12], fingers: [0,0,1,3,2,4], baseFret: 10 },
+    { label: 'C7 (öppen variant)', frets: [-1,3,2,3,1,0], fingers: [0,3,2,4,1,0] },
   ],
   'D7': [
-    { label: 'D7 (A-form, 5:e bandet)', frets: [-1,5,7,5,7,5], fingers: [0,1,3,1,4,1], baseFret: 5, barre: 5 },
-    { label: 'D7 (utan bas, D–e)', frets: [-1,-1,0,2,1,2], fingers: [0,0,0,2,1,3] },
     { label: 'D7 (E-form, 10:e bandet)', frets: [10,12,10,11,10,10], fingers: [1,3,1,2,1,1], baseFret: 10, barre: 10 },
+    { label: 'D7 (A-form, 5:e bandet)', frets: [-1,5,7,5,7,5], fingers: [0,1,3,1,4,1], baseFret: 5, barre: 5 },
+    { label: 'D7 (D-form, öppen)', frets: [-1,-1,0,2,1,2], fingers: [0,0,0,2,1,3] },
+    { label: 'D7 (utan bas, D–e)', frets: [-1,-1,0,2,1,2], fingers: [0,0,0,2,1,3] },
   ],
   'E7': [
+    { label: 'E7 (E-form, öppen)', frets: [0,2,0,1,0,0], fingers: [0,2,0,1,0,0] },
     { label: 'E7 (A-form, 7:e bandet)', frets: [-1,7,9,7,9,7], fingers: [0,1,3,1,4,1], baseFret: 7, barre: 7 },
-    { label: 'E7 (utan pekfinger)', frets: [0,2,0,1,0,0], fingers: [0,2,0,1,0,0] },
-    { label: 'E7 (D-form, D–e)', frets: [-1,-1,2,1,3,0], fingers: [0,0,2,1,3,0] },
+    { label: 'E7 (D-form, 2:a bandet)', frets: [-1,-1,2,4,3,4], fingers: [0,0,1,3,2,4], baseFret: 2 },
+    { label: 'E7 (öppen variant)', frets: [0,2,0,1,3,0], fingers: [0,2,0,1,3,0] },
   ],
   'F7': [
+    { label: 'F7 (E-form, 1:a bandet)', frets: [1,3,1,2,1,1], fingers: [1,3,1,2,1,1], baseFret: 1, barre: 1 },
     { label: 'F7 (A-form, 8:e bandet)', frets: [-1,8,10,8,10,8], fingers: [0,1,3,1,4,1], baseFret: 8, barre: 8 },
+    { label: 'F7 (D-form, 3:e bandet)', frets: [-1,-1,3,5,4,5], fingers: [0,0,1,3,2,4], baseFret: 3 },
     { label: 'F7 (utan bas, D–e)', frets: [-1,-1,3,2,4,1], fingers: [0,0,2,1,4,1] },
   ],
   'G7': [
     { label: 'G7 (E-form, 3:e bandet)', frets: [3,5,3,4,3,3], fingers: [1,3,1,2,1,1], baseFret: 3, barre: 3 },
-    { label: 'G7 (D-form, D–e)', frets: [-1,-1,0,0,0,1], fingers: [0,0,0,0,0,1] },
     { label: 'G7 (A-form, 10:e bandet)', frets: [-1,10,12,10,12,10], fingers: [0,1,3,1,4,1], baseFret: 10, barre: 10 },
+    { label: 'G7 (D-form, 5:e bandet)', frets: [-1,-1,5,7,6,7], fingers: [0,0,1,3,2,4], baseFret: 5 },
+    { label: 'G7 (öppen variant)', frets: [3,2,0,0,0,1], fingers: [3,2,0,0,0,1] },
   ],
 
   // ─── Minor 7 ───
+  // CAGED-former: Em7=[n,n+2,n,n,n,n]  Am7=[x,n,n+2,n,n+1,n]  Dm7=[x,x,n,n+2,n+1,n+1]
   'Am7': [
+    { label: 'Am7 (öppen)', frets: [-1,0,2,0,1,0], fingers: [0,0,2,0,1,0] },
     { label: 'Am7 (E-form, 5:e bandet)', frets: [5,7,5,5,5,5], fingers: [1,3,1,1,1,1], baseFret: 5, barre: 5 },
-    { label: 'Am7 (utan bas, D–e)', frets: [-1,-1,2,0,1,0], fingers: [0,0,2,0,1,0] },
-    { label: 'Am7 (A-form, 12:e bandet)', frets: [-1,-1,10,9,10,8], fingers: [0,0,2,1,3,1], baseFret: 8 },
+    { label: 'Am7 (D-form, 7:e bandet)', frets: [-1,-1,7,9,8,8], fingers: [0,0,1,3,2,2], baseFret: 7 },
   ],
   'Dm7': [
+    { label: 'Dm7 (D-form, öppen)', frets: [-1,-1,0,2,1,1], fingers: [0,0,0,2,1,1] },
     { label: 'Dm7 (A-form, 5:e bandet)', frets: [-1,5,7,5,6,5], fingers: [0,1,3,1,2,1], baseFret: 5, barre: 5 },
-    { label: 'Dm7 (utan bas, D–e)', frets: [-1,-1,0,2,1,1], fingers: [0,0,0,2,1,1] },
     { label: 'Dm7 (E-form, 10:e bandet)', frets: [10,12,10,10,10,10], fingers: [1,3,1,1,1,1], baseFret: 10, barre: 10 },
   ],
   'Em7': [
-    { label: 'Em7 (öppen variant)', frets: [0,2,2,0,3,0], fingers: [0,1,2,0,3,0] },
+    { label: 'Em7 (E-form, öppen)', frets: [0,2,0,0,0,0], fingers: [0,2,0,0,0,0] },
+    { label: 'Em7 (D-form, 2:a bandet)', frets: [-1,-1,2,4,3,3], fingers: [0,0,1,3,2,2], baseFret: 2 },
     { label: 'Em7 (A-form, 7:e bandet)', frets: [-1,7,9,7,8,7], fingers: [0,1,3,1,2,1], baseFret: 7, barre: 7 },
-    { label: 'Em7 (D-form, D–e)', frets: [-1,-1,0,0,0,0], fingers: [0,0,0,0,0,0] },
   ],
   'Bm7': [
-    { label: 'Bm7 (E-form, 7:e bandet)', frets: [7,9,7,7,7,7], fingers: [1,3,1,1,1,1], baseFret: 7, barre: 7 },
     { label: 'Bm7 (A-form, 2:a bandet)', frets: [-1,2,4,2,3,2], fingers: [0,1,3,1,2,1], baseFret: 2, barre: 2 },
+    { label: 'Bm7 (E-form, 7:e bandet)', frets: [7,9,7,7,7,7], fingers: [1,3,1,1,1,1], baseFret: 7, barre: 7 },
+    { label: 'Bm7 (D-form, 9:e bandet)', frets: [-1,-1,9,11,10,10], fingers: [0,0,1,3,2,2], baseFret: 9 },
   ],
   'Cm7': [
+    { label: 'Cm7 (A-form, 3:e bandet)', frets: [-1,3,5,3,4,3], fingers: [0,1,3,1,2,1], baseFret: 3, barre: 3 },
     { label: 'Cm7 (E-form, 8:e bandet)', frets: [8,10,8,8,8,8], fingers: [1,3,1,1,1,1], baseFret: 8, barre: 8 },
-    { label: 'Cm7 (utan bas, D–e)', frets: [-1,-1,5,3,4,3], fingers: [0,0,3,1,2,1], baseFret: 3, barre: 3 },
+    { label: 'Cm7 (D-form, 10:e bandet)', frets: [-1,-1,10,12,11,11], fingers: [0,0,1,3,2,2], baseFret: 10 },
   ],
   'F#m7': [
     { label: 'F#m7 (E-form, 2:a bandet)', frets: [2,4,2,2,2,2], fingers: [1,3,1,1,1,1], baseFret: 2, barre: 2 },
+    { label: 'F#m7 (D-form, 4:e bandet)', frets: [-1,-1,4,6,5,5], fingers: [0,0,1,3,2,2], baseFret: 4 },
     { label: 'F#m7 (A-form, 9:e bandet)', frets: [-1,9,11,9,10,9], fingers: [0,1,3,1,2,1], baseFret: 9, barre: 9 },
   ],
   'Gm7': [
-    { label: 'Gm7 (utan bas, D–e)', frets: [-1,-1,5,3,3,3], fingers: [0,0,3,1,1,1], baseFret: 3, barre: 3 },
+    { label: 'Gm7 (E-form, 3:e bandet)', frets: [3,5,3,3,3,3], fingers: [1,3,1,1,1,1], baseFret: 3, barre: 3 },
+    { label: 'Gm7 (D-form, 5:e bandet)', frets: [-1,-1,5,7,6,6], fingers: [0,0,1,3,2,2], baseFret: 5 },
     { label: 'Gm7 (A-form, 10:e bandet)', frets: [-1,10,12,10,11,10], fingers: [0,1,3,1,2,1], baseFret: 10, barre: 10 },
   ],
 };
