@@ -5,44 +5,43 @@
   "timeSignature": "3/4",
   "difficulty": "Lätt",
   "chordTemplates": {
-    "rad_1": "Am F|G C",
-    "rad_2": "F|C",
-    "rad_3": "Am D7|G",
-    "rad_4": "E Am|E",
-    "rad_5": "Am|E",
-    "rad_6": "Am|Dm",
-    "rad_7": "Am E|Am"
+    "vers_1": "Am|Am|F    G|C",
+    "vers_2": "C    F|C",
+    "vers_3": "Am|Am|D7|G",
+    "ref_1": "E    Am|E",
+    "ref_2": "E    Am|Dm",
+    "ref_3": "Dm   Am   E|Am"
   },
   "sections": [
     {
       "label": "Vers 1",
       "lines": [
         {
-          "c": "@rad_1",
-          "l": "Uti vår hage där |växa blå bär"
+          "c": "@vers_1",
+          "l": "Uti vår |hage där |växa blå |bär"
         },
         {
-          "c": "@rad_2",
+          "c": "@vers_2",
           "l": "Kom hjärtans |fröjd!"
         },
         {
-          "c": "@rad_3",
-          "l": "Vill du mig något |så träffas vi där."
+          "c": "@vers_3",
+          "l": "Vill du mig |något så |träffas vi |där."
         },
         {
-          "c": "@rad_4",
-          "l": "Kom liljor |och akvileja,"
+          "c": "@ref_1",
+          "l": "Kom liljor och |akvileja,"
         },
         {
-          "c": "@rad_5",
-          "l": "kom rosor |och salivia"
+          "c": "@ref_1",
+          "l": "kom rosor och |salivia"
         },
         {
-          "c": "@rad_6",
+          "c": "@ref_2",
           "l": "Kom ljuva |krusmynta,"
         },
         {
-          "c": "@rad_7",
+          "c": "@ref_3",
           "l": "kom, hjärtans |fröjd."
         }
       ]
@@ -51,31 +50,31 @@
       "label": "Vers 2",
       "lines": [
         {
-          "c": "@rad_1",
-          "l": "Fagra små blommor |där bjuda till dans."
+          "c": "@vers_1",
+          "l": "Fagra små  |blommor där |bjuda till |dans."
         },
         {
-          "c": "@rad_2",
+          "c": "@vers_2",
           "l": "Kom hjärtans |fröjd!"
         },
         {
-          "c": "@rad_3",
-          "l": "Vill du så binder |jag åt dig en krans."
+          "c": "@vers_3",
+          "l": "Vill du så |binder jag |åt dig en |krans."
         },
         {
-          "c": "@rad_4",
-          "l": "Kom liljor |och akvileja,"
+          "c": "@ref_1",
+          "l": "Kom liljor och |akvileja,"
         },
         {
-          "c": "@rad_5",
-          "l": "kom rosor |och salivia"
+          "c": "@ref_1",
+          "l": "kom rosor och |salivia"
         },
         {
-          "c": "@rad_6",
+          "c": "@ref_2",
           "l": "Kom ljuva |krusmynta,"
         },
         {
-          "c": "@rad_7",
+          "c": "@ref_3",
           "l": "kom, hjärtans |fröjd."
         }
       ]
@@ -84,31 +83,31 @@
       "label": "Vers 3",
       "lines": [
         {
-          "c": "@rad_1",
-          "l": "Kransen den sätter |jag sen i ditt hår."
+          "c": "@vers_1",
+          "l": "Kransen den |sätter jag |sen i ditt |hår."
         },
         {
-          "c": "@rad_2",
+          "c": "@vers_2",
           "l": "Kom hjärtans |fröjd!"
         },
         {
-          "c": "@rad_3",
-          "l": "Solen den dalar, |men hoppet uppgår."
+          "c": "@vers_3",
+          "l": "Solen den |dalar, men |hoppet |uppgår."
         },
         {
-          "c": "@rad_4",
-          "l": "Kom liljor |och akvileja,"
+          "c": "@ref_1",
+          "l": "Kom liljor och |akvileja,"
         },
         {
-          "c": "@rad_5",
-          "l": "kom rosor |och salivia"
+          "c": "@ref_1",
+          "l": "kom rosor och |salivia"
         },
         {
-          "c": "@rad_6",
+          "c": "@ref_2",
           "l": "Kom ljuva |krusmynta,"
         },
         {
-          "c": "@rad_7",
+          "c": "@ref_3",
           "l": "kom, hjärtans |fröjd."
         }
       ]
@@ -117,31 +116,31 @@
       "label": "Vers 4",
       "lines": [
         {
-          "c": "@rad_1",
-          "l": "Uti vår hage finns |blommor och bär."
+          "c": "@vers_1",
+          "l": "Uti vår |hage finns |blommor och |bär."
         },
         {
-          "c": "@rad_2",
+          "c": "@vers_2",
           "l": "Kom hjärtans |fröjd!"
         },
         {
-          "c": "@rad_3",
-          "l": "Men utav alla |du kärast mig är."
+          "c": "@vers_3",
+          "l": "Men utav |alla du |kärast mig |är."
         },
         {
-          "c": "@rad_4",
-          "l": "Kom liljor |och akvileja,"
+          "c": "@ref_1",
+          "l": "Kom liljor och |akvileja,"
         },
         {
-          "c": "@rad_5",
-          "l": "kom rosor |och salivia"
+          "c": "@ref_1",
+          "l": "kom rosor och |salivia"
         },
         {
-          "c": "@rad_6",
+          "c": "@ref_2",
           "l": "Kom ljuva |krusmynta,"
         },
         {
-          "c": "@rad_7",
+          "c": "@ref_3",
           "l": "kom, hjärtans |fröjd."
         }
       ]

@@ -37,19 +37,19 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Du är min |ledstjärna och|vän.|"
+          "l": "Du är min |ledstjärna och |vän. |"
         },
         {
           "c": "@vers_b",
-          "l": "Du är min|tro, mitt hopp, min |kärlek.|"
+          "l": "Du är min |tro, mitt hopp, min |kärlek.|"
         },
         {
           "c": "@vers_c",
-          "l": "Du är mitt |blod och mina |lungor, mina|ögon, mina"
+          "l": "Du är mitt |blod och mina |lungor, mina |ögon, mina"
         },
         {
           "c": "@vers_d",
-          "l": "skuldror, mina|händer och mitt|hjärta.|"
+          "l": "skuldror, mina |händer och mitt |hjärta.|"
         }
       ]
     },

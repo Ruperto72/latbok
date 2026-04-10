@@ -14,11 +14,11 @@
       "lines": [
         {
           "c": "@vers_a",
-          "l": "Una |mattina mi sono |alzato, O bella,|ciao! Bella, ciao! Bella,|ciao, ciao, ciao!"
+          "l": "Una |mattina mi sono |alzato, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
         },
         {
           "c": "@vers_b",
-          "l": "Una |mattina mi sono |alzato e ho |trovato l'inva|sor."
+          "l": "Una |mattina mi sono |alzato e ho |trovato l'inva |sor."
         }
       ]
     },
