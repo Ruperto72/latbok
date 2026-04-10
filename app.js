@@ -759,7 +759,10 @@ function renderSongEditor() {
       <label class="sed-field">Artist<input class="sed-input" data-prop="artist" value="${escHtml(s.artist || '')}"></label>
       <label class="sed-field">Tonart<input class="sed-input sed-input--sm" data-prop="key" value="${escHtml(s.key || '')}"></label>
       <label class="sed-field">Taktart<input class="sed-input sed-input--sm" data-prop="timeSignature" value="${escHtml(s.timeSignature || '')}"></label>
-      <label class="sed-field">Svårigh.<input class="sed-input sed-input--sm" data-prop="difficulty" value="${escHtml(s.difficulty || '')}"></label>
+      <label class="sed-field">Svårigh.<select class="sed-input sed-input--sm" data-prop="difficulty">
+        <option value="">—</option>
+        ${VALID_DIFFICULTIES.map(d => `<option value="${d}"${s.difficulty === d ? ' selected' : ''}>${d}</option>`).join('')}
+      </select></label>
     </div>
     <div style="margin-top:12px">
       <button class="sed-btn" id="sed-fix-all-pipes">🛠 Reparera alla saknade taktstreck i texten</button>
