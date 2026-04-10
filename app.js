@@ -510,6 +510,14 @@ function showChordPopup(chordName, anchorEl) {
   const voicings = getAllVoicings(chordName);
   if (voicings.length === 0) return;
 
+  const isMobile = window.innerWidth <= 768;
+
+  // Backdrop (mobile only — closes popup on tap outside)
+  const backdrop = document.createElement('div');
+  backdrop.className = 'chord-popup-backdrop';
+  backdrop.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(backdrop);
+
   const popup = document.createElement('div');
   popup.className = 'chord-popup';
   popup.setAttribute('role', 'dialog');
@@ -536,21 +544,27 @@ function showChordPopup(chordName, anchorEl) {
 
   document.body.appendChild(popup);
 
-  // Position near the clicked diagram
-  const rect = anchorEl.getBoundingClientRect();
-  const popupRect = popup.getBoundingClientRect();
-  let left = rect.left + rect.width / 2 - popupRect.width / 2;
-  let top = rect.bottom + 8;
+  if (isMobile) {
+    // On mobile: CSS centres the popup; no JS positioning needed
+    backdrop.classList.add('chord-popup-backdrop--active');
+  } else {
+    // On desktop: position near the clicked diagram
+    const rect = anchorEl.getBoundingClientRect();
+    const popupRect = popup.getBoundingClientRect();
+    let left = rect.left + rect.width / 2 - popupRect.width / 2;
+    let top = rect.bottom + 8;
 
-  // Keep within viewport
-  if (left < 8) left = 8;
-  if (left + popupRect.width > window.innerWidth - 8) left = window.innerWidth - popupRect.width - 8;
-  if (top + popupRect.height > window.innerHeight - 8) top = rect.top - popupRect.height - 8;
+    // Keep within viewport
+    if (left < 8) left = 8;
+    if (left + popupRect.width > window.innerWidth - 8) left = window.innerWidth - popupRect.width - 8;
+    if (top + popupRect.height > window.innerHeight - 8) top = rect.top - popupRect.height - 8;
 
-  popup.style.left = `${left}px`;
-  popup.style.top = `${top}px`;
+    popup.style.left = `${left}px`;
+    popup.style.top = `${top}px`;
+  }
 
   popup.querySelector('.chord-popup-close').addEventListener('click', closeChordPopup);
+  backdrop.addEventListener('click', closeChordPopup);
 
   // Close on click outside or Escape
   setTimeout(() => {
@@ -560,8 +574,8 @@ function showChordPopup(chordName, anchorEl) {
 }
 
 function closeChordPopup() {
-  const existing = document.querySelector('.chord-popup');
-  if (existing) existing.remove();
+  document.querySelector('.chord-popup')?.remove();
+  document.querySelector('.chord-popup-backdrop')?.remove();
   document.removeEventListener('click', onClickOutsidePopup);
   document.removeEventListener('keydown', onEscapePopup);
 }

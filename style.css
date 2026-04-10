@@ -315,6 +315,17 @@ body {
 }
 
 /* ─── Chord voicing popup ─── */
+.chord-popup-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 499;
+}
+.chord-popup-backdrop--active {
+  display: block;
+}
+
 .chord-popup {
   position: fixed;
   z-index: 500;
@@ -350,9 +361,14 @@ body {
   color: var(--text-dim);
   font-size: 20px;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 4px 8px;
   line-height: 1;
   transition: color 0.15s;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chord-popup-close:hover { color: var(--text); }
@@ -668,6 +684,18 @@ body {
   .song-display .cl-line-measures .cl-abs-pair { min-width: max-content; overflow-x: clip; padding-right: 4px; }
   .song-display .cl-line-measures .cl-display-lyric { width: auto; }
   .song-display .cl-measure-row { flex: 0 0 auto; }
+
+  /* Mobil: ackordpopup som centrerad modal */
+  .chord-popup {
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%);
+    max-width: calc(100vw - 24px);
+    max-height: 80vh;
+    width: max-content;
+  }
+  .chord-popup-grid { gap: 8px; }
+  .chord-popup-label { font-size: 9px; white-space: normal; max-width: 72px; }
 }
 
 /* ─── Song Editor ─── */
