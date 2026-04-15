@@ -1,3 +1,3 @@
 @echo off
-start "" "http://localhost:8000"
+start "" "http://localhost:8005"
 python server.py

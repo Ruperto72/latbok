@@ -364,6 +364,7 @@ Sidan hostas gratis via GitHub Pages:
 6. Sång till Friheten — Björn Afzelius
 7. Uti Vår Hage — Traditionell (svensk)
 8. Visa Från Utanmyra — Trad. / Monica Zetterlund
+9. När Vi Två Blir En - Gyllene Tider
 
 
 

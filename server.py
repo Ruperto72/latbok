@@ -46,6 +46,6 @@ class Handler(SimpleHTTPRequestHandler):
             super().log_message(fmt, *args)
 
 if __name__ == '__main__':
-    port = 8000
+    port = 8005
     print(f'Körhäftet-server startar på http://localhost:{port}')
     ThreadingHTTPServer(('', port), Handler).serve_forever()
