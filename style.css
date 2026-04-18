@@ -410,9 +410,6 @@ body {
   white-space: nowrap;
 }
 
-.columns-2 .song-body { column-count: 2; column-gap: 40px; column-fill: balance; }
-.columns-2 .song-block { break-inside: avoid; }
-
 .columns-2c .song-body {
   column-count: 2;
   column-gap: 40px;
@@ -678,7 +675,6 @@ body {
   .main { margin-left: 0; }
   .topbar { padding-left: 56px; }
   .song-display { padding: 18px 12px; }
-  .columns-2 .song-body,
   .columns-2c .song-body { column-count: 1; width: auto; }
 
   #colBtn, #songEditorBtn { display: none !important; }

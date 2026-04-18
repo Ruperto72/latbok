@@ -8,15 +8,13 @@ import {
 
 // Column layout modes
 const COL = {
-  NARROW_1: 0,  // 1 kolumn, smal
-  WIDE_1:   1,  // 1 kolumn, bred
-  NARROW_2: 2,  // 2 kolumner, smal
-  WIDE_2:   3,  // 2 kolumner, bred
-  COUNT:    4,   // antal lägen (för cykling)
+  ONE:   0,  // 1 kolumn
+  TWO:   1,  // 2 kolumner
+  COUNT: 2,  // antal lägen (för cykling)
 };
 
-const COL_LABELS = ['1 smal', '1 bred', '2 smal', '2 bred'];
-const COL_CLASSES = [' columns-1c', '', ' columns-2c', ' columns-2'];
+const COL_LABELS = ['1 kolumn', '2 kolumner'];
+const COL_CLASSES = [' columns-1c', ' columns-2c'];
 
 // Songs loaded dynamically from songs/ folder
 let songs = [];
@@ -25,7 +23,7 @@ let songs = [];
 let currentSong = 0;
 let transposeSemitones = 0;
 let fontSize = 13;
-let columnsMode = COL.NARROW_1;
+let columnsMode = COL.ONE;
 let hideChords = false;
 let sidebarHidden = false;
 let songEditorMode = false;
@@ -89,8 +87,11 @@ async function loadFromStorage() {
     if (raw) {
       const p = JSON.parse(raw);
       if (p.fontSize) fontSize = p.fontSize;
-      if (p.columnsMode !== undefined) columnsMode = p.columnsMode;
-      else if (p.twoColumns !== undefined) columnsMode = p.twoColumns ? 1 : 0; // bakåtkompatibilitet
+      if (p.columnsMode !== undefined) {
+        // Mappa tidigare 4-läges värden (0=1smal,1=1bred,2=2smal,3=2bred) till nya 2-läges
+        columnsMode = (p.columnsMode >= 2) ? COL.TWO : COL.ONE;
+      }
+      else if (p.twoColumns !== undefined) columnsMode = p.twoColumns ? COL.TWO : COL.ONE;
       if (p.hideChords !== undefined) hideChords = p.hideChords;
       if (p.sidebarHidden !== undefined) sidebarHidden = p.sidebarHidden;
       if (p.currentSong !== undefined) currentSong = p.currentSong;
@@ -230,7 +231,6 @@ function alignMeasureColumns() {
     cells.forEach(c => { c.style.flex = '0 0 auto'; c.style.minWidth = ''; });
     
     const colWidths = {};
-    let maxMi = -1;
     cells.forEach(c => {
       const mi = parseInt(c.dataset.mi);
       const cellRect = c.getBoundingClientRect();
@@ -241,25 +241,12 @@ function alignMeasureColumns() {
         if (tagRight > w) w = tagRight;
       });
       colWidths[mi] = Math.max(colWidths[mi] || 0, w);
-      if (mi > maxMi) maxMi = mi;
     });
 
     cells.forEach(c => {
       const mi = parseInt(c.dataset.mi);
-      // I bred-lägen (1 och 3) låter vi den sista takten i varje block expandera för att fylla ut raden/kolumnen
-      if ((columnsMode === COL.WIDE_1 || columnsMode === COL.WIDE_2) && mi === maxMi) {
-        c.style.flex = `1 0 ${colWidths[mi]}px`;
-      } else {
-        c.style.flex = `0 0 ${colWidths[mi]}px`;
-      }
+      c.style.flex = `0 0 ${colWidths[mi]}px`;
     });
-  });
-}
-
-function clearMeasureColumnAlignment() {
-  document.querySelectorAll('.cl-abs-pair[data-mi]').forEach(c => {
-    c.style.flex = '';
-    c.style.minWidth = '';
   });
 }
 
