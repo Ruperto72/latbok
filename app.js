@@ -298,7 +298,7 @@ async function toggleAutoScroll() {
 function autoScrollStep(ts) {
   if (!scrollActive) return;
   if (scrollLastTime !== null) {
-    const px = (scrollLevel * 12) * (ts - scrollLastTime) / 1000;
+    const px = (scrollLevel * 6) * (ts - scrollLastTime) / 1000;
     window.scrollBy(0, px);
     // Stanna automatiskt vid sidans slut
     if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {

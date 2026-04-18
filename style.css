@@ -690,6 +690,15 @@ body {
   .song-display .cl-line-measures .cl-display-lyric { width: auto; }
   .song-display .cl-measure-row { flex: 0 0 auto; }
 
+  /* Mobil: tydligare separation mellan sångtextrader när ackord visas.
+     Stort margin-bottom mellan rader, litet row-gap mellan ombrutna takter i samma rad. */
+  .cl-line-measures {
+    margin-bottom: 26px;
+    row-gap: 8px;
+  }
+  .cl-display-lyric { line-height: 1.4; font-size: 1.02em; }
+  .cl-abs-chord-row { border-bottom-color: rgba(232,200,106,0.4); }
+
   /* Mobil: ackordpopup som centrerad modal */
   .chord-popup {
     left: 50% !important;
