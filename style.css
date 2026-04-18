@@ -683,12 +683,35 @@ body {
 
   #colBtn, #songEditorBtn { display: none !important; }
 
-  /* Mobil: kompakt layout (som "1 smal") — takter flödar och justeras i kolumner */
-  .song-display .song-body { width: fit-content; max-width: 100%; }
-  .song-display .cl-line-measures { width: fit-content; }
-  .song-display .cl-line-measures .cl-abs-pair { min-width: max-content; overflow-x: clip; padding-right: 4px; }
-  .song-display .cl-line-measures .cl-display-lyric { width: auto; }
-  .song-display .cl-measure-row { flex: 0 0 auto; }
+  /* Mobil: hela raden fyller bredden — taktgrupper stretchar istället för att bara
+     ta plats för sitt innehåll. Detta gör att en 4-taktersrad syns som 2+2 som fyller
+     hela bredden, vilket hjälper läsaren följa versen visuellt. */
+  .song-display .song-body { width: auto; max-width: 100%; }
+  .song-display .cl-line-measures { width: auto; }
+  .song-display .cl-line-measures .cl-abs-pair {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow-x: clip;
+    padding-right: 4px;
+  }
+  .song-display .cl-line-measures .cl-display-lyric { width: 100%; word-break: break-word; }
+  .song-display .cl-measure-row { flex: 1 1 100%; }
+
+  /* Dölj taktstrecket som sitter mellan taktgrupper — på mobil blir det en
+     överbliven vertikal strimla som hamnar på egen rad mellan ombrutna takter.
+     Taktstrecken inuti grupperna (mellan takt 1|2 och 3|4) visas fortfarande. */
+  .cl-line-measures > .cl-measure-bar { display: none; }
+
+  /* Anakrus (pickup) ska ligga till vänster om första taktstrecket,
+     inte på egen rad ovanför. Första taktgruppen efter pickup växer bara till
+     tillgänglig bredd istället för full 100%, så pickup + grupp får plats på samma rad. */
+  .cl-line-measures.cl-has-pickup > .cl-abs-pair.cl-pickup + .cl-measure-row {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .cl-line-measures.cl-has-pickup > .cl-abs-pair.cl-pickup {
+    flex: 0 0 auto;
+  }
 
   /* Mobil: tydligare separation mellan sångtextrader när ackord visas.
      Stort margin-bottom mellan rader, litet row-gap mellan ombrutna takter i samma rad. */
