@@ -751,6 +751,7 @@ function renderSongEditor() {
         <option value="">—</option>
         ${VALID_DIFFICULTIES.map(d => `<option value="${d}"${s.difficulty === d ? ' selected' : ''}>${d}</option>`).join('')}
       </select></label>
+      <label class="sed-field">Capo<input class="sed-input sed-input--sm" data-prop="capio" value="${escHtml(s.capio || '')}" placeholder="ex. 5th Fret"></label>
     </div>
     <div style="margin-top:12px">
       <button class="sed-btn" id="sed-fix-all-pipes">🛠 Reparera alla saknade taktstreck i texten</button>
