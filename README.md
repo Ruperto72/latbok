@@ -148,7 +148,7 @@ Texten börjar direkt på ettan.
     {
       "label": "Refräng",
       "lines": [
-        { "c": "@refräng", "l": "Sjung nu |alla med |oss här i |kväll, |" },
+        { "c": "@refräng", "l": "Sjung nu |alla med |oss här i |kväll." },
         { "c": "@vers",    "l": "höj din |röst mot |himlen klar |och varm." }
       ]
     }

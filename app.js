@@ -342,6 +342,7 @@ function renderSong() {
     ? transposeChordName(s.key, transposeSemitones) : s.key;
 
   let info = `Tonart: ${transposedKey}`;
+  if (s.capio) info += ` · Capo: ${s.capio}`;
   if (s.timeSignature) info += ` · ${s.timeSignature}`;
   if (s.bpm) info += ` · ${s.bpm} bpm`;
   info += ` · ${s.difficulty}`;

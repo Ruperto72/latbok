@@ -1,0 +1,36 @@
+{
+  "title": "What A Wonderfull World",
+  "artist": "Louis Armstrong",
+  "key": "G",
+  "capio": "5th Fret",
+  "timeSignature": "3/4",
+  "difficulty": "Medel",
+  "sections": [
+    {
+      "label": "Intro",
+      "lines": [
+        {
+          "c": "C  Dm  C  Dm",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "      C        Em     F         Em",
+          "l": "I se trees of green, red roses too"
+        },
+        {
+          "c": "Dm          C      E7         Am",
+          "l": "I see them bloom, for me and you"
+        },
+        {
+          "c": "      Ab          Dm7         G           C       G",
+          "l": "And I thing to myself, what a wonderfull world"
+        }
+      ]
+    }
+  ]
+}

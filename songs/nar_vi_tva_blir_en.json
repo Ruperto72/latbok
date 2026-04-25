@@ -7,89 +7,175 @@
   "chordTemplates": {
     "vers_a": "G|D|C|G",
     "vers_b": "G|D|C|D",
-    "vers_c": "Em|D|Em|C|D",
-    "vers_d": "G|D|Am|C|D",
-    "mellanspel": "G|D|C|C"
+    "vers_c": "Em|D|Em|C    D",
+    "vers_d": "G|D|Am|C    D",
+    "mellanspel": "G|D|C|C",
+    "ref_a": "G|D|C|C",
+    "ref_b": "G|D|C|D",
+    "ref_c": "Em|D|Em|C     D",
+    "ref_d": "G|D|Am    C|C"
   },
   "sections": [
     {
       "label": "Intro",
       "lines": [
-        { "c": "@mellanspel", "l": "|||(x4)" }
+        {
+          "c": "@mellanspel",
+          "l": "|||(x4)"
+        }
       ]
     },
     {
       "label": "Vers 1",
       "lines": [
-        { "c": "@vers_a", "l": "Det verkar så |lätt att bara |stöta på. |Ja, det är alla" },
-        { "c": "@vers_b", "l": "män'skors rätt att |bara göra |så. |" },
-        { "c": "@vers_c", "l": "Men det är så |svårt att säga till |nå'n vad man egentligen |tycker och |tänker om nå'n." },
-        { "c": "@vers_d", "l": "Det blir mest en |massa prat, om |plugget och pop, och |bio så klart. |Jag vill" }
+        {
+          "c": "@vers_a",
+          "l": "Det verkar så |lätt att |bara stöta |på. "
+        },
+        {
+          "c": "@vers_b",
+          "l": "Ja, det är alla män'skors |rätt att |bara göra |så. "
+        },
+        {
+          "c": "@vers_c",
+          "l": "Men det är så svårt att |säga till nå'n vad man |egentligen tycker och |tänker om nå'n."
+        },
+        {
+          "c": "@vers_d",
+          "l": "Det blir mest en massa |prat, om |plugget och pop, och |bio så klart. "
+        }
       ]
     },
     {
       "label": "Refräng",
       "lines": [
-        { "c": "@vers_a", "l": "känna din kropp |emot min, höra |pulsen slå. |Din mun tätt" },
-        { "c": "@vers_b", "l": "emot min, |hjärtat snabbar |på. |" },
-        { "c": "Em|D|Em", "l": "Jag ser på dig och |du ser på mig och jag |säger:" },
-        { "c": "C|D|G|D", "l": "Ja, ja, jag |vill ha dig. Jag vill |känna din kropp |emot min..." },
-        { "c": "Am|C", "l": "När vi |två (blir en)" }
+        {
+          "c": "@ref_a",
+          "l": "Jag vill känna din kropp emot |min, |höra pulsen slå. |"
+        },
+        {
+          "c": "@ref_b",
+          "l": "Din mun tätt emot |min, |hjärtat snabbar  |på."
+        },
+        {
+          "c": "@ref_c",
+          "l": "Jag ser på dig och |du ser på mig och jag |säger: Ja, ja, |jag vill ha dig."
+        },
+        {
+          "c": "@ref_d",
+          "l": " Jag vill känna din kropp |emot min...||När vi två (blir en)"
+        }
       ]
     },
     {
       "label": "Vers 2",
       "lines": [
-        { "c": "@vers_a", "l": "Man springer på |disco och för|söker hänga |på." },
-        { "c": "@vers_b", "l": "Tar cykeln ner till |city när |bussen slutat |gå." },
-        { "c": "@vers_c", "l": "Åh, det är så |svårt att säga till |dig vad man egentligen |tycker och |tänker om dig." },
-        { "c": "@vers_d", "l": "Det blir mest en |massa ord som |glider, om myggbett som |svider och |Gyllene Tider." }
+        {
+          "c": "@vers_a",
+          "l": "Man springer på |disco och för|söker hänga |på."
+        },
+        {
+          "c": "@vers_b",
+          "l": "Tar cykeln ner till |city när |bussen slutat |gå."
+        },
+        {
+          "c": "@vers_c",
+          "l": "Åh, det är så svårt att |säga till dig vad man |egentligen tycker och |tänker om dig."
+        },
+        {
+          "c": "@vers_d",
+          "l": "Det blir mest en massa ord som |glider, om |myggbett som svider och |Gyllene Tider."
+        }
       ]
     },
     {
       "label": "Refräng",
       "lines": [
-        { "c": "@vers_a", "l": "Jag vill känna din |kropp emot min, |höra pulsen |slå." },
-        { "c": "@vers_b", "l": "Din mun tätt |emot min, |hjärtat snabbar |på." },
-        { "c": "Em|D|Em", "l": "Jag ser på dig och |du ser på mig och jag |säger:" },
-        { "c": "C|D|G|D", "l": "Ja, ja, jag |vill ha dig. Jag vill |känna din kropp |emot min..." },
-        { "c": "Am|C", "l": "När vi |två blir en." }
+        {
+          "c": "@ref_a",
+          "l": "Jag vill känna din kropp emot |min, |höra pulsen slå. |"
+        },
+        {
+          "c": "@ref_b",
+          "l": "Din mun tätt emot |min, |hjärtat snabbar  |på."
+        },
+        {
+          "c": "@ref_c",
+          "l": "Jag ser på dig och |du ser på mig och jag |säger: Ja, ja, |jag vill ha dig."
+        },
+        {
+          "c": "@ref_d",
+          "l": " Jag vill känna din kropp |emot min...||När vi två (blir en)"
+        }
       ]
     },
     {
       "label": "Mellanspel",
       "lines": [
-        { "c": "@mellanspel", "l": "När vi |två blir en. |(x2)|" }
+        {
+          "c": "@mellanspel",
+          "l": "|||"
+        }
       ]
     },
     {
       "label": "Vers 3",
       "lines": [
-        { "c": "@vers_c", "l": "När vi är tillsammans, och |du vill dansa, och |jag vill bara sitta och |snacka. |" },
-        { "c": "@vers_d", "l": "Blir det lätt att |man drar en vals, |en massa tomt snack om |ingenting |alls. Jag vill" }
+        {
+          "c": "@vers_c",
+          "l": "När vi är |tillsammans, och du vill |dansa, och jag vill bara |sitta och snacka. "
+        },
+        {
+          "c": "@vers_d",
+          "l": "Blir det lätt att man drar en |vals, en |massa tomt snack om |ingenting alls."
+        }
       ]
     },
     {
       "label": "Refräng",
       "lines": [
-        { "c": "@vers_a", "l": "känna din kropp |emot min, höra |pulsen slå. |Din mun tätt" },
-        { "c": "@vers_b", "l": "emot min, |hjärtat snabbar |på. |" },
-        { "c": "Em|D|Em", "l": "Jag ser på dig och |du ser på mig och jag |säger:" },
-        { "c": "C|D", "l": "Ja, ja, ja, ja |jag vill ha dig. Jag vill" }
+        {
+          "c": "@vers_a",
+          "l": "Jag vill känna din kropp |emot min, höra |pulsen slå. |Din mun tätt"
+        },
+        {
+          "c": "@vers_b",
+          "l": "emot min, |hjärtat snabbar |på. |"
+        },
+        {
+          "c": "Em|D|Em",
+          "l": "Jag ser på dig och |du ser på mig och jag |säger:"
+        },
+        {
+          "c": "C|D",
+          "l": "Ja, ja, ja, ja |jag vill ha dig. Jag vill"
+        }
       ]
     },
     {
       "label": "Refräng (upprepning)",
       "lines": [
-        { "c": "@vers_a", "l": "känna din kropp |emot min, höra |pulsen slå. |Din mun tätt" },
-        { "c": "@vers_b", "l": "emot min, |hjärtat snabbar |på. |" }
+        {
+          "c": "@vers_a",
+          "l": "känna din kropp |emot min, höra |pulsen slå. |Din mun tätt"
+        },
+        {
+          "c": "@vers_b",
+          "l": "emot min, |hjärtat snabbar |på. |"
+        }
       ]
     },
     {
       "label": "Outro (repeat to fade)",
       "lines": [
-        { "c": "G|D|C", "l": "Jag vill känna din |kropp emot min, |höra pulsen slå." },
-        { "c": "@vers_b", "l": "Din mun tätt |emot min, |hjärtat snabbar |på." }
+        {
+          "c": "G|D|C",
+          "l": "Jag vill känna din |kropp emot min, |höra pulsen slå."
+        },
+        {
+          "c": "@vers_b",
+          "l": "Din mun tätt |emot min, |hjärtat snabbar |på."
+        }
       ]
     }
   ]
