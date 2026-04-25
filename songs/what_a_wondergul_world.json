@@ -31,6 +31,65 @@
           "l": "And I thing to myself, what a wonderfull world"
         }
       ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "      C        Em        F         Em",
+          "l": "I see skies of blue and clouds of white"
+        },
+        {
+          "c": "Dm                  C       E7           Am",
+          "l": "The bright blessed day, the dark scared night"
+        },
+        {
+          "c": "      Ab          Dm7         G           C   Dm  Dm  C",
+          "l": "And I thing to myself, what a wonderfull world"
+        }
+      ]
+    },
+    {
+      "label": "Bridge",
+      "lines": [
+        {
+          "c": "    G                           C",
+          "l": "The colours of the rainbow, so pretty in the sky"
+        },
+        {
+          "c": "G                        C",
+          "l": "Are also on the faces of people going by"
+        },
+        {
+          "c": "       Am              Em           Am         Em",
+          "l": "I see friends shaking hands, saying how do you do"
+        },
+        {
+          "c": "Am             Em     Dm  C    G",
+          "l": "They're really saying: I love you"
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "      C        Em        F         Em",
+          "l": "I hear babies crying, I watch them grow"
+        },
+        {
+          "c": "Dm                  C       E7           Am",
+          "l": "They'll learn much more then I'll ever know"
+        },
+        {
+          "c": "      Ab          Dm7         G           C    Bb7  A7",
+          "l": "And I thing to myself, what a wonderfull world"
+        },
+        {
+          "c": "      Dm7             G                     Cmaj7",
+          "l": "Yes I think to myself,   what a wonderfull world"
+        }
+      ]
     }
   ]
 }
