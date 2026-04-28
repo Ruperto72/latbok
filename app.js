@@ -318,8 +318,10 @@ function toggleSettingsSheet() {
 async function toggleAutoScroll() {
   scrollActive = !scrollActive;
   const scrollBtn = document.getElementById('scrollBtn');
-  scrollBtn.className = 'ctrl-btn' + (scrollActive ? ' active' : '');
-  scrollBtn.setAttribute('aria-pressed', scrollActive);
+  if (scrollBtn) {
+    scrollBtn.className = 'ctrl-btn' + (scrollActive ? ' active' : '');
+    scrollBtn.setAttribute('aria-pressed', scrollActive);
+  }
   updateMobileScrollBtn();
   if (scrollActive) {
     scrollLastTime = null;
