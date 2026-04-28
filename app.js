@@ -136,6 +136,12 @@ async function init() {
     document.getElementById('fontLabel').textContent = fontSize;
     updateColBtn();
     document.getElementById('hideChordsBtn').className = 'ctrl-btn' + (hideChords ? '' : ' active');
+    // Sync initial state to mobile elements
+    const mfl = document.getElementById('mobileFontLabel');
+    if (mfl) mfl.textContent = fontSize;
+    const msl = document.getElementById('mobileScrollSpeedLabel');
+    if (msl) msl.textContent = scrollLevel;
+    updateMobileChordsBtn();
     if (hideChords) document.getElementById('transposeBtns').style.display = 'none';
     const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (!isLocal) document.getElementById('songEditorBtn').style.display = 'none';
