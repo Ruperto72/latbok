@@ -11,6 +11,14 @@ En modern webbapp för körsånger med ackord, byggd som en PWA för GitHub Page
 - **2-kolumnläge** — komprimera långa låtar med balanserade kolumner (desktop)
 - **Justerbar textstorlek** — versrubriker och avstånd skalas proportionellt
 
+### Mobilgränssnitt
+På mobil ersätts toppmenyn av en fast **bottenrad** med tre knappar:
+- **☰** — öppnar/stänger låtlistan
+- **▶ Scrolla / ■ Stopp** — startar och stoppar autoscroll
+- **⚙** — öppnar ett inställningsblad underifrån med: teckenstorlek, ackord av/på, transponering och scrollhastighet
+
+Alla inställningar sparas lokalt på enheten.
+
 ### Transponering
 - **Tonartsbyte** med ♭/♯-knappar
 - Ackorddiagrammen uppdateras automatiskt vid transponering
@@ -40,7 +48,7 @@ Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i
 - **Fungerar utan nät** — alla låtar cachas vid första besöket
 
 ### Övrigt
-- **Döljbar sidopanel** — hamburgaremenyn fungerar både på mobil och desktop
+- **Döljbar sidopanel** — fungerar på både mobil och desktop
 - **Utskriftsvänlig** — skriv ut direkt från webbläsaren
 - **Mörkt tema** med guldiga ackord
 
@@ -78,7 +86,7 @@ Definiera återkommande ackordföljder i `chordTemplates` och referera till dem 
   "artist": "Artist / Kompositör",
   "key": "Am",
   "timeSignature": "4/4",
-  "difficulty": "beginner",
+  "difficulty": "Medel",
   "chordTemplates": {
     "vers": "Am|F|G|Am",
     "refr": "F|G|C|Am"
@@ -105,6 +113,8 @@ Varje rad har två fält:
 - `"c"` — ackordrad: antingen `@mallnamn` eller ackord separerade med `|`
 - `"l"` — textrad separerad med `|` (ett segment per takt)
 
+Giltiga värden för `difficulty`: `Lätt`, `Medel`, `Svår`
+
 **Obs:** Om ett ord delas av ett taktstreck hanterar appen detta automatiskt — hela ordet visas i rätt takt.
 
 ### Förslag (anakrus) — text som börjar före första takten
@@ -124,15 +134,13 @@ Många visor börjar med en eller några stavelser innan första taktslaget. Mar
 
 #### Exempel 1 — 4/4 utan förslag
 
-Texten börjar direkt på ettan.
-
 ```json
 {
   "title": "En enkel visa",
   "artist": "Trad.",
   "key": "G",
   "timeSignature": "4/4",
-  "difficulty": "nybörjare",
+  "difficulty": "Lätt",
   "chordTemplates": {
     "vers":    "G|D|Em|C",
     "refräng": "C|G|D|G"
@@ -144,13 +152,6 @@ Texten börjar direkt på ettan.
         { "c": "@vers",    "l": "Solen skiner |över skog och |mark i dag |och det är |" },
         { "c": "@refräng", "l": "skönt att |vara här till |sist nu |äntligen." }
       ]
-    },
-    {
-      "label": "Refräng",
-      "lines": [
-        { "c": "@refräng", "l": "Sjung nu |alla med |oss här i |kväll." },
-        { "c": "@vers",    "l": "höj din |röst mot |himlen klar |och varm." }
-      ]
     }
   ]
 }
@@ -160,15 +161,13 @@ Texten börjar direkt på ettan.
 
 #### Exempel 2 — 4/4 med förslag
 
-Texten börjar med en eller ett par stavelser före ettan. `.` i mallen ger en smal förslags­cell utan ackord.
-
 ```json
 {
   "title": "Sommarpsalm",
   "artist": "Trad.",
   "key": "C",
   "timeSignature": "4/4",
-  "difficulty": "nybörjare",
+  "difficulty": "Lätt",
   "chordTemplates": {
     "vers_a": ".|C|Am|F|G",
     "vers_b": ".|F|G|C|C"
@@ -178,9 +177,7 @@ Texten börjar med en eller ett par stavelser före ettan. `.` i mallen ger en s
       "label": "Vers 1",
       "lines": [
         { "c": "@vers_a", "l": "Nu är det |dags att |sjunga vår |sommarvisa |" },
-        { "c": "@vers_b", "l": "för dig och |mig och |alla vi |känner. |" },
-        { "c": "@vers_a", "l": "Himlen är |blå och |fåglarna |sjunger fritt |" },
-        { "c": "@vers_b", "l": "en sång om |ljus och |glädje som |bränner." }
+        { "c": "@vers_b", "l": "för dig och |mig och |alla vi |känner. |" }
       ]
     }
   ]
@@ -191,15 +188,13 @@ Texten börjar med en eller ett par stavelser före ettan. `.` i mallen ger en s
 
 #### Exempel 3 — 3/4 (valstakt) med förslag
 
-Vanligt i svenska folkvisor — ett eller två förslags­stavelser, sedan tre slag per takt.
-
 ```json
 {
   "title": "Vallvisa",
   "artist": "Trad.",
   "key": "Am",
   "timeSignature": "3/4",
-  "difficulty": "nybörjare",
+  "difficulty": "Lätt",
   "chordTemplates": {
     "vers_a": ".|Am|Am|E7|E7",
     "vers_b": ".|Am|E7|Am|Am"
@@ -209,18 +204,7 @@ Vanligt i svenska folkvisor — ett eller två förslags­stavelser, sedan tre s
       "label": "Vers 1",
       "lines": [
         { "c": "@vers_a", "l": "Långt i |skogen |bortom |stigen |" },
-        { "c": "@vers_b", "l": "hördes |klockor |klinga |sakta. |" },
-        { "c": "@vers_a", "l": "Där gick |herden |med sin |hjord |" },
-        { "c": "@vers_b", "l": "mot den |kvällens |röda |himmel." }
-      ]
-    },
-    {
-      "label": "Vers 2",
-      "lines": [
-        { "c": "@vers_a", "l": "Stilla |sjöng han |gamla |visor |" },
-        { "c": "@vers_b", "l": "om en |sommar |som var |borta. |" },
-        { "c": "@vers_a", "l": "Och hans |röst bar |ut i |natten |" },
-        { "c": "@vers_b", "l": "över |dalar |mörka |djupa." }
+        { "c": "@vers_b", "l": "hördes |klockor |klinga |sakta. |" }
       ]
     }
   ]
@@ -295,37 +279,7 @@ För att lägga till ett nytt ackord, utöka `CHORD_LIB` i `chords.js`:
 
 Format: `frets` = greppet per sträng (E A D G B e), där -1 = dämpad, 0 = öppen.
 
-## Utveckling
-
-### Installera beroenden
-
-```bash
-npm install
-```
-
-### Byggsystem
-
-| Kommando | Beskrivning |
-|---|---|
-| `npm run build` | Bundla och minifiera JS till `dist/app.bundle.js` (esbuild) |
-| `npm run build:dev` | Bundla utan minifiering (med sourcemap) |
-| `npm run watch` | Bundla vid filändringar |
-| `npm run dist` | Bygg komplett dist-mapp (JS + assets + songs) |
-| `npm test` | Kör enhetstester (33 st, Node.js test runner) |
-
-Byggsystemet är valfritt — appen fungerar direkt utan bygge tack vare ES-moduler (`type="module"`).
-
-### Tester
-
-Testerna finns i `tests/chords.test.js` och täcker:
-- Transponering (upp, ner, oktavhopp, slash-ackord, komplexa suffix)
-- Chord-parsing (positioner, tomma strängar)
-- Ackorduppslag (direkt, enharmoniskt, slash-fallback)
-- Enharmoniska konverteringar
-- HTML-escaping
-- Ackordbibliotekens fullständighet (alla 12 grundtoner för dur, 7, sus4, sus2)
-
-### Lokal låtserver
+## Lokal låtserver
 
 Låtredaktörens sparfunktion kräver en lokal server som hanterar `POST /save-song`. Starta med:
 
@@ -353,20 +307,3 @@ Sidan hostas gratis via GitHub Pages:
 | Taktbaserad layout | ✅ | ✅ | ✅ |
 | Autoscroll | ✅ | ✅ | ✅ |
 | Låtredaktör | ✅ | ✅ | ✅ |
-
-## Låtlista
-
-1. Amazing Grace — John Newton
-2. Bella Ciao — Traditionell (italiensk)
-3. Fattig Bonddräng — Astrid Lindgren / Georg Riedel
-4. Från Djursholm till Danvikstull — Orup
-5. Pärleporten — Christer Sjögren
-6. Sång till Friheten — Björn Afzelius
-7. Uti Vår Hage — Traditionell (svensk)
-8. Visa Från Utanmyra — Trad. / Monica Zetterlund
-9. När Vi Två Blir En - Gyllene Tider
-
-
-
-
-https://www.infoom.se/gitarr-ackord/ackord.php?ackord=E&ackord_namn=E
