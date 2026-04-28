@@ -65,6 +65,46 @@
         <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Laddar...</p>
       </div>
     </div>
+
+    <!-- Mobile bottom bar (hidden on desktop via CSS) -->
+    <div class="mobile-bar" id="mobileBar" role="toolbar" aria-label="Mobilmeny">
+      <button class="mobile-bar__btn" onclick="toggleSidebar()" aria-label="Öppna/stäng låtlista">☰</button>
+      <button class="mobile-bar__scroll" id="mobileScrollBtn" onclick="toggleAutoScroll()" aria-pressed="false" aria-label="Autoscroll">▶ Scrolla</button>
+      <button class="mobile-bar__btn" id="mobileSettingsBtn" onclick="toggleSettingsSheet()" aria-label="Inställningar" aria-expanded="false">⚙</button>
+    </div>
+
+    <!-- Mobile settings sheet (slides up from behind the bottom bar) -->
+    <div class="mobile-sheet" id="mobileSheet" role="dialog" aria-label="Inställningar" aria-hidden="true">
+      <div class="mobile-sheet__handle"></div>
+      <div class="mobile-sheet__row">
+        <span class="mobile-sheet__label">Textstorlek</span>
+        <div class="mobile-sheet__ctrl">
+          <button onclick="changeFontSize(-1)" aria-label="Minska textstorlek">−</button>
+          <span id="mobileFontLabel">13</span>
+          <button onclick="changeFontSize(1)" aria-label="Öka textstorlek">+</button>
+        </div>
+      </div>
+      <div class="mobile-sheet__row">
+        <span class="mobile-sheet__label">Ackord</span>
+        <button class="mobile-sheet__toggle mobile-sheet__toggle--on" id="mobileHideChordsBtn" onclick="toggleHideChords()" aria-pressed="true">Visas</button>
+      </div>
+      <div class="mobile-sheet__row">
+        <span class="mobile-sheet__label">Transponera</span>
+        <div class="mobile-sheet__ctrl">
+          <button onclick="transpose(-1)" aria-label="Transponera ner ett halvsteg">♭</button>
+          <button onclick="transpose(1)" aria-label="Transponera upp ett halvsteg">♯</button>
+        </div>
+      </div>
+      <div class="mobile-sheet__row">
+        <span class="mobile-sheet__label">Scrollhastighet</span>
+        <div class="mobile-sheet__ctrl">
+          <button onclick="changeScrollSpeed(-1)" aria-label="Minska scrollhastighet">−</button>
+          <span id="mobileScrollSpeedLabel">3</span>
+          <button onclick="changeScrollSpeed(1)" aria-label="Öka scrollhastighet">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop" onclick="closeSettingsSheet()" aria-hidden="true"></div>
   </main>
 </div>
 
