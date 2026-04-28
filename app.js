@@ -266,11 +266,61 @@ function releaseWakeLock() {
   }
 }
 
+function updateMobileScrollBtn() {
+  const btn = document.getElementById('mobileScrollBtn');
+  if (!btn) return;
+  btn.textContent = scrollActive ? '■ Stopp' : '▶ Scrolla';
+  btn.className = 'mobile-bar__scroll' + (scrollActive ? ' active' : '');
+  btn.setAttribute('aria-pressed', scrollActive);
+}
+
+function updateMobileChordsBtn() {
+  const btn = document.getElementById('mobileHideChordsBtn');
+  if (!btn) return;
+  btn.textContent = hideChords ? 'Dold' : 'Visas';
+  btn.className = 'mobile-sheet__toggle' + (hideChords ? '' : ' mobile-sheet__toggle--on');
+  btn.setAttribute('aria-pressed', !hideChords);
+}
+
+function closeSettingsSheet() {
+  const sheet = document.getElementById('mobileSheet');
+  const btn = document.getElementById('mobileSettingsBtn');
+  const backdrop = document.getElementById('mobileSheetBackdrop');
+  if (!sheet) return;
+  sheet.classList.remove('mobile-sheet--open');
+  sheet.setAttribute('aria-hidden', 'true');
+  if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-expanded', 'false'); }
+  if (backdrop) backdrop.classList.remove('mobile-sheet-backdrop--active');
+}
+
+function toggleSettingsSheet() {
+  const sheet = document.getElementById('mobileSheet');
+  const btn = document.getElementById('mobileSettingsBtn');
+  const backdrop = document.getElementById('mobileSheetBackdrop');
+  if (!sheet) return;
+  const isOpen = sheet.classList.contains('mobile-sheet--open');
+  if (isOpen) {
+    closeSettingsSheet();
+  } else {
+    // Sync current values into sheet before opening
+    const mfl = document.getElementById('mobileFontLabel');
+    if (mfl) mfl.textContent = fontSize;
+    const msl = document.getElementById('mobileScrollSpeedLabel');
+    if (msl) msl.textContent = scrollLevel;
+    updateMobileChordsBtn();
+    sheet.classList.add('mobile-sheet--open');
+    sheet.setAttribute('aria-hidden', 'false');
+    if (btn) { btn.classList.add('active'); btn.setAttribute('aria-expanded', 'true'); }
+    if (backdrop) backdrop.classList.add('mobile-sheet-backdrop--active');
+  }
+}
+
 async function toggleAutoScroll() {
   scrollActive = !scrollActive;
   const scrollBtn = document.getElementById('scrollBtn');
   scrollBtn.className = 'ctrl-btn' + (scrollActive ? ' active' : '');
   scrollBtn.setAttribute('aria-pressed', scrollActive);
+  updateMobileScrollBtn();
   if (scrollActive) {
     scrollLastTime = null;
     scrollRAF = requestAnimationFrame(autoScrollStep);
@@ -300,6 +350,8 @@ function autoScrollStep(ts) {
 function changeScrollSpeed(dir) {
   scrollLevel = Math.max(1, Math.min(9, scrollLevel + dir));
   document.getElementById('scrollSpeedLabel').textContent = scrollLevel;
+  const msl = document.getElementById('mobileScrollSpeedLabel');
+  if (msl) msl.textContent = scrollLevel;
 }
 
 function selectSong(idx) {
@@ -316,6 +368,7 @@ function selectSong(idx) {
   if (window.innerWidth <= 768) {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
+    closeSettingsSheet();
   }
 }
 
@@ -616,6 +669,8 @@ function transpose(dir) {
 function changeFontSize(dir) {
   fontSize = Math.max(9, Math.min(20, fontSize + dir));
   document.getElementById('fontLabel').textContent = fontSize;
+  const mfl = document.getElementById('mobileFontLabel');
+  if (mfl) mfl.textContent = fontSize;
   renderSong();
   savePrefs();
 }
@@ -639,6 +694,7 @@ function toggleHideChords() {
   btn.className = 'ctrl-btn' + (hideChords ? '' : ' active');
   btn.setAttribute('aria-pressed', !hideChords);
   document.getElementById('transposeBtns').style.display = hideChords ? 'none' : '';
+  updateMobileChordsBtn();
   renderSong();
   savePrefs();
 }
@@ -1169,6 +1225,7 @@ Object.assign(window, {
   toggleSidebar, reloadSongs, changeFontSize, toggleColumns,
   toggleHideChords, transpose, toggleSongEditor, toggleAutoScroll,
   changeScrollSpeed, transposeSongData, selectSong, renderSongList,
+  toggleSettingsSheet, closeSettingsSheet,
 });
 
 // ─── Service Worker ───
