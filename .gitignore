@@ -2,5 +2,6 @@
 Thumbs.db
 *.log
 .claude/
+.superpowers/
 node_modules/
 dist/
