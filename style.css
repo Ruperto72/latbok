@@ -672,14 +672,11 @@ body {
   .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
   .sidebar.open { transform: translateX(0); }
   .overlay.open { display: block; }
-  .main { margin-left: 0; }
+  .main { margin-left: 0; padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
 
   /* Hide desktop-only elements on mobile */
   .menu-toggle { display: none !important; }
   .topbar { display: none !important; }
-
-  /* Prevent song content from hiding behind the fixed bottom bar */
-  .main { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
 
   .song-display { padding: 18px 12px; }
   .columns-2c .song-body { column-count: 1; width: auto; }
@@ -1099,7 +1096,7 @@ body {
 
   .mobile-sheet__handle {
     width: 32px; height: 3px;
-    background: #444;
+    background: var(--text-dim);
     border-radius: 2px;
     margin: 0 auto 12px;
   }
