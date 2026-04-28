@@ -95,6 +95,7 @@ async function loadFromStorage() {
       if (p.hideChords !== undefined) hideChords = p.hideChords;
       if (p.sidebarHidden !== undefined) sidebarHidden = p.sidebarHidden;
       if (p.currentSong !== undefined) currentSong = p.currentSong;
+      if (p.scrollLevel !== undefined) scrollLevel = p.scrollLevel;
     }
   } catch (e) {}
   storageReady = true;
@@ -103,7 +104,7 @@ async function loadFromStorage() {
 async function savePrefs() {
   if (!storageReady) return;
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, columnsMode, hideChords, sidebarHidden, currentSong }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, columnsMode, hideChords, sidebarHidden, currentSong, scrollLevel }));
   } catch (e) {
     console.error('Failed to save prefs:', e);
   }
@@ -360,6 +361,7 @@ function changeScrollSpeed(dir) {
   document.getElementById('scrollSpeedLabel').textContent = scrollLevel;
   const msl = document.getElementById('mobileScrollSpeedLabel');
   if (msl) msl.textContent = scrollLevel;
+  savePrefs();
 }
 
 function selectSong(idx) {
