@@ -31,34 +31,6 @@
   </aside>
 
   <main class="main" id="mainContent">
-    <div class="topbar" role="toolbar" aria-label="Verktyg">
-      <div class="topbar-left">
-<span class="transpose-badge" id="transposeBadge" style="display:none" aria-live="polite"></span>
-        <span class="save-indicator" id="saveIndicator" aria-live="polite" role="status">✓ Sparat</span>
-      </div>
-      <div class="controls">
-        <div class="font-ctrl" role="group" aria-label="Textstorlek">
-          <button onclick="changeFontSize(-1)" aria-label="Minska textstorlek">−</button>
-          <span id="fontLabel" aria-label="Textstorlek">13</span>
-          <button onclick="changeFontSize(1)" aria-label="Öka textstorlek">+</button>
-        </div>
-        <button class="ctrl-btn" onclick="toggleColumns()" id="colBtn" aria-label="Byt kolumnläge">2 kolumner</button>
-        <button class="ctrl-btn" onclick="toggleHideChords()" id="hideChordsBtn" aria-pressed="true">Ackord</button>
-        <span id="transposeBtns" role="group" aria-label="Transponera">
-          <button class="ctrl-btn" onclick="transpose(-1)" aria-label="Transponera ner ett halvsteg">♭</button>
-          <button class="ctrl-btn" onclick="transpose(1)" aria-label="Transponera upp ett halvsteg">♯</button>
-        </span>
-        <button class="ctrl-btn" onclick="toggleSongEditor()" id="songEditorBtn" aria-pressed="false">✎ Redigera låt</button>
-        <div class="scroll-group" role="group" aria-label="Autoscroll">
-          <button class="ctrl-btn" onclick="toggleAutoScroll()" id="scrollBtn" aria-pressed="false">▶ Scrolla</button>
-          <div class="font-ctrl" id="scrollCtrl" role="group" aria-label="Scrollhastighet">
-            <button onclick="changeScrollSpeed(-1)" aria-label="Minska scrollhastighet">−</button>
-            <span id="scrollSpeedLabel" aria-label="Scrollhastighet">3</span>
-            <button onclick="changeScrollSpeed(1)" aria-label="Öka scrollhastighet">+</button>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="song-display" id="songDisplay" role="region" aria-label="Låtvisning" aria-live="polite">
       <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
         <p style="font-size:40px;margin-bottom:12px" aria-hidden="true">🎸</p>
@@ -102,6 +74,14 @@
           <span id="mobileScrollSpeedLabel">3</span>
           <button onclick="changeScrollSpeed(1)" aria-label="Öka scrollhastighet">+</button>
         </div>
+      </div>
+      <div class="mobile-sheet__row mobile-sheet__row--desktop-only" id="mobileColRow">
+        <span class="mobile-sheet__label">Kolumner</span>
+        <button class="mobile-sheet__toggle" id="mobileColBtn" onclick="toggleColumns()" aria-label="Byt kolumnläge">1 kolumn</button>
+      </div>
+      <div class="mobile-sheet__row mobile-sheet__row--desktop-only" id="mobileEditorRow">
+        <span class="mobile-sheet__label">Redigera låt</span>
+        <button class="mobile-sheet__toggle" id="mobileEditorBtn" onclick="toggleSongEditor()" aria-pressed="false">Av</button>
       </div>
     </div>
     <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop" onclick="closeSettingsSheet()" aria-hidden="true"></div>

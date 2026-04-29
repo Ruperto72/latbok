@@ -34,6 +34,7 @@ let scrollLevel = 3;       // 1–9, visas i knappen
 let scrollActive = false;
 let scrollRAF = null;
 let scrollLastTime = null;
+let scrollAccum = 0;
 let wakeLock = null;
 
 const PREFS_KEY = 'korhaftet-preferences';
@@ -110,11 +111,6 @@ async function savePrefs() {
   }
 }
 
-function flashSaveIndicator() {
-  const el = document.getElementById('saveIndicator');
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 1500);
-}
 
 // ─── Init ───
 async function init() {
@@ -134,18 +130,18 @@ async function init() {
     renderSongList();
     setupGlobalEvents();
 
-    document.getElementById('fontLabel').textContent = fontSize;
-    updateColBtn();
-    document.getElementById('hideChordsBtn').className = 'ctrl-btn' + (hideChords ? '' : ' active');
     // Sync initial state to mobile elements
     const mfl = document.getElementById('mobileFontLabel');
     if (mfl) mfl.textContent = fontSize;
     const msl = document.getElementById('mobileScrollSpeedLabel');
     if (msl) msl.textContent = scrollLevel;
     updateMobileChordsBtn();
-    if (hideChords) document.getElementById('transposeBtns').style.display = 'none';
+    updateMobileColBtn();
     const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    if (!isLocal) document.getElementById('songEditorBtn').style.display = 'none';
+    if (!isLocal) {
+      const editorRow = document.getElementById('mobileEditorRow');
+      if (editorRow) editorRow.style.display = 'none';
+    }
     if (sidebarHidden && window.innerWidth > 768) {
       document.querySelector('.app').classList.add('sidebar-hidden');
     }
@@ -289,6 +285,22 @@ function updateMobileChordsBtn() {
   btn.setAttribute('aria-pressed', !hideChords);
 }
 
+function updateMobileColBtn() {
+  const btn = document.getElementById('mobileColBtn');
+  if (!btn) return;
+  const is2col = columnsMode === COL.TWO;
+  btn.textContent = is2col ? '2 kolumner' : '1 kolumn';
+  btn.className = 'mobile-sheet__toggle' + (is2col ? ' mobile-sheet__toggle--on' : '');
+}
+
+function updateMobileEditorBtn() {
+  const btn = document.getElementById('mobileEditorBtn');
+  if (!btn) return;
+  btn.textContent = songEditorMode ? 'På' : 'Av';
+  btn.className = 'mobile-sheet__toggle' + (songEditorMode ? ' mobile-sheet__toggle--on' : '');
+  btn.setAttribute('aria-pressed', songEditorMode);
+}
+
 function closeSettingsSheet() {
   const sheet = document.getElementById('mobileSheet');
   const btn = document.getElementById('mobileSettingsBtn');
@@ -315,6 +327,8 @@ function toggleSettingsSheet() {
     const msl = document.getElementById('mobileScrollSpeedLabel');
     if (msl) msl.textContent = scrollLevel;
     updateMobileChordsBtn();
+    updateMobileColBtn();
+    updateMobileEditorBtn();
     sheet.classList.add('mobile-sheet--open');
     sheet.setAttribute('aria-hidden', 'false');
     if (btn) { btn.classList.add('active'); btn.setAttribute('aria-expanded', 'true'); }
@@ -324,14 +338,10 @@ function toggleSettingsSheet() {
 
 async function toggleAutoScroll() {
   scrollActive = !scrollActive;
-  const scrollBtn = document.getElementById('scrollBtn');
-  if (scrollBtn) {
-    scrollBtn.className = 'ctrl-btn' + (scrollActive ? ' active' : '');
-    scrollBtn.setAttribute('aria-pressed', scrollActive);
-  }
   updateMobileScrollBtn();
   if (scrollActive) {
     scrollLastTime = null;
+    scrollAccum = 0;
     scrollRAF = requestAnimationFrame(autoScrollStep);
     await requestWakeLock();
   } else {
@@ -344,8 +354,12 @@ async function toggleAutoScroll() {
 function autoScrollStep(ts) {
   if (!scrollActive) return;
   if (scrollLastTime !== null) {
-    const px = (scrollLevel * 6) * (ts - scrollLastTime) / 1000;
-    window.scrollBy(0, px);
+    scrollAccum += (scrollLevel * 6) * (ts - scrollLastTime) / 1000;
+    const px = Math.floor(scrollAccum);
+    if (px >= 1) {
+      window.scrollBy(0, px);
+      scrollAccum -= px;
+    }
     // Stanna automatiskt vid sidans slut
     if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
       toggleAutoScroll();
@@ -358,7 +372,6 @@ function autoScrollStep(ts) {
 
 function changeScrollSpeed(dir) {
   scrollLevel = Math.max(1, Math.min(9, scrollLevel + dir));
-  document.getElementById('scrollSpeedLabel').textContent = scrollLevel;
   const msl = document.getElementById('mobileScrollSpeedLabel');
   if (msl) msl.textContent = scrollLevel;
   savePrefs();
@@ -366,10 +379,9 @@ function changeScrollSpeed(dir) {
 
 function selectSong(idx) {
   if (scrollActive) toggleAutoScroll();
-  if (songEditorMode) { songEditorMode = false; document.getElementById('songEditorBtn').className = 'ctrl-btn'; }
+  if (songEditorMode) { songEditorMode = false; updateMobileEditorBtn(); }
   currentSong = idx;
   transposeSemitones = 0;
-  document.getElementById('transposeBadge').style.display = 'none';
   document.querySelectorAll('.song-item').forEach((el, i) => {
     el.className = 'song-item' + (i === idx ? ' active' : '');
   });
@@ -666,44 +678,26 @@ function attachChordDiagramListeners() {
 // ─── Controls ───
 function transpose(dir) {
   transposeSemitones = ((transposeSemitones + dir) + 12) % 12;
-  const badge = document.getElementById('transposeBadge');
-  if (transposeSemitones === 0) {
-    badge.style.display = 'none';
-  } else {
-    badge.style.display = 'inline-block';
-    badge.textContent = transposeSemitones <= 6 ? `+${transposeSemitones}` : `${transposeSemitones - 12}`;
-  }
   renderSong();
 }
 
 function changeFontSize(dir) {
   fontSize = Math.max(9, Math.min(20, fontSize + dir));
-  document.getElementById('fontLabel').textContent = fontSize;
   const mfl = document.getElementById('mobileFontLabel');
   if (mfl) mfl.textContent = fontSize;
   renderSong();
   savePrefs();
 }
 
-function updateColBtn() {
-  const btn = document.getElementById('colBtn');
-  btn.textContent = COL_LABELS[columnsMode];
-  btn.className = 'ctrl-btn active';
-}
-
 function toggleColumns() {
   columnsMode = (columnsMode + 1) % COL.COUNT;
-  updateColBtn();
+  updateMobileColBtn();
   renderSong();
   savePrefs();
 }
 
 function toggleHideChords() {
   hideChords = !hideChords;
-  const btn = document.getElementById('hideChordsBtn');
-  btn.className = 'ctrl-btn' + (hideChords ? '' : ' active');
-  btn.setAttribute('aria-pressed', !hideChords);
-  document.getElementById('transposeBtns').style.display = hideChords ? 'none' : '';
   updateMobileChordsBtn();
   renderSong();
   savePrefs();
@@ -712,9 +706,7 @@ function toggleHideChords() {
 function toggleSongEditor() {
   songEditorMode = !songEditorMode;
   if (songEditorMode && scrollActive) toggleAutoScroll();
-  const btn = document.getElementById('songEditorBtn');
-  btn.className = 'ctrl-btn' + (songEditorMode ? ' active' : '');
-  btn.setAttribute('aria-pressed', songEditorMode);
+  updateMobileEditorBtn();
   renderSong();
 }
 
@@ -1223,7 +1215,6 @@ async function saveSongEditorToFile() {
     });
     if (!resp.ok) throw new Error(await resp.text());
     if (errEl) errEl.textContent = '';
-    flashSaveIndicator();
   } catch (e) {
     if (errEl) errEl.textContent = 'Fel: ' + e.message;
     console.error('saveSongEditorToFile:', e);
