@@ -1,6 +1,6 @@
 // ─── Körhäftet — Service Worker ───
 
-const CACHE_NAME = 'korhaftet-v2';
+const CACHE_NAME = 'korhaftet-v3';
 
 const PRECACHE_URLS = [
   './',
