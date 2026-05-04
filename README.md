@@ -11,11 +11,15 @@ En modern webbapp för körsånger med ackord, byggd som en PWA för GitHub Page
 - **2-kolumnläge** — komprimera långa låtar med balanserade kolumner (desktop)
 - **Justerbar textstorlek** — versrubriker och avstånd skalas proportionellt
 
-### Mobilgränssnitt
-På mobil ersätts toppmenyn av en fast **bottenrad** med tre knappar:
+### Gränssnitt
+En fast **bottenrad** används på alla enheter med tre knappar:
 - **☰** — öppnar/stänger låtlistan
 - **▶ Scrolla / ■ Stopp** — startar och stoppar autoscroll
 - **⚙** — öppnar ett inställningsblad underifrån med: teckenstorlek, ackord av/på, transponering och scrollhastighet
+
+På **desktop** finns även i inställningsbladet:
+- **Kolumner** — växla 2-kolumnläge
+- **Redigera låt** — öppna låtredaktören
 
 Alla inställningar sparas lokalt på enheten.
 

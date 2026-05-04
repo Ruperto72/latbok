@@ -1,0 +1,34 @@
+# CLAUDE.md — Körhäftet
+
+## Projektöversikt
+
+PWA för körsånger, hostad på GitHub Pages. Ingen backend i produktion — `POST /save-song` fungerar bara lokalt via `python server.py`.
+
+## Byggsystem
+
+Källkod ligger i roten (`app.js`, `chords.js`, `sw.js`, `style.css`, `index.html`). `dist/` är en publicerbar kopia och hålls manuellt synkroniserad:
+
+```bash
+npm run dist   # bygger dist/ med esbuild + kopierar assets
+npm test       # enhetstester för chords.js
+```
+
+När du ändrar en fil i roten ska motsvarande fil i `dist/` uppdateras också, antingen via `npm run dist` eller manuellt.
+
+## Service Worker & mobilcache
+
+`sw.js` (och `dist/sw.js`) cachar statiska filer med **cache-first**. Mobila enheter fastnar i gammal cache om `CACHE_NAME` inte byts.
+
+**Regel: bumpa `CACHE_NAME` varje gång `app.js`, `chords.js`, `style.css` eller `index.html` ändras och ska ut i produktion.**
+
+```js
+const CACHE_NAME = 'korhaftet-v3';  // öka versionsnumret
+```
+
+Ändringen måste göras i **både** `sw.js` och `dist/sw.js`.
+
+## Låtdata
+
+- `songs/index.json` — lista med filnamn, styr menyordningen
+- `songs/*.json` — en fil per låt
+- Song-filer hämtas **network-first** av service workern, så de uppdateras utan cache-bump
