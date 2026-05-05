@@ -19,3 +19,10 @@
 - Visuell feedback: "Sparar...", "Sparat till GitHub ✓", felmeddelande
 
 **Beroenden:** GitHub Personal Access Token med `repo`-scope
+
+
+## Genomförda funktioner
+
+### ✅ Arkivering av låtar
+**Mål:** Flytta låtar till ett arkiv för att hålla det aktiva urvalet rent.
+*(Implementerat 2026-05-05: Låtar döljs från huvudlistan och kan nås, hanteras och återställas från en separat arkivsida.)*

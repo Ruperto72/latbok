@@ -28,6 +28,56 @@ class Handler(SimpleHTTPRequestHandler):
                 self._respond(200, 'OK')
             except Exception as e:
                 self._respond(500, str(e))
+        elif self.path in ['/archive-song', '/unarchive-song']:
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                data = json.loads(body)
+                filename = data.get('filename')
+
+                if not filename or '/' in filename or '\\' in filename or not filename.endswith('.json'):
+                    self._respond(400, 'Ogiltigt filnamn')
+                    return
+
+                active_path = os.path.join('songs', filename)
+                archive_dir = os.path.join('songs', 'archive')
+                archive_path = os.path.join(archive_dir, filename)
+                active_index_path = os.path.join('songs', 'index.json')
+                archive_index_path = os.path.join(archive_dir, 'index.json')
+
+                os.makedirs(archive_dir, exist_ok=True)
+
+                def update_index(idx_path, item, add=True):
+                    items = []
+                    if os.path.exists(idx_path):
+                        with open(idx_path, 'r', encoding='utf-8') as f:
+                            items = json.load(f)
+                    if add and item not in items:
+                        items.append(item)
+                        items.sort()
+                    elif not add and item in items:
+                        items.remove(item)
+                    with open(idx_path, 'w', encoding='utf-8') as f:
+                        json.dump(items, f, ensure_ascii=False, indent=2)
+
+                if self.path == '/archive-song':
+                    if not os.path.exists(active_path):
+                        self._respond(404, 'Filen hittades inte i aktiva låtar')
+                        return
+                    os.rename(active_path, archive_path)
+                    update_index(active_index_path, filename, add=False)
+                    update_index(archive_index_path, filename, add=True)
+                else: # unarchive
+                    if not os.path.exists(archive_path):
+                        self._respond(404, 'Filen hittades inte i arkivet')
+                        return
+                    os.rename(archive_path, active_path)
+                    update_index(archive_index_path, filename, add=False)
+                    update_index(active_index_path, filename, add=True)
+
+                self._respond(200, 'OK')
+            except Exception as e:
+                self._respond(500, str(e))
         else:
             self._respond(404, 'Not found')
 

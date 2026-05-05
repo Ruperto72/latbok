@@ -31,6 +31,11 @@ Alla inställningar sparas lokalt på enheten.
 - **Jämnt flöde** — scrolla sidan automatiskt med ▶ Scrolla-knappen
 - **Hastighetskontroll** — skala 1–9 justerar scrollhastigheten
 
+### Arkivering (lokal server krävs)
+- **Håll rent i listan** — arkivera låtar du inte använder för att dölja dem från huvudmenyn
+- **Separat arkivsida** — hantera arkivet via "Öppna"-knappen i inställningsmenyn
+- **Återställ snabbt** — flytta tillbaka arkiverade låtar till den aktiva listan med ett klick
+
 ### Låtredaktör (desktop)
 Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i webbläsaren:
 - **Metadata** — titel, artist, tonart, taktart, svårighet

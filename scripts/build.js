@@ -34,7 +34,21 @@ staticFiles.forEach(f => cpSync(f, join(DIST, f)));
 // Copy songs directory
 mkdirSync(join(DIST, 'songs'), { recursive: true });
 readdirSync('songs').forEach(f => {
-  cpSync(join('songs', f), join(DIST, 'songs', f));
+  if (f.endsWith('.json')) {
+    cpSync(join('songs', f), join(DIST, 'songs', f));
+  }
 });
+
+// Copy archived songs if they exist
+try {
+  mkdirSync(join(DIST, 'songs', 'archive'), { recursive: true });
+  readdirSync(join('songs', 'archive')).forEach(f => {
+    if (f.endsWith('.json')) {
+      cpSync(join('songs', 'archive', f), join(DIST, 'songs', 'archive', f));
+    }
+  });
+} catch (e) {
+  // Ignore if archive doesn't exist
+}
 
 console.log('Build complete → dist/');

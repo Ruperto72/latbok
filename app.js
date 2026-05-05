@@ -43,17 +43,20 @@ const PREFS_KEY = 'korhaftet-preferences';
 async function loadSongs(bustCache = false) {
   const qs = bustCache ? `?t=${Date.now()}` : '';
   try {
-    const indexResp = await fetch(`songs/index.json${qs}`);
-    if (!indexResp.ok) throw new Error('Could not load songs/index.json');
-    const songFiles = await indexResp.json();
+    const indexResp = await fetch(`songs/index.json${qs}`).catch(() => null);
+    const activeFiles = indexResp && indexResp.ok ? await indexResp.json() : [];
 
-    const loaded = await Promise.all(
-      songFiles.map(async (filename) => {
+    const archiveResp = await fetch(`songs/archive/index.json${qs}`).catch(() => null);
+    const archiveFiles = archiveResp && archiveResp.ok ? await archiveResp.json() : [];
+
+    const loadedActive = await Promise.all(
+      activeFiles.map(async (filename) => {
         try {
           const resp = await fetch(`songs/${filename}${qs}`);
           if (!resp.ok) return null;
           const song = await resp.json();
           song._filename = filename;
+          song.isArchived = false;
           return song;
         } catch (e) {
           console.warn(`Could not load songs/${filename}:`, e);
@@ -62,7 +65,22 @@ async function loadSongs(bustCache = false) {
       })
     );
 
-    songs = loaded.filter(s => s !== null);
+    const loadedArchive = await Promise.all(
+      archiveFiles.map(async (filename) => {
+        try {
+          const resp = await fetch(`songs/archive/${filename}${qs}`);
+          if (!resp.ok) return null;
+          const song = await resp.json();
+          song._filename = filename;
+          song.isArchived = true;
+          return song;
+        } catch (e) {
+          return null;
+        }
+      })
+    );
+
+    songs = [...loadedActive, ...loadedArchive].filter(s => s !== null);
 
     // Update subtitle with song count
     const subtitle = document.querySelector('.sidebar-header p');
@@ -141,6 +159,8 @@ async function init() {
     if (!isLocal) {
       const editorRow = document.getElementById('mobileEditorRow');
       if (editorRow) editorRow.style.display = 'none';
+      const archiveRow = document.getElementById('mobileArchiveRow');
+      if (archiveRow) archiveRow.style.display = 'none';
     }
     if (sidebarHidden && window.innerWidth > 768) {
       document.querySelector('.app').classList.add('sidebar-hidden');
@@ -159,6 +179,7 @@ function renderSongList(filter = '') {
   const f = filter.toLowerCase();
 
   songs.forEach((s, i) => {
+    if (s.isArchived) return; // Dölj arkiverade låtar från menyn
     if (f && !s.title.toLowerCase().includes(f) && !s.artist.toLowerCase().includes(f)) return;
     
     const div = document.createElement('div');
@@ -301,6 +322,14 @@ function updateMobileEditorBtn() {
   btn.setAttribute('aria-pressed', songEditorMode);
 }
 
+function updateMobileArchiveBtn() {
+  const btn = document.getElementById('mobileArchiveBtn');
+  if (!btn || !songs[currentSong]) return;
+  const isArchived = songs[currentSong].isArchived;
+  btn.textContent = isArchived ? 'Återställ' : 'Arkivera';
+  btn.className = 'mobile-sheet__toggle' + (isArchived ? ' mobile-sheet__toggle--on' : '');
+}
+
 function closeSettingsSheet() {
   const sheet = document.getElementById('mobileSheet');
   const btn = document.getElementById('mobileSettingsBtn');
@@ -329,6 +358,7 @@ function toggleSettingsSheet() {
     updateMobileChordsBtn();
     updateMobileColBtn();
     updateMobileEditorBtn();
+    updateMobileArchiveBtn();
     sheet.classList.add('mobile-sheet--open');
     sheet.setAttribute('aria-hidden', 'false');
     if (btn) { btn.classList.add('active'); btn.setAttribute('aria-expanded', 'true'); }
@@ -710,6 +740,94 @@ function toggleSongEditor() {
   renderSong();
 }
 
+async function toggleArchiveSong(filename = null) {
+  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if (!isLocal) {
+    alert('Arkivering fungerar bara på localhost');
+    return;
+  }
+  
+  let s, isArchived;
+  if (filename) {
+    s = songs.find(x => x._filename === filename);
+    if (!s) return;
+    isArchived = s.isArchived;
+  } else {
+    s = songs[currentSong];
+    if (!s || !s._filename) return;
+    filename = s._filename;
+    isArchived = s.isArchived;
+  }
+
+  const endpoint = isArchived ? '/unarchive-song' : '/archive-song';
+  try {
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename })
+    });
+    if (!resp.ok) throw new Error(await resp.text());
+    
+    await reloadSongs();
+    
+    // If we are currently on the archive page, re-render it
+    const display = document.getElementById('songDisplay');
+    if (display.querySelector('.archive-page')) {
+      showArchivePage();
+    } else if (filename === songs[currentSong]?._filename && isArchived) {
+      // If we restored the currently active song
+      renderSong();
+    } else if (!filename) {
+      renderSong();
+    }
+  } catch (e) {
+    alert('Kunde inte arkivera/återställa: ' + e.message);
+  }
+}
+
+function showArchivePage() {
+  if (window.innerWidth <= 768) {
+    closeSettingsSheet();
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+  
+  const display = document.getElementById('songDisplay');
+  display.className = 'song-display';
+  
+  const archivedSongs = songs.filter(s => s.isArchived);
+  
+  let html = `<div class="archive-page">
+    <div class="header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:14px; margin-bottom:18px;">
+      <div>
+        <h2 style="margin:0; font-size:26px; font-weight:700;">Arkiverade låtar</h2>
+        <div class="info" style="margin-top:6px;">${archivedSongs.length} låtar i arkivet</div>
+      </div>
+      <button class="sed-btn" onclick="renderSong()">Stäng arkiv</button>
+    </div>
+    
+    <div class="archive-list">`;
+    
+  if (archivedSongs.length === 0) {
+    html += `<div style="padding:40px 0; color:var(--text-dim); text-align:center; font-family:'JetBrains Mono',monospace;">Arkivet är tomt.</div>`;
+  } else {
+    archivedSongs.forEach(s => {
+      html += `
+        <div class="archive-item">
+          <div>
+            <div style="font-weight:600; font-size:15px; margin-bottom:2px;">${s.title}</div>
+            <div style="font-size:12px; color:var(--text-dim);">${s.artist}</div>
+          </div>
+          <button class="sed-btn" onclick="toggleArchiveSong('${s._filename}')">Återställ</button>
+        </div>
+      `;
+    });
+  }
+  
+  html += `</div></div>`;
+  display.innerHTML = html;
+}
+
 function toggleSidebar() {
   if (window.innerWidth <= 768) {
     document.getElementById('sidebar').classList.toggle('open');
@@ -882,6 +1000,7 @@ function renderSongEditor() {
   }
 
   // Save bar
+  const archiveLabel = s.isArchived ? 'Återställ' : 'Arkivera';
   html += `<div class="sed-save-bar">
     <div class="sed-transpose-group">
       <span class="sed-save-note">Transponera:</span>
@@ -889,6 +1008,7 @@ function renderSongEditor() {
       <button class="sed-btn sed-transpose-btn" onclick="transposeSongData(1)">♯</button>
     </div>
     <button class="sed-save-btn"${isLocal ? '' : ' disabled'}${songErrors.length > 0 ? ' title="Åtgärda valideringsfel först"' : ''}>Spara till fil</button>
+    <button class="sed-btn sed-btn--danger" onclick="toggleArchiveSong()"${isLocal ? '' : ' disabled'}>${archiveLabel}</button>
     <span class="sed-save-note">${isLocal ? `songs/${escHtml(s._filename || '?')}` : 'Sparning fungerar bara på localhost'}</span>
     <span class="sed-save-error" id="sed-save-error"></span>
   </div>`;
@@ -1226,7 +1346,7 @@ Object.assign(window, {
   toggleSidebar, reloadSongs, changeFontSize, toggleColumns,
   toggleHideChords, transpose, toggleSongEditor, toggleAutoScroll,
   changeScrollSpeed, transposeSongData, selectSong, renderSongList,
-  toggleSettingsSheet, closeSettingsSheet,
+  toggleSettingsSheet, closeSettingsSheet, toggleArchiveSong, showArchivePage,
 });
 
 // ─── Service Worker ───
