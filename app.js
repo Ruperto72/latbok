@@ -27,6 +27,8 @@ let columnsMode = COL.ONE;
 let hideChords = false;
 let sidebarHidden = false;
 let songEditorMode = false;
+let variantEditorMode = false;
+let variantEditorSong = null; // Copy of original song being edited
 let storageReady = false;
 
 // ─── Auto-scroll ───
