@@ -931,6 +931,7 @@ function renderSongEditor() {
     </div>
     <div style="margin-top:12px">
       <button class="sed-btn" id="sed-fix-all-pipes">🛠 Reparera alla saknade taktstreck i texten</button>
+      <button class="sed-btn" id="sed-clone-btn">🔄 Klona</button>
     </div>
   </div>`;
 
@@ -1313,6 +1314,12 @@ function attachEditorHandlers() {
     });
     if (fixedCount > 0) renderSong();
   });
+
+  // Clone
+  const cloneBtn = document.getElementById('sed-clone-btn');
+  if (cloneBtn) {
+    cloneBtn.addEventListener('click', () => toggleVariantEditor(songs[currentSong]));
+  }
 
   // Save
   document.querySelector('.sed-save-btn')?.addEventListener('click', saveSongEditorToFile);
