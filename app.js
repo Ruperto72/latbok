@@ -760,7 +760,7 @@ function toggleVariantEditor(song) {
   // Modify title to indicate it's a variant
   variantEditorSong.title = (song.title || '') + ' (variant)';
   variantEditorSong._originalFilename = song._filename;
-  renderVariantEditor();
+  renderSong();
 }
 
 function closeVariantEditor() {
