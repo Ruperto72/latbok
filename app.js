@@ -769,6 +769,42 @@ function closeVariantEditor() {
   renderSong();
 }
 
+function transposeAllChords(semitones) {
+  if (!variantEditorSong || !variantEditorSong.chordTemplates) return;
+  Object.keys(variantEditorSong.chordTemplates).forEach(tplName => {
+    const chords = variantEditorSong.chordTemplates[tplName].split('|');
+    const transposed = chords.map(chord => {
+      if (!chord || chord === '.') return chord;
+      return transposeChordName(chord, semitones);
+    });
+    variantEditorSong.chordTemplates[tplName] = transposed.join('|');
+  });
+  const currentKey = variantEditorSong.key || 'C';
+  variantEditorSong.key = transposeChordName(currentKey, semitones);
+  renderVariantEditor();
+}
+
+function extendAllMeasures() {
+  if (!variantEditorSong || !variantEditorSong.chordTemplates) return;
+  Object.keys(variantEditorSong.chordTemplates).forEach(tplName => {
+    const tpl = variantEditorSong.chordTemplates[tplName];
+    variantEditorSong.chordTemplates[tplName] = tpl + '|';
+  });
+  renderVariantEditor();
+}
+
+function shortenAllMeasures() {
+  if (!variantEditorSong || !variantEditorSong.chordTemplates) return;
+  Object.keys(variantEditorSong.chordTemplates).forEach(tplName => {
+    const measures = variantEditorSong.chordTemplates[tplName].split('|');
+    if (measures.length > 1) {
+      measures.pop();
+      variantEditorSong.chordTemplates[tplName] = measures.join('|');
+    }
+  });
+  renderVariantEditor();
+}
+
 async function toggleArchiveSong(filename = null) {
   const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   if (!isLocal) {
@@ -1171,6 +1207,17 @@ function renderVariantEditor() {
   });
 
   html += `</div></div>`;
+
+  // Macro Tools Section
+  html += `<div class="variant-editor-card">
+    <div class="variant-editor-card-title">Makro-verktyg</div>
+    <div class="variant-macro-buttons">
+      <button class="variant-btn variant-macro-btn" onclick="transposeAllChords(1)">▲ Transponera +1</button>
+      <button class="variant-btn variant-macro-btn" onclick="transposeAllChords(-1)">▼ Transponera -1</button>
+      <button class="variant-btn variant-macro-btn" onclick="extendAllMeasures()">➕ Förläng verser</button>
+      <button class="variant-btn variant-macro-btn" onclick="shortenAllMeasures()">➖ Förkorta verser</button>
+    </div>
+  </div>`;
 
   html += `</div>`;
   return html;

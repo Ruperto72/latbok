@@ -997,6 +997,174 @@ body {
   transition: all 0.15s;
 }
 
+/* ─── Variant Editor ─── */
+.variant-editor {
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px 24px;
+}
+
+.variant-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.variant-editor-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.variant-editor-back {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.variant-editor-back:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.variant-editor-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.variant-editor-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.variant-tpl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.variant-tpl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.variant-tpl-name {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: border-color 0.15s;
+  min-width: 80px;
+}
+
+.variant-tpl-name:focus {
+  border-color: var(--accent);
+}
+
+.variant-colon {
+  color: var(--text-dim);
+  font-weight: 700;
+}
+
+.variant-tpl-measures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.variant-tpl-measure {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.variant-tpl-measure:focus {
+  border-color: var(--accent);
+}
+
+.variant-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+}
+
+.variant-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.variant-btn--add {
+  border-style: dashed;
+  border-color: rgba(232,200,106,0.3);
+  color: var(--accent);
+}
+
+.variant-btn--danger:hover {
+  border-color: #f88;
+  color: #f88;
+}
+
+.variant-macro-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.variant-macro-btn {
+  padding: 8px 12px;
+  height: auto;
+  min-width: auto;
+  font-size: 12px;
+  justify-content: center;
+  border-color: var(--text-dim);
+}
+
+.variant-macro-btn:hover {
+  background: rgba(232,200,106,0.1);
+}
+
 .mobile-bar__scroll.active {
   background: var(--accent);
   color: #0f0f0f;
