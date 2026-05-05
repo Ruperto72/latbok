@@ -147,6 +147,10 @@ async function init() {
     // Clamp currentSong to valid range
     if (currentSong >= songs.length) currentSong = 0;
 
+    // Reset editor modes
+    if (songEditorMode) { songEditorMode = false; updateMobileEditorBtn(); }
+    if (variantEditorMode) { variantEditorMode = false; variantEditorSong = null; }
+
     renderSongList();
     setupGlobalEvents();
 
@@ -435,6 +439,12 @@ function renderSong() {
   try {
   const controls = document.querySelector('.controls');
   if (controls) controls.style.display = songEditorMode ? 'none' : '';
+
+  if (variantEditorMode) {
+    const display = document.querySelector('.sheet-display');
+    if (display) display.innerHTML = renderVariantEditor();
+    return;
+  }
 
   if (songEditorMode) {
     const display = document.getElementById('songDisplay');
@@ -739,6 +749,23 @@ function toggleSongEditor() {
   songEditorMode = !songEditorMode;
   if (songEditorMode && scrollActive) toggleAutoScroll();
   updateMobileEditorBtn();
+  renderSong();
+}
+
+function toggleVariantEditor(song) {
+  if (!song) return;
+  variantEditorMode = true;
+  // Create a deep copy of the song
+  variantEditorSong = JSON.parse(JSON.stringify(song));
+  // Modify title to indicate it's a variant
+  variantEditorSong.title = (song.title || '') + ' (variant)';
+  variantEditorSong._originalFilename = song._filename;
+  renderVariantEditor();
+}
+
+function closeVariantEditor() {
+  variantEditorMode = false;
+  variantEditorSong = null;
   renderSong();
 }
 
