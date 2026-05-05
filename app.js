@@ -805,6 +805,38 @@ function shortenAllMeasures() {
   renderVariantEditor();
 }
 
+function addMeasureToTemplate(tplName, afterIndex) {
+  if (!variantEditorSong || !variantEditorSong.chordTemplates[tplName]) return;
+
+  const measures = variantEditorSong.chordTemplates[tplName].split('|');
+  measures.splice(afterIndex + 1, 0, '');
+  variantEditorSong.chordTemplates[tplName] = measures.join('|');
+
+  renderVariantEditor();
+}
+
+function removeMeasureFromTemplate(tplName, index) {
+  if (!variantEditorSong || !variantEditorSong.chordTemplates[tplName]) return;
+
+  const measures = variantEditorSong.chordTemplates[tplName].split('|');
+  if (measures.length > 1) {
+    measures.splice(index, 1);
+    variantEditorSong.chordTemplates[tplName] = measures.join('|');
+  }
+
+  renderVariantEditor();
+}
+
+function updateTemplateMeasure(tplName, index, newChord) {
+  if (!variantEditorSong || !variantEditorSong.chordTemplates[tplName]) return;
+
+  const measures = variantEditorSong.chordTemplates[tplName].split('|');
+  measures[index] = newChord;
+  variantEditorSong.chordTemplates[tplName] = measures.join('|');
+
+  renderVariantEditor();
+}
+
 async function toggleArchiveSong(filename = null) {
   const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
   if (!isLocal) {
@@ -1190,7 +1222,8 @@ function renderVariantEditor() {
         data-mi="${mi}"
         value="${escHtml(m)}"
         size="${ms}"
-        placeholder="ackord">
+        placeholder="ackord"
+        onchange="updateTemplateMeasure('${escHtml(name)}', ${mi}, this.value)">
         <button class="variant-btn variant-btn--add"
           data-name="${escHtml(name)}"
           data-mi="${mi}"
@@ -1204,6 +1237,34 @@ function renderVariantEditor() {
     });
 
     html += `</div></div>`;
+  });
+
+  html += `</div></div>`;
+
+  // Live Preview Section
+  html += `<div class="variant-editor-card">
+    <div class="variant-editor-card-title">Förhandsvisning</div>
+    <div class="variant-preview">`;
+
+  // Render the variant song using existing renderSong logic
+  s.sections.forEach((sec, si) => {
+    html += `<div class="variant-section">
+      <h3>${escHtml(sec.label)}</h3>`;
+
+    sec.lines.forEach(line => {
+      const chords = (line.c || '').startsWith('@')
+        ? (s.chordTemplates[(line.c || '').slice(1)] || '')
+        : (line.c || '');
+      const chordArr = chords.split('|');
+      const textParts = (line.l || '').split('|');
+
+      html += `<div class="variant-line">
+        <div class="variant-chords">${chordArr.map(c => `<span>${escHtml(c)}</span>`).join('')}</div>
+        <div class="variant-text">${textParts.map(t => `<span>${escHtml(t)}</span>`).join('')}</div>
+      </div>`;
+    });
+
+    html += `</div>`;
   });
 
   html += `</div></div>`;
