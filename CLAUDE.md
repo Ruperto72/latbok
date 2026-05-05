@@ -29,6 +29,17 @@ const CACHE_NAME = 'korhaftet-v3';  // öka versionsnumret
 
 ## Låtdata
 
-- `songs/index.json` — lista med filnamn, styr menyordningen
-- `songs/*.json` — en fil per låt
+- `songs/index.json` — lista med filnamn för aktiva låtar, styr menyordningen
+- `songs/*.json` — en fil per aktiv låt
+- `songs/archive/` — mapp för arkiverade låtar
+- `songs/archive/index.json` — lista med arkiverade låtfilnamn
+- `songs/archive/*.json` — arkiverade låtfiler
 - Song-filer hämtas **network-first** av service workern, så de uppdateras utan cache-bump
+
+## Arkivering
+
+Använare kan arkivera och återställa låtar via en "Arkivera"/"Återställ"-knapp (sista knappen i mobilvyn).
+
+**Lokalt** (development): `POST /archive-song` och `POST /unarchive-song` hanteras av `server.py`, som flyttar filer mellan `songs/` och `songs/archive/` samt uppdaterar motsvarande `index.json`-filer.
+
+**I produktion** (GitHub Pages): Arkiveringen fungerar inte — det finns ingen backend. Knappen döljs via `isLocal`-check.
