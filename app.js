@@ -1133,7 +1133,44 @@ function renderVariantEditor() {
     <button class="variant-editor-back" onclick="closeVariantEditor()">← Tillbaka</button>
   </div>`;
 
-  // Rest of sections will go here (placeholder for now)
+  // Chord Templates Section
+  const tplNames = s.chordTemplates ? Object.keys(s.chordTemplates) : [];
+  html += `<div class="variant-editor-card">
+    <div class="variant-editor-card-title">Ackordmallar</div>
+    <div class="variant-tpl-list">`;
+
+  tplNames.forEach(name => {
+    const tplStr = s.chordTemplates[name] || '';
+    const measures = tplStr.split('|');
+    html += `<div class="variant-tpl-row">
+      <input class="variant-tpl-name" data-name="${escHtml(name)}" value="${escHtml(name)}" placeholder="mallnamn">
+      <span class="variant-colon">:</span>
+      <div class="variant-tpl-measures">`;
+
+    measures.forEach((m, mi) => {
+      const ms = Math.max(4, m.length + 2);
+      html += `<input class="variant-tpl-measure"
+        data-name="${escHtml(name)}"
+        data-mi="${mi}"
+        value="${escHtml(m)}"
+        size="${ms}"
+        placeholder="ackord">
+        <button class="variant-btn variant-btn--add"
+          data-name="${escHtml(name)}"
+          data-mi="${mi}"
+          onclick="addMeasureToTemplate('${escHtml(name)}', ${mi})">+</button>`;
+      if (measures.length > 1) {
+        html += `<button class="variant-btn variant-btn--danger"
+          data-name="${escHtml(name)}"
+          data-mi="${mi}"
+          onclick="removeMeasureFromTemplate('${escHtml(name)}', ${mi})">−</button>`;
+      }
+    });
+
+    html += `</div></div>`;
+  });
+
+  html += `</div></div>`;
 
   html += `</div>`;
   return html;
