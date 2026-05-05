@@ -31,10 +31,13 @@ const CACHE_NAME = 'korhaftet-v3';  // öka versionsnumret
 
 - `songs/index.json` — lista med filnamn för aktiva låtar, styr menyordningen
 - `songs/*.json` — en fil per aktiv låt
+- `songs/template.json` — mall för nya låtar
 - `songs/archive/` — mapp för arkiverade låtar
 - `songs/archive/index.json` — lista med arkiverade låtfilnamn
 - `songs/archive/*.json` — arkiverade låtfiler
 - Song-filer hämtas **network-first** av service workern, så de uppdateras utan cache-bump
+
+**Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för steg-för-steg instruktioner när du lägger till nya låtar.**
 
 ## Arkivering
 

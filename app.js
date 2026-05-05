@@ -441,7 +441,7 @@ function renderSong() {
   if (controls) controls.style.display = songEditorMode ? 'none' : '';
 
   if (variantEditorMode) {
-    const display = document.querySelector('.sheet-display');
+    const display = document.getElementById('songDisplay');
     if (display) display.innerHTML = renderVariantEditor();
     return;
   }
@@ -781,7 +781,7 @@ function transposeAllChords(semitones) {
   });
   const currentKey = variantEditorSong.key || 'C';
   variantEditorSong.key = transposeChordName(currentKey, semitones);
-  renderVariantEditor();
+  renderSong();
 }
 
 function extendAllMeasures() {
@@ -790,7 +790,7 @@ function extendAllMeasures() {
     const tpl = variantEditorSong.chordTemplates[tplName];
     variantEditorSong.chordTemplates[tplName] = tpl + '|';
   });
-  renderVariantEditor();
+  renderSong();
 }
 
 function shortenAllMeasures() {
@@ -802,7 +802,7 @@ function shortenAllMeasures() {
       variantEditorSong.chordTemplates[tplName] = measures.join('|');
     }
   });
-  renderVariantEditor();
+  renderSong();
 }
 
 function openVariantSaveDialog() {
@@ -879,7 +879,7 @@ function closeVariantSaveDialog() {
 function saveVariantSong() {
   const title = document.getElementById('variantSaveTitle')?.value.trim();
   const artist = document.getElementById('variantSaveArtist')?.value.trim();
-  const key = document.getElementById('variantSaveKey')?.value.trim();
+  let key = document.getElementById('variantSaveKey')?.value.trim();
 
   // Validation
   if (!title) {
@@ -890,6 +890,11 @@ function saveVariantSong() {
   if (!variantEditorSong) {
     alert('Ingen variant att spara.');
     return;
+  }
+
+  // Validate key
+  if (key && !lookupChord(key)) {
+    key = 'C';
   }
 
   // Prepare the new song object
@@ -1694,6 +1699,9 @@ Object.assign(window, {
   toggleHideChords, transpose, toggleSongEditor, toggleAutoScroll,
   changeScrollSpeed, transposeSongData, selectSong, renderSongList,
   toggleSettingsSheet, closeSettingsSheet, toggleArchiveSong, showArchivePage,
+  toggleVariantEditor, closeVariantEditor, closeVariantSaveDialog, saveVariantSong,
+  transposeAllChords, extendAllMeasures, shortenAllMeasures, openVariantSaveDialog,
+  updateTemplateMeasure, addMeasureToTemplate, removeMeasureFromTemplate,
 });
 
 // ─── Service Worker ───

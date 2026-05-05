@@ -1,0 +1,31 @@
+{
+  "title": "Låtens namn här",
+  "artist": "Artist eller Traditionell",
+  "key": "Am",
+  "timeSignature": "4/4",
+  "difficulty": "Lätt",
+  "chordTemplates": {
+    "vers": ".|Am|Am|Dm|Am",
+    "refräng": ".|C|F|G|C"
+  },
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "@vers",
+          "l": "Primera |línea"
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "@refräng",
+          "l": "Refräng |línea"
+        }
+      ]
+    }
+  ]
+}
