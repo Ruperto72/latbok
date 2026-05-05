@@ -1248,7 +1248,7 @@ function renderSongEditor() {
       <button class="sed-btn sed-transpose-btn" onclick="transposeSongData(1)">♯</button>
     </div>
     <button class="sed-save-btn"${isLocal ? '' : ' disabled'}${songErrors.length > 0 ? ' title="Åtgärda valideringsfel först"' : ''}>Spara till fil</button>
-    <button class="sed-btn" id="sed-clone-btn">🔄 Klona</button>
+    ${isLocal ? `<button class="sed-btn" id="sed-clone-btn">🔄 Klona</button>` : ''}
     <button class="sed-btn sed-btn--danger" onclick="toggleArchiveSong()"${isLocal ? '' : ' disabled'}>${archiveLabel}</button>
     <span class="sed-save-note">${isLocal ? `songs/${escHtml(s._filename || '?')}` : 'Sparning fungerar bara på localhost'}</span>
     <span class="sed-save-error" id="sed-save-error"></span>
