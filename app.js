@@ -897,55 +897,56 @@ function saveVariantSong() {
     key = 'C';
   }
 
+  // Generate filename from title
+  let filename = title.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '') + '.json';
+
   // Prepare the new song object
   const newSong = {
     title: title,
     artist: artist || 'Okänd',
     key: key || variantEditorSong.key || 'C',
+    timeSignature: variantEditorSong.timeSignature || '4/4',
+    difficulty: variantEditorSong.difficulty || 'Lätt',
     sections: variantEditorSong.sections || [],
     chordTemplates: variantEditorSong.chordTemplates || {},
-    _filename: null,  // Will be set by backend
   };
 
-  // Send to backend
+  // Send to backend with proper structure
   fetch('/save-song', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newSong),
+    body: JSON.stringify({
+      filename: filename,
+      content: newSong,
+    }),
   })
     .then(resp => {
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      return resp.json();
     })
-    .then(data => {
-      if (data.success && data.filename) {
-        // Add to songs array
-        newSong._filename = data.filename;
-        newSong.isArchived = false;
-        songs.push(newSong);
+    .then(() => {
+      // Add to songs array
+      newSong._filename = filename;
+      newSong.isArchived = false;
+      songs.push(newSong);
 
-        // Update songs/index.json
-        return fetch('/update-songs-index', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'add',
-            filename: data.filename,
-            archive: false,
-          }),
-        });
-      } else {
-        throw new Error(data.error || 'Okänt fel vid sparning');
-      }
+      // Update songs/index.json
+      return fetch('/save-song', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: 'index.json',
+          content: songs.map(s => s._filename),
+        }),
+      });
     })
     .then(resp => {
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      return resp.json();
     })
     .then(() => {
       closeVariantSaveDialog();
       alert(`Låten "${title}" sparades!`);
       closeVariantEditor();
+      loadSongs(true);
     })
     .catch(err => {
       console.error('Failed to save variant:', err);
