@@ -1121,6 +1121,24 @@ function renderEditorLine(s, line, si, li, tplNames) {
   return html;
 }
 
+function renderVariantEditor() {
+  const s = variantEditorSong;
+  if (!s) return '';
+
+  let html = `<div class="variant-editor">`;
+
+  // Header
+  html += `<div class="variant-editor-header">
+    <h2>Variant av ${escHtml(s._originalFilename ? songs.find(song => song._filename === s._originalFilename)?.title || 'låt' : 'låt')}</h2>
+    <button class="variant-editor-back" onclick="closeVariantEditor()">← Tillbaka</button>
+  </div>`;
+
+  // Rest of sections will go here (placeholder for now)
+
+  html += `</div>`;
+  return html;
+}
+
 function attachEditorHandlers() {
   const s = songs[currentSong];
 
