@@ -1165,12 +1165,12 @@ body {
   background: rgba(232,200,106,0.1);
 }
 
-.variant-preview { background: #fff; border: 1px solid #ddd; padding: 1rem; font-family: monospace; }
+.variant-preview { background: var(--bg, #fff); border: 1px solid #ddd; padding: 1rem; font-family: monospace; }
 .variant-section { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; }
-.variant-section h3 { margin: 0 0 0.5rem 0; color: #1976d2; }
+.variant-section h3 { margin: 0 0 0.5rem 0; color: var(--primary, #1976d2); }
 .variant-line { margin-bottom: 0.5rem; }
-.variant-chords { color: #1976d2; font-weight: bold; word-spacing: 0.5rem; }
-.variant-text { color: #333; word-spacing: 0.5rem; }
+.variant-chords { color: var(--primary, #1976d2); font-weight: bold; word-spacing: 0.5rem; }
+.variant-text { color: var(--text, #333); word-spacing: 0.5rem; }
 
 /* ─── Variant Save Dialog ─── */
 .variant-save-dialog-backdrop {
