@@ -1165,6 +1165,115 @@ body {
   background: rgba(232,200,106,0.1);
 }
 
+/* ─── Variant Save Dialog ─── */
+.variant-save-dialog-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.variant-save-dialog-backdrop.active {
+  display: flex;
+}
+
+.variant-save-dialog {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.variant-save-dialog-header {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.variant-save-dialog-group {
+  margin-bottom: 12px;
+}
+
+.variant-save-dialog-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.variant-save-dialog-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.variant-save-dialog-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(232,200,106,0.2);
+}
+
+.variant-save-dialog-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.variant-save-dialog-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+.variant-save-dialog-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.variant-save-dialog-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f0f0f;
+  font-weight: 600;
+}
+
+.variant-save-dialog-btn--primary:hover {
+  opacity: 0.9;
+}
+
+.variant-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f0f0f;
+  font-weight: 600;
+  padding: 8px 12px;
+  height: auto;
+}
+
+.variant-btn--primary:hover {
+  opacity: 0.9;
+}
+
 .mobile-bar__scroll.active {
   background: var(--accent);
   color: #0f0f0f;

@@ -805,6 +805,149 @@ function shortenAllMeasures() {
   renderVariantEditor();
 }
 
+function openVariantSaveDialog() {
+  // Create backdrop
+  const backdrop = document.createElement('div');
+  backdrop.className = 'variant-save-dialog-backdrop';
+  backdrop.id = 'variantSaveDialogBackdrop';
+
+  // Create dialog
+  const dialog = document.createElement('div');
+  dialog.className = 'variant-save-dialog';
+  dialog.id = 'variantSaveDialog';
+  dialog.setAttribute('role', 'dialog');
+  dialog.setAttribute('aria-label', 'Spara variant som ny låt');
+
+  dialog.innerHTML = `
+    <div class="variant-save-dialog-header">Spara som ny låt</div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Titel</label>
+      <input type="text" class="variant-save-dialog-input" id="variantSaveTitle" placeholder="t.ex. Min variant">
+    </div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Artist</label>
+      <input type="text" class="variant-save-dialog-input" id="variantSaveArtist" placeholder="t.ex. Okänd">
+    </div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Tonart (frivilligt)</label>
+      <input type="text" class="variant-save-dialog-input" id="variantSaveKey" placeholder="t.ex. G">
+    </div>
+    <div class="variant-save-dialog-buttons">
+      <button class="variant-save-dialog-btn" onclick="closeVariantSaveDialog()">Avbryt</button>
+      <button class="variant-save-dialog-btn variant-save-dialog-btn--primary" onclick="saveVariantSong()">Spara</button>
+    </div>
+  `;
+
+  backdrop.appendChild(dialog);
+  document.body.appendChild(backdrop);
+
+  // Make backdrop active
+  setTimeout(() => backdrop.classList.add('active'), 0);
+
+  // Focus title input
+  document.getElementById('variantSaveTitle').focus();
+
+  // Close on Escape
+  const onEscape = (e) => {
+    if (e.key === 'Escape') {
+      closeVariantSaveDialog();
+    }
+  };
+  document.addEventListener('keydown', onEscape);
+
+  // Close on backdrop click
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) {
+      closeVariantSaveDialog();
+    }
+  });
+
+  // Store listener for cleanup
+  backdrop._escapeListener = onEscape;
+}
+
+function closeVariantSaveDialog() {
+  const backdrop = document.getElementById('variantSaveDialogBackdrop');
+  if (backdrop) {
+    if (backdrop._escapeListener) {
+      document.removeEventListener('keydown', backdrop._escapeListener);
+    }
+    backdrop.remove();
+  }
+}
+
+function saveVariantSong() {
+  const title = document.getElementById('variantSaveTitle')?.value.trim();
+  const artist = document.getElementById('variantSaveArtist')?.value.trim();
+  const key = document.getElementById('variantSaveKey')?.value.trim();
+
+  // Validation
+  if (!title) {
+    alert('Du måste ange en titel.');
+    return;
+  }
+
+  if (!variantEditorSong) {
+    alert('Ingen variant att spara.');
+    return;
+  }
+
+  // Prepare the new song object
+  const newSong = {
+    title: title,
+    artist: artist || 'Okänd',
+    key: key || variantEditorSong.key || 'C',
+    sections: variantEditorSong.sections || [],
+    chordTemplates: variantEditorSong.chordTemplates || {},
+    _filename: null,  // Will be set by backend
+  };
+
+  // Send to backend
+  fetch('/save-song', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newSong),
+  })
+    .then(resp => {
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      return resp.json();
+    })
+    .then(data => {
+      if (data.success && data.filename) {
+        // Add to songs array
+        newSong._filename = data.filename;
+        newSong.isArchived = false;
+        songs.push(newSong);
+
+        // Update songs/index.json
+        return fetch('/update-songs-index', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'add',
+            filename: data.filename,
+            archive: false,
+          }),
+        });
+      } else {
+        throw new Error(data.error || 'Okänt fel vid sparning');
+      }
+    })
+    .then(resp => {
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      return resp.json();
+    })
+    .then(() => {
+      closeVariantSaveDialog();
+      alert(`Låten "${title}" sparades!`);
+      closeVariantEditor();
+    })
+    .catch(err => {
+      console.error('Failed to save variant:', err);
+      alert(`Fel vid sparning: ${err.message}`);
+    });
+}
+
 function addMeasureToTemplate(tplName, afterIndex) {
   if (!variantEditorSong || !variantEditorSong.chordTemplates[tplName]) return;
 
@@ -1278,6 +1421,11 @@ function renderVariantEditor() {
       <button class="variant-btn variant-macro-btn" onclick="extendAllMeasures()">➕ Förläng verser</button>
       <button class="variant-btn variant-macro-btn" onclick="shortenAllMeasures()">➖ Förkorta verser</button>
     </div>
+  </div>`;
+
+  // Save Section
+  html += `<div class="variant-editor-card">
+    <button class="variant-btn variant-btn--primary" onclick="openVariantSaveDialog()">💾 Spara som ny låt</button>
   </div>`;
 
   html += `</div>`;
