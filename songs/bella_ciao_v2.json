@@ -1,0 +1,160 @@
+{
+  "title": "Bella Ciao v.2",
+  "artist": "Traditionell (italiensk)",
+  "key": "Am",
+  "timeSignature": "4/4",
+  "difficulty": "Lätt",
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "      Am",
+          "l": "Una mattina mi sono alzato,"
+        },
+        {
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "    Dm                 Am ",
+          "l": "Una mattina mi sono alzato,"
+        },
+        {
+          "c": "      E7              Em",
+          "l": "e ho trovato l'invasor."
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "      Am",
+          "l": "O partigiano, portami via,"
+        },
+        {
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "       Dm             Am ",
+          "l": "O partigiano, portami via,"
+        },
+        {
+          "c": "        E7        Em",
+          "l": "ché mi sento di morir."
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "        Am",
+          "l": "E se io muoio da partigiano,"
+        },
+        {
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "        Dm            Am ",
+          "l": "E se io muoio da partigiano,"
+        },
+        {
+          "c": "      E7         Em",
+          "l": "tu mi devi seppellir."
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "         Am",
+          "l": "E seppellire lassù in montagna,"
+        },
+        {
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "        Dm               Am ",
+          "l": "E seppellire lassù in montagna,"
+        },
+        {
+          "c": "        E7              Em",
+          "l": "Sotto l'ombra di un bel fior."
+        }
+      ]
+    },
+    {
+      "label": "Vers 5",
+      "lines": [
+        {
+          "c": "      Am",
+          "l": "E le genti che passeranno,"
+        },
+        {
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "      Dm            Am ",
+          "l": "E le genti che passeranno,"
+        },
+        {
+          "c": "      E7              Em",
+          "l": "ti diranno: Che bel fior!"
+        }
+      ]
+    },
+    {
+      "label": "Vers 6",
+      "lines": [
+        {
+          "c": "            Am",
+          "l": "È questo il fiore del partigiano,"
+        },
+        {
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "             Dm            Am ",
+          "l": "È questo il fiore del partigiano,"
+        },
+        {
+          "c": "      E7        Em",
+          "l": "morto per la libertà!"
+        }
+      ]
+    }
+  ],
+  "isArchived": false
+}
