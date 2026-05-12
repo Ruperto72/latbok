@@ -4,21 +4,29 @@
   "key": "Am",
   "timeSignature": "4/4",
   "difficulty": "Lätt",
-  "chordTemplates": {
-    "vers_a": ".|Am|Am|Am|A7",
-    "vers_b": ".|Dm|Am|E7|Am"
-  },
   "sections": [
     {
       "label": "Vers 1",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "Una |mattina mi sono |alzato, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "c": "      Am",
+          "l": "Una mattina mi sono alzato,"
         },
         {
-          "c": "@vers_b",
-          "l": "Una |mattina mi sono |alzato e ho |trovato l'inva |sor."
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "    Dm                 Am ",
+          "l": "Una mattina mi sono alzato,"
+        },
+        {
+          "c": "      E7              Em",
+          "l": "e ho trovato l'invasor."
         }
       ]
     },
@@ -26,12 +34,24 @@
       "label": "Vers 2",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "O parti|giano, portami |via, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "c": "      Am",
+          "l": "O partigiano, portami via,"
         },
         {
-          "c": "@vers_b",
-          "l": "O parti|giano, portami |via, |ché mi sento di |morir."
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "       Dm             Am ",
+          "l": "O partigiano, portami via,"
+        },
+        {
+          "c": "        E7        Em",
+          "l": "ché mi sento di morir."
         }
       ]
     },
@@ -39,12 +59,24 @@
       "label": "Vers 3",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "E se io |muoio da |partigiano, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "c": "        Am",
+          "l": "E se io muoio da partigiano,"
         },
         {
-          "c": "@vers_b",
-          "l": "E se io |muoio da |partigiano, tu mi |devi |seppellir."
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "        Dm            Am ",
+          "l": "E se io muoio da partigiano,"
+        },
+        {
+          "c": "      E7         Em",
+          "l": "tu mi devi seppellir."
         }
       ]
     },
@@ -52,12 +84,24 @@
       "label": "Vers 4",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "E |seppellire lassù in |montagna, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "c": "         Am",
+          "l": "E seppellire lassù in montagna,"
         },
         {
-          "c": "@vers_b",
-          "l": "E |seppellire lassù in |montagna, sotto |l'ombra di un bel |fior."
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "        Dm               Am ",
+          "l": "E seppellire lassù in montagna,"
+        },
+        {
+          "c": "        E7              Em",
+          "l": "Sotto l'ombra di un bel fior."
         }
       ]
     },
@@ -65,12 +109,24 @@
       "label": "Vers 5",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "E le |genti che |passeranno, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "c": "      Am",
+          "l": "E le genti che passeranno,"
         },
         {
-          "c": "@vers_b",
-          "l": "E le |genti che |passeranno, ti |diranno: Che bel |fior!"
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "      Dm            Am ",
+          "l": "E le genti che passeranno,"
+        },
+        {
+          "c": "      E7              Em",
+          "l": "ti diranno: Che bel fior!"
         }
       ]
     },
@@ -78,14 +134,27 @@
       "label": "Vers 6",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "È questo il |fiore del |partigiano, O bella, |ciao! Bella, ciao! Bella, |ciao, ciao, ciao!"
+          "c": "            Am",
+          "l": "È questo il fiore del partigiano,"
         },
         {
-          "c": "@vers_b",
-          "l": "È questo il |fiore del |partigiano, |morto per la |libertà!"
+          "c": "         Am",
+          "l": "O bella, ciao! Bella, ciao!"
+        },
+        {
+          "c": "        A7",
+          "l": "Bella, ciao, ciao, ciao!"
+        },
+        {
+          "c": "             Dm            Am ",
+          "l": "È questo il fiore del partigiano,"
+        },
+        {
+          "c": "      E7        Em",
+          "l": "morto per la libertà!"
         }
       ]
     }
-  ]
+  ],
+  "isArchived": false
 }
