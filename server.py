@@ -20,7 +20,7 @@ class Handler(SimpleHTTPRequestHandler):
                 filename = data.get('filename')
                 content = data.get('content')
 
-                if not filename or '/' in filename or '\\' in filename or not filename.endswith('.json'):
+                if not filename or '/' in filename or '\\' in filename or ':' in filename or not filename.endswith('.json'):
                     self._respond(400, 'Ogiltigt filnamn')
                     return
 
@@ -42,8 +42,12 @@ class Handler(SimpleHTTPRequestHandler):
                 data = json.loads(body)
                 filename = data.get('filename')
 
-                if not filename or '/' in filename or '\\' in filename or not filename.endswith('.json'):
+                if not filename or '/' in filename or '\\' in filename or ':' in filename or not filename.endswith('.json'):
                     self._respond(400, 'Ogiltigt filnamn')
+                    return
+
+                if filename in ('index.json', 'template.json'):
+                    self._respond(400, 'Filen kan inte arkiveras')
                     return
 
                 active_path = os.path.join('songs', filename)

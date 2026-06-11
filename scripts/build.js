@@ -1,5 +1,5 @@
 import { build } from 'esbuild';
-import { cpSync, mkdirSync, readdirSync } from 'fs';
+import { cpSync, mkdirSync, readdirSync, rmSync } from 'fs';
 import { join } from 'path';
 
 const DIST = 'dist';
@@ -31,7 +31,8 @@ const staticFiles = [
 
 staticFiles.forEach(f => cpSync(f, join(DIST, f)));
 
-// Copy songs directory
+// Copy songs directory (rensa först så borttagna låtar inte ligger kvar)
+rmSync(join(DIST, 'songs'), { recursive: true, force: true });
 mkdirSync(join(DIST, 'songs'), { recursive: true });
 readdirSync('songs').forEach(f => {
   if (f.endsWith('.json')) {

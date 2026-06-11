@@ -13,7 +13,6 @@ const COL = {
   COUNT: 2,  // antal lägen (för cykling)
 };
 
-const COL_LABELS = ['1 kolumn', '2 kolumner'];
 const COL_CLASSES = [' columns-1c', ' columns-2c'];
 
 // Songs loaded dynamically from songs/ folder
@@ -194,11 +193,11 @@ function renderSongList(filter = '') {
     div.setAttribute('tabindex', '0');
     div.setAttribute('aria-current', i === currentSong ? 'true' : 'false');
     div.innerHTML = `
-      <div class="song-title">${s.title}</div>
-      <div class="song-artist">${s.artist}</div>
+      <div class="song-title">${escHtml(s.title)}</div>
+      <div class="song-artist">${escHtml(s.artist)}</div>
       <div class="song-meta">
-        <span class="tag">${s.key}</span>
-        <span class="tag">${s.difficulty}</span>
+        <span class="tag">${escHtml(s.key)}</span>
+        <span class="tag">${escHtml(s.difficulty)}</span>
         ${s.bpm ? `<span class="tag">${s.bpm} bpm</span>` : ''}
       </div>
     `;
@@ -911,7 +910,14 @@ function saveVariantSong() {
   }
 
   // Generate filename from title
-  let filename = title.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '') + '.json';
+  let filename = title.toLowerCase()
+    .replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/é/g, 'e')
+    .replace(/\s+/g, '_').replace(/[^\w_]/g, '') + '.json';
+
+  if (songs.some(s => s._filename === filename)) {
+    alert(`Det finns redan en låt med filnamnet ${filename}. Byt titel.`);
+    return;
+  }
 
   // Prepare the new song object
   const newSong = {
@@ -948,7 +954,7 @@ function saveVariantSong() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           filename: 'index.json',
-          content: songs.map(s => s._filename),
+          content: songs.filter(s => !s.isArchived).map(s => s._filename),
         }),
       });
     })
@@ -1087,10 +1093,10 @@ function showArchivePage() {
       html += `
         <div class="archive-item">
           <div>
-            <div style="font-weight:600; font-size:15px; margin-bottom:2px;">${s.title}</div>
-            <div style="font-size:12px; color:var(--text-dim);">${s.artist}</div>
+            <div style="font-weight:600; font-size:15px; margin-bottom:2px;">${escHtml(s.title)}</div>
+            <div style="font-size:12px; color:var(--text-dim);">${escHtml(s.artist)}</div>
           </div>
-          <button class="sed-btn" onclick="toggleArchiveSong('${s._filename}')">Återställ</button>
+          <button class="sed-btn" onclick="toggleArchiveSong('${escHtml(s._filename)}')">Återställ</button>
         </div>
       `;
     });

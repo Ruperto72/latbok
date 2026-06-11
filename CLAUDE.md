@@ -6,7 +6,7 @@ PWA för körsånger, hostad på GitHub Pages. Ingen backend i produktion — `P
 
 ## Byggsystem
 
-Källkod ligger i roten (`app.js`, `chords.js`, `sw.js`, `style.css`, `index.html`). `dist/` är en publicerbar kopia och hålls manuellt synkroniserad:
+Källkod ligger i roten (`app.js`, `chords.js`, `sw.js`, `style.css`, `index.html`). GitHub Pages serverar direkt från roten — `dist/` är gitignorerad och används bara som lokal byggd kopia:
 
 ```bash
 npm run dist   # bygger dist/ med esbuild + kopierar assets
