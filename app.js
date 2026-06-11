@@ -784,12 +784,24 @@ function transposeAllChords(semitones) {
   renderSong();
 }
 
+// Synkar line.l mot det aktuella antalet takter i chordTemplates för rader
+// som refererar en mall (@tplName), så att text och ackord inte hamnar i otakt.
+function syncTemplateLines() {
+  if (!variantEditorSong) return;
+  variantEditorSong.sections.forEach(sec => {
+    sec.lines.forEach(line => {
+      if (line.c && line.c.startsWith('@')) syncLyricsToChords(line, variantEditorSong);
+    });
+  });
+}
+
 function extendAllMeasures() {
   if (!variantEditorSong || !variantEditorSong.chordTemplates) return;
   Object.keys(variantEditorSong.chordTemplates).forEach(tplName => {
     const tpl = variantEditorSong.chordTemplates[tplName];
     variantEditorSong.chordTemplates[tplName] = tpl + '|';
   });
+  syncTemplateLines();
   renderSong();
 }
 
@@ -802,6 +814,7 @@ function shortenAllMeasures() {
       variantEditorSong.chordTemplates[tplName] = measures.join('|');
     }
   });
+  syncTemplateLines();
   renderSong();
 }
 
@@ -961,7 +974,7 @@ function addMeasureToTemplate(tplName, afterIndex) {
   measures.splice(afterIndex + 1, 0, '');
   variantEditorSong.chordTemplates[tplName] = measures.join('|');
 
-  renderVariantEditor();
+  renderSong();
 }
 
 function removeMeasureFromTemplate(tplName, index) {
@@ -973,7 +986,7 @@ function removeMeasureFromTemplate(tplName, index) {
     variantEditorSong.chordTemplates[tplName] = measures.join('|');
   }
 
-  renderVariantEditor();
+  renderSong();
 }
 
 function updateTemplateMeasure(tplName, index, newChord) {
@@ -983,7 +996,7 @@ function updateTemplateMeasure(tplName, index, newChord) {
   measures[index] = newChord;
   variantEditorSong.chordTemplates[tplName] = measures.join('|');
 
-  renderVariantEditor();
+  renderSong();
 }
 
 async function toggleArchiveSong(filename = null) {
@@ -1005,6 +1018,11 @@ async function toggleArchiveSong(filename = null) {
     isArchived = s.isArchived;
   }
 
+  // Arkiverar vi låten som visas just nu försvinner den ur songs-arrayen,
+  // så currentSong måste återställas - annars visas/redigeras fel låt efter omladdning.
+  const archivingCurrentSong = !isArchived && filename === songs[currentSong]?._filename;
+  const currentFilename = songs[currentSong]?._filename;
+
   const endpoint = isArchived ? '/unarchive-song' : '/archive-song';
   try {
     const resp = await fetch(endpoint, {
@@ -1013,17 +1031,25 @@ async function toggleArchiveSong(filename = null) {
       body: JSON.stringify({ filename })
     });
     if (!resp.ok) throw new Error(await resp.text());
-    
+
+    if (archivingCurrentSong) {
+      songEditorMode = false;
+      variantEditorMode = false;
+      currentSong = 0;
+    }
+
     await reloadSongs();
-    
+
+    if (!archivingCurrentSong) {
+      const newIdx = songs.findIndex(x => x._filename === currentFilename);
+      if (newIdx !== -1) currentSong = newIdx;
+    }
+
     // If we are currently on the archive page, re-render it
     const display = document.getElementById('songDisplay');
     if (display.querySelector('.archive-page')) {
       showArchivePage();
-    } else if (filename === songs[currentSong]?._filename && isArchived) {
-      // If we restored the currently active song
-      renderSong();
-    } else if (!filename) {
+    } else {
       renderSong();
     }
   } catch (e) {
@@ -1106,7 +1132,8 @@ function transposeSongData(semitones) {
 
 // Hjälpfunktion för att reparera rader där texten saknar taktstreck (|)
 function syncLyricsToChords(line, s) {
-  const cStr = line.c.startsWith('@') ? (s.chordTemplates?.[line.c.slice(1)] || '') : (line.c || '');
+  const c = line.c || '';
+  const cStr = c.startsWith('@') ? (s.chordTemplates?.[c.slice(1)] || '') : c;
   const cCount = cStr.split('|').length;
   const lParts = (line.l || '').split('|');
   if (lParts.length !== cCount) {
@@ -1563,7 +1590,7 @@ function attachEditorHandlers() {
       const si = +el.dataset.si, li = +el.dataset.li;
       const line = s.sections[si].lines[li];
       if (el.value === '__custom__') {
-        const oldKey = line.c.startsWith('@') ? line.c.slice(1) : '';
+        const oldKey = (line.c || '').startsWith('@') ? line.c.slice(1) : '';
         line.c = s.chordTemplates?.[oldKey] || '';
       } else {
         const tplKey = el.value.slice(1);

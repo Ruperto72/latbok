@@ -5,7 +5,10 @@ Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till 
 
 import json
 import os
+import threading
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+
+index_lock = threading.Lock()
 
 class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):
@@ -19,6 +22,10 @@ class Handler(SimpleHTTPRequestHandler):
 
                 if not filename or '/' in filename or '\\' in filename or not filename.endswith('.json'):
                     self._respond(400, 'Ogiltigt filnamn')
+                    return
+
+                if content is None:
+                    self._respond(400, 'Saknar innehåll (content)')
                     return
 
                 path = os.path.join('songs', filename)
@@ -48,17 +55,18 @@ class Handler(SimpleHTTPRequestHandler):
                 os.makedirs(archive_dir, exist_ok=True)
 
                 def update_index(idx_path, item, add=True):
-                    items = []
-                    if os.path.exists(idx_path):
-                        with open(idx_path, 'r', encoding='utf-8') as f:
-                            items = json.load(f)
-                    if add and item not in items:
-                        items.append(item)
-                        items.sort()
-                    elif not add and item in items:
-                        items.remove(item)
-                    with open(idx_path, 'w', encoding='utf-8') as f:
-                        json.dump(items, f, ensure_ascii=False, indent=2)
+                    with index_lock:
+                        items = []
+                        if os.path.exists(idx_path):
+                            with open(idx_path, 'r', encoding='utf-8') as f:
+                                items = json.load(f)
+                        if add and item not in items:
+                            items.append(item)
+                            items.sort()
+                        elif not add and item in items:
+                            items.remove(item)
+                        with open(idx_path, 'w', encoding='utf-8') as f:
+                            json.dump(items, f, ensure_ascii=False, indent=2)
 
                 if self.path == '/archive-song':
                     if not os.path.exists(active_path):

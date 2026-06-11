@@ -51,6 +51,14 @@ describe('transposeChordName', () => {
     assert.equal(transposeChordName('F#m7', 2), 'G#m7');
     assert.equal(transposeChordName('Bbm7b5', 1), 'Bm7b5');
   });
+
+  it('spells "downward" transpositions with flats regardless of normalization', () => {
+    // 10 = ((-2) + 12) % 12, dvs samma transponering som -2 men normaliserat till 0–11
+    assert.equal(transposeChordName('F', 10), 'Eb');
+    assert.equal(transposeChordName('Bb', 10), 'Ab');
+    assert.equal(transposeChordName('Cm', 10), 'Bbm');
+    assert.equal(transposeChordName('F', -2), 'Eb');
+  });
 });
 
 // ─── parseChordLine ───

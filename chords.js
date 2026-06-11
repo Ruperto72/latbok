@@ -5,12 +5,16 @@ export const NOTES_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'
 
 export function transposeChordName(chord, semitones) {
   if (semitones === 0) return chord;
+  // Riktning för #/b-val: oberoende av om semitones är normaliserat till 0–11
+  // eller skickas som ett litet negativt tal, ska "neråt" alltid ge b-stavning.
+  let dir = ((semitones % 12) + 12) % 12;
+  if (dir > 6) dir -= 12;
   return chord.replace(/(?<![A-Za-z])([A-G])(#|b)?/g, (match, note, acc) => {
     let idx = NOTES_SHARP.indexOf(note + (acc || ''));
     if (idx === -1) idx = NOTES_FLAT.indexOf(note + (acc || ''));
     if (idx === -1) return match;
-    let newIdx = (idx + semitones + 12) % 12;
-    return semitones >= 0 ? NOTES_SHARP[newIdx] : NOTES_FLAT[newIdx];
+    let newIdx = (((idx + semitones) % 12) + 12) % 12;
+    return dir >= 0 ? NOTES_SHARP[newIdx] : NOTES_FLAT[newIdx];
   });
 }
 
@@ -534,15 +538,7 @@ export function getUniqueChords(song, transposeSemitones) {
       while ((m = regex.exec(flatStr)) !== null) {
         let name = m[1];
         if (transposeSemitones !== 0) {
-          name = name.replace(/(?<![A-Za-z])([A-G])(#|b)?/g, (match, note, acc) => {
-            const SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-            const FLAT = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-            let idx = SHARP.indexOf(note + (acc || ''));
-            if (idx === -1) idx = FLAT.indexOf(note + (acc || ''));
-            if (idx === -1) return match;
-            let newIdx = (idx + transposeSemitones + 12) % 12;
-            return transposeSemitones >= 0 ? SHARP[newIdx] : FLAT[newIdx];
-          });
+          name = transposeChordName(name, transposeSemitones);
         }
         if (!seen.has(name)) {
           seen.add(name);
