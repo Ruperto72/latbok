@@ -85,7 +85,8 @@ async function loadSongs(bustCache = false) {
 
     // Update subtitle with song count
     const subtitle = document.querySelector('.sidebar-header p');
-    if (subtitle) subtitle.textContent = `${songs.length} låtar — ackord & text`;
+    const activeCount = songs.filter(s => !s.isArchived).length;
+    if (subtitle) subtitle.textContent = `${activeCount} låtar — ackord & text`;
 
   } catch (e) {
     console.error('Failed to load song index:', e);
