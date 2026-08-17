@@ -36,6 +36,14 @@ Alla inställningar sparas lokalt på enheten.
 - **Separat arkivsida** — hantera arkivet via "Öppna"-knappen i inställningsmenyn
 - **Återställ snabbt** — flytta tillbaka arkiverade låtar till den aktiva listan med ett klick
 
+### Import från Ultimate Guitar
+Knappen **⭳ Importera från Ultimate Guitar** (sidopanelens fot, eller under ⚙ Inställningar på mobil) öppnar en dialog där du klistrar in ackord/text kopierat från Ultimate Guitars ackordvy:
+- **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Körhäftets format med bibehållen kolumnjustering
+- **Gissar titel/artist/tonart** — från en "Låt by Artist"-rad samt `Key:`/`Capo:`-rader om de finns med i den inklistrade texten (annars fyller du i själv)
+- **Förhandsvisning** — se hur låten tolkats innan du sparar
+- **Spara till fil** — skriver en ny låtfil via den lokala servern (fungerar på localhost), precis som låtredaktören
+- **Kopiera JSON** — fungerar även utan lokal server (t.ex. på GitHub Pages): kopiera den tolkade låten och lägg till den som en ny fil i `songs/` manuellt
+
 ### Låtredaktör (desktop)
 Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i webbläsaren:
 - **Metadata** — titel, artist, tonart, taktart, svårighet

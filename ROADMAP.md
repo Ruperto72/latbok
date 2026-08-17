@@ -23,6 +23,13 @@
 
 ## Genomförda funktioner
 
+### ✅ Import från Ultimate Guitar
+**Mål:** Kunna klistra in ackord/text kopierat från Ultimate Guitar och få det omvandlat
+till en färdig låtfil, istället för att skriva om låtar för hand.
+*(Implementerat 2026-08-17: Dialog i sidopanelen tolkar ackordrad-ovanför-textrad-format
+med `[Vers]`/`[Chorus]`-headers, gissar titel/artist/tonart, visar förhandsvisning och
+sparar via lokal server eller som kopierbar JSON för manuell import på GitHub Pages.)*
+
 ### ✅ Arkivering av låtar
 **Mål:** Flytta låtar till ett arkiv för att hålla det aktiva urvalet rent.
 *(Implementerat 2026-05-05: Låtar döljs från huvudlistan och kan nås, hanteras och återställas från en separat arkivsida.)*

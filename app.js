@@ -4,6 +4,7 @@ import {
   transposeChordName, parseChordLine,
   escHtml, renderChordDiagrams, lookupChord,
   getAllVoicings, chordSVG,
+  parseUgImportText,
 } from './chords.js';
 
 // Column layout modes
@@ -28,6 +29,7 @@ let sidebarHidden = false;
 let songEditorMode = false;
 let variantEditorMode = false;
 let variantEditorSong = null; // Copy of original song being edited
+let ugImportParsed = null; // Senaste tolkningsresultatet från UG-importdialogen
 let storageReady = false;
 
 // ─── Auto-scroll ───
@@ -889,6 +891,32 @@ function closeVariantSaveDialog() {
   }
 }
 
+// Genererar ett snake_case-filnamn från en låttitel (t.ex. "Min Låt" → "min_lat.json").
+function filenameFromTitle(title) {
+  return title.toLowerCase()
+    .replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/é/g, 'e')
+    .replace(/\s+/g, '_').replace(/[^\w_]/g, '') + '.json';
+}
+
+// Sparar en ny låtfil via den lokala servern och lägger till den i songs/index.json.
+// Kastar vid nätverksfel/icke-OK-svar (fångas av anroparen).
+async function saveNewSongToBackend(filename, songObj) {
+  let resp = await fetch('/save-song', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ filename, content: songObj }),
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+  const indexList = songs.filter(s => !s.isArchived).map(s => s._filename).concat(filename);
+  resp = await fetch('/save-song', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ filename: 'index.json', content: indexList }),
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+}
+
 function saveVariantSong() {
   const title = document.getElementById('variantSaveTitle')?.value.trim();
   const artist = document.getElementById('variantSaveArtist')?.value.trim();
@@ -910,10 +938,7 @@ function saveVariantSong() {
     key = 'C';
   }
 
-  // Generate filename from title
-  let filename = title.toLowerCase()
-    .replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/é/g, 'e')
-    .replace(/\s+/g, '_').replace(/[^\w_]/g, '') + '.json';
+  const filename = filenameFromTitle(title);
 
   if (songs.some(s => s._filename === filename)) {
     alert(`Det finns redan en låt med filnamnet ${filename}. Byt titel.`);
@@ -931,38 +956,11 @@ function saveVariantSong() {
     chordTemplates: variantEditorSong.chordTemplates || {},
   };
 
-  // Send to backend with proper structure
-  fetch('/save-song', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      filename: filename,
-      content: newSong,
-    }),
-  })
-    .then(resp => {
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    })
+  saveNewSongToBackend(filename, newSong)
     .then(() => {
-      // Add to songs array
       newSong._filename = filename;
       newSong.isArchived = false;
       songs.push(newSong);
-
-      // Update songs/index.json
-      return fetch('/save-song', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename: 'index.json',
-          content: songs.filter(s => !s.isArchived).map(s => s._filename),
-        }),
-      });
-    })
-    .then(resp => {
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    })
-    .then(() => {
       closeVariantSaveDialog();
       alert(`Låten "${title}" sparades!`);
       closeVariantEditor();
@@ -972,6 +970,204 @@ function saveVariantSong() {
       console.error('Failed to save variant:', err);
       alert(`Fel vid sparning: ${err.message}`);
     });
+}
+
+// ─── Ultimate Guitar-import ───
+
+function isLocalHost() {
+  return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+}
+
+function openUgImportDialog() {
+  ugImportParsed = null;
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'variant-save-dialog-backdrop ug-import-dialog-backdrop';
+  backdrop.id = 'ugImportDialogBackdrop';
+
+  const dialog = document.createElement('div');
+  dialog.className = 'variant-save-dialog ug-import-dialog';
+  dialog.setAttribute('role', 'dialog');
+  dialog.setAttribute('aria-label', 'Importera låt från Ultimate Guitar');
+
+  const local = isLocalHost();
+
+  dialog.innerHTML = `
+    <div class="variant-save-dialog-header">Importera från Ultimate Guitar</div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Klistra in ackord/text (kopierat från Ultimate Guitars ackordvy)</label>
+      <textarea class="variant-save-dialog-input ug-import-textarea" id="ugImportText" rows="12" placeholder="[Vers 1]&#10;G          D&#10;Amazing grace, how sweet the sound&#10;..."></textarea>
+    </div>
+    <div class="ug-import-dialog-row">
+      <button class="variant-save-dialog-btn" id="ugImportParseBtn" onclick="parseUgImportPreview()">🔍 Tolka text</button>
+      <span class="ug-import-dialog-hint">Ackordrad ovanför textrad eller inline som <code>[G]text</code>, sektioner som <code>[Vers]</code>/<code>[Refräng]</code></span>
+    </div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Titel</label>
+      <input type="text" class="variant-save-dialog-input" id="ugImportTitle" placeholder="t.ex. Amazing Grace">
+    </div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Artist</label>
+      <input type="text" class="variant-save-dialog-input" id="ugImportArtist" placeholder="t.ex. Traditionell">
+    </div>
+    <div class="ug-import-dialog-row">
+      <div class="variant-save-dialog-group ug-import-dialog-col">
+        <label class="variant-save-dialog-label">Tonart (frivilligt)</label>
+        <input type="text" class="variant-save-dialog-input" id="ugImportKey" placeholder="t.ex. G">
+      </div>
+      <div class="variant-save-dialog-group ug-import-dialog-col">
+        <label class="variant-save-dialog-label">Svårighetsgrad</label>
+        <select class="variant-save-dialog-input" id="ugImportDifficulty">
+          <option>Lätt</option>
+          <option selected>Medel</option>
+          <option>Svår</option>
+        </select>
+      </div>
+    </div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Förhandsvisning</label>
+      <div class="ug-import-preview" id="ugImportPreview">
+        <p class="ug-preview-empty">Klistra in text och klicka "Tolka text" ovan.</p>
+      </div>
+    </div>
+    <span class="ug-import-copy-note" id="ugImportCopyNote" aria-live="polite"></span>
+    <div class="variant-save-dialog-buttons">
+      <button class="variant-save-dialog-btn" onclick="closeUgImportDialog()">Avbryt</button>
+      <button class="variant-save-dialog-btn" id="ugImportCopyBtn" onclick="copyUgImportJson()" disabled>📋 Kopiera JSON</button>
+      <button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="ugImportSaveBtn" onclick="saveUgImportSong()"${local ? '' : ' disabled'}>💾 Spara till fil</button>
+    </div>
+    ${!local ? '<span class="ug-import-dialog-hint">Sparning fungerar bara på localhost — använd "Kopiera JSON" och lägg filen i songs/ manuellt.</span>' : ''}
+  `;
+
+  backdrop.appendChild(dialog);
+  document.body.appendChild(backdrop);
+
+  setTimeout(() => backdrop.classList.add('active'), 0);
+  document.getElementById('ugImportText').focus();
+
+  const onEscape = (e) => {
+    if (e.key === 'Escape') closeUgImportDialog();
+  };
+  document.addEventListener('keydown', onEscape);
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) closeUgImportDialog();
+  });
+  backdrop._escapeListener = onEscape;
+}
+
+function closeUgImportDialog() {
+  const backdrop = document.getElementById('ugImportDialogBackdrop');
+  if (backdrop) {
+    if (backdrop._escapeListener) document.removeEventListener('keydown', backdrop._escapeListener);
+    backdrop.remove();
+  }
+  ugImportParsed = null;
+}
+
+function parseUgImportPreview() {
+  const textEl = document.getElementById('ugImportText');
+  const previewEl = document.getElementById('ugImportPreview');
+  if (!textEl || !previewEl) return;
+
+  const parsed = parseUgImportText(textEl.value);
+  ugImportParsed = parsed;
+
+  const titleEl = document.getElementById('ugImportTitle');
+  const artistEl = document.getElementById('ugImportArtist');
+  const keyEl = document.getElementById('ugImportKey');
+  if (titleEl && !titleEl.value.trim() && parsed.title) titleEl.value = parsed.title;
+  if (artistEl && !artistEl.value.trim() && parsed.artist) artistEl.value = parsed.artist;
+  if (keyEl && !keyEl.value.trim() && parsed.key) keyEl.value = parsed.key;
+
+  if (!parsed.sections.length) {
+    previewEl.innerHTML = `<p class="ug-preview-empty">Inget kunde tolkas — kontrollera att texten har ackordrader ovanför textrader eller [sektions]-headers.</p>`;
+  } else {
+    previewEl.innerHTML = parsed.sections.map(sec => `
+      <div class="ug-preview-section">
+        <div class="ug-preview-label">${escHtml(sec.label)}</div>
+        ${sec.lines.map(line => `<pre class="ug-preview-line">${escHtml(line.c)}${line.c ? '\n' : ''}${escHtml(line.l)}</pre>`).join('')}
+      </div>
+    `).join('');
+  }
+
+  const saveBtn = document.getElementById('ugImportSaveBtn');
+  const copyBtn = document.getElementById('ugImportCopyBtn');
+  const hasContent = parsed.sections.length > 0;
+  if (saveBtn) saveBtn.disabled = !hasContent || !isLocalHost();
+  if (copyBtn) copyBtn.disabled = !hasContent;
+}
+
+// Bygger ett komplett låtobjekt från senaste tolkningsresultatet + dialogens fält.
+// Returnerar null (och visar en alert) om något krävt saknas.
+function buildUgImportSong() {
+  if (!ugImportParsed || !ugImportParsed.sections.length) {
+    alert('Tolka texten innan du sparar.');
+    return null;
+  }
+  const title = document.getElementById('ugImportTitle')?.value.trim();
+  if (!title) {
+    alert('Du måste ange en titel.');
+    return null;
+  }
+  const artist = document.getElementById('ugImportArtist')?.value.trim();
+  let key = document.getElementById('ugImportKey')?.value.trim();
+  if (key && !lookupChord(key)) key = 'C';
+  const difficulty = document.getElementById('ugImportDifficulty')?.value || 'Medel';
+
+  return {
+    title,
+    artist: artist || 'Okänd',
+    key: key || 'C',
+    timeSignature: '4/4',
+    difficulty,
+    chordTemplates: {},
+    sections: ugImportParsed.sections.map(s => ({ label: s.label, lines: s.lines.map(l => ({ c: l.c, l: l.l })) })),
+  };
+}
+
+async function copyUgImportJson() {
+  const song = buildUgImportSong();
+  if (!song) return;
+  const json = JSON.stringify(song, null, 2);
+  const note = document.getElementById('ugImportCopyNote');
+  try {
+    await navigator.clipboard.writeText(json);
+    if (note) {
+      note.textContent = `Kopierat! Spara som songs/${filenameFromTitle(song.title)} och lägg till filnamnet i songs/index.json.`;
+      setTimeout(() => { if (note) note.textContent = ''; }, 6000);
+    }
+  } catch (e) {
+    console.log(json);
+    alert('Kunde inte kopiera automatiskt (klippbordsåtkomst nekad). JSON:en loggades i konsolen istället.');
+  }
+}
+
+async function saveUgImportSong() {
+  if (!isLocalHost()) {
+    alert('Sparning fungerar bara på localhost. Använd "Kopiera JSON" istället.');
+    return;
+  }
+  const song = buildUgImportSong();
+  if (!song) return;
+
+  const filename = filenameFromTitle(song.title);
+  if (songs.some(s => s._filename === filename)) {
+    alert(`Det finns redan en låt med filnamnet ${filename}. Byt titel.`);
+    return;
+  }
+
+  try {
+    await saveNewSongToBackend(filename, song);
+    song._filename = filename;
+    song.isArchived = false;
+    songs.push(song);
+    closeUgImportDialog();
+    alert(`Låten "${song.title}" importerades!`);
+    loadSongs(true);
+  } catch (err) {
+    console.error('Failed to save UG import:', err);
+    alert(`Fel vid sparning: ${err.message}`);
+  }
 }
 
 function addMeasureToTemplate(tplName, afterIndex) {
@@ -1737,6 +1933,8 @@ Object.assign(window, {
   toggleVariantEditor, closeVariantEditor, closeVariantSaveDialog, saveVariantSong,
   transposeAllChords, extendAllMeasures, shortenAllMeasures, openVariantSaveDialog,
   updateTemplateMeasure, addMeasureToTemplate, removeMeasureFromTemplate,
+  openUgImportDialog, closeUgImportDialog, parseUgImportPreview,
+  copyUgImportJson, saveUgImportSong,
 });
 
 // ─── Service Worker ───

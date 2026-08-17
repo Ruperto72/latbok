@@ -5,6 +5,8 @@ import {
   transposeChordName, parseChordLine,
   lookupChord, toEnharmonic, escHtml,
   getUniqueChords,
+  isUgChordLine, parseUgImportText,
+  isUgInlineChordLine, parseUgInlineChordLine,
 } from '../chords.js';
 
 // ─── transposeChordName ───
@@ -230,5 +232,206 @@ describe('NOTES arrays', () => {
   it('both start with C', () => {
     assert.equal(NOTES_SHARP[0], 'C');
     assert.equal(NOTES_FLAT[0], 'C');
+  });
+});
+
+// ─── isUgChordLine ───
+
+describe('isUgChordLine', () => {
+  it('recognizes a simple chord line', () => {
+    assert.equal(isUgChordLine('G          D'), true);
+  });
+
+  it('recognizes chord lines with extended qualities', () => {
+    assert.equal(isUgChordLine('Am7   Dsus4   G/B   Cmaj7'), true);
+  });
+
+  it('ignores trailing repeat markers like x2', () => {
+    assert.equal(isUgChordLine('C   G   x2'), true);
+    assert.equal(isUgChordLine('C   G   (2x)'), true);
+  });
+
+  it('rejects lyric lines', () => {
+    assert.equal(isUgChordLine('Amazing grace how sweet the sound'), false);
+  });
+
+  it('rejects blank lines', () => {
+    assert.equal(isUgChordLine(''), false);
+    assert.equal(isUgChordLine('   '), false);
+  });
+
+  it('accepts N.C. as a no-chord marker', () => {
+    assert.equal(isUgChordLine('N.C.'), true);
+  });
+});
+
+// ─── parseUgImportText ───
+
+describe('parseUgImportText', () => {
+  it('pairs a chord line with the lyric line below it, preserving alignment', () => {
+    const text = [
+      '[Verse 1]',
+      'G          D',
+      'Amazing grace, how sweet the sound',
+    ].join('\n');
+    const result = parseUgImportText(text);
+    assert.equal(result.sections.length, 1);
+    assert.equal(result.sections[0].label, 'Vers 1');
+    assert.deepEqual(result.sections[0].lines, [
+      { c: 'G          D', l: 'Amazing grace, how sweet the sound' },
+    ]);
+  });
+
+  it('maps common English section names to Swedish labels', () => {
+    const text = [
+      '[Verse]',
+      'C',
+      'Text',
+      '[Chorus]',
+      'G',
+      'Text',
+      '[Bridge]',
+      'Am',
+      'Text',
+    ].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections.map(s => s.label), ['Vers', 'Refräng', 'Brygga']);
+  });
+
+  it('numbers repeated unlabeled sections', () => {
+    const text = [
+      '[Verse]',
+      'C',
+      'Text ett',
+      '[Verse]',
+      'G',
+      'Text två',
+    ].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections.map(s => s.label), ['Vers', 'Vers 2']);
+  });
+
+  it('falls back to auto-numbered verses split by blank lines when there are no headers', () => {
+    const text = [
+      'C          G',
+      'Första raden',
+      '',
+      'D          Am',
+      'Andra raden',
+    ].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections.map(s => s.label), ['Vers 1', 'Vers 2']);
+  });
+
+  it('handles an instrumental chord-only line with no lyric below', () => {
+    const text = ['[Intro]', 'G   D   Em   C'].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections[0].lines, [{ c: 'G   D   Em   C', l: '' }]);
+  });
+
+  it('keeps lyric-only lines with no chords', () => {
+    const text = ['[Verse]', 'Spoken word intro with no chords'].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections[0].lines, [{ c: '', l: 'Spoken word intro with no chords' }]);
+  });
+
+  it('extracts Key and Capo metadata lines without treating them as lyrics', () => {
+    const text = [
+      'Key: G',
+      'Capo: 3rd fret',
+      '[Verse]',
+      'C',
+      'Text',
+    ].join('\n');
+    const result = parseUgImportText(text);
+    assert.equal(result.key, 'G');
+    assert.equal(result.capo, '3rd fret');
+    assert.equal(result.sections[0].lines.length, 1);
+  });
+
+  it('skips common metadata lines like "Tabbed by"', () => {
+    const text = ['Tabbed by: someone', '[Verse]', 'C', 'Text'].join('\n');
+    const result = parseUgImportText(text);
+    assert.equal(result.sections[0].lines.length, 1);
+    assert.equal(result.sections[0].lines[0].l, 'Text');
+  });
+
+  it('detects "Title by Artist" on the first line', () => {
+    const text = ['Wonderwall by Oasis', '[Verse]', 'Em7', 'Text'].join('\n');
+    const result = parseUgImportText(text);
+    assert.equal(result.title, 'Wonderwall');
+    assert.equal(result.artist, 'Oasis');
+  });
+
+  it('returns no sections for empty input', () => {
+    const result = parseUgImportText('');
+    assert.deepEqual(result.sections, []);
+  });
+});
+
+// ─── isUgInlineChordLine ───
+
+describe('isUgInlineChordLine', () => {
+  it('recognizes inline bracket chords mixed with lyrics', () => {
+    assert.equal(isUgInlineChordLine('[G]Amazing [D]grace'), true);
+  });
+
+  it('recognizes a line that is only a single bracket chord', () => {
+    assert.equal(isUgInlineChordLine('[C]'), true);
+  });
+
+  it('does not treat a section header as inline chords', () => {
+    assert.equal(isUgInlineChordLine('[Verse 1]'), false);
+    assert.equal(isUgInlineChordLine('[Chorus]'), false);
+  });
+
+  it('returns false for plain lyric lines without brackets', () => {
+    assert.equal(isUgInlineChordLine('Amazing grace how sweet the sound'), false);
+  });
+});
+
+// ─── parseUgInlineChordLine ───
+
+describe('parseUgInlineChordLine', () => {
+  it('lifts inline chords into a separate chord line at matching positions', () => {
+    const result = parseUgInlineChordLine('[G]Amazing [D]grace');
+    assert.deepEqual(result, { c: 'G       D', l: 'Amazing grace' });
+  });
+
+  it('handles a line with only one inline chord and no lyrics', () => {
+    assert.deepEqual(parseUgInlineChordLine('[C]'), { c: 'C', l: '' });
+  });
+
+  it('keeps colliding adjacent chords at least one space apart', () => {
+    const result = parseUgInlineChordLine('[Am]a[C]b');
+    assert.equal(result.l, 'ab');
+    const chords = result.c.trim().split(/\s+/);
+    assert.deepEqual(chords, ['Am', 'C']);
+  });
+});
+
+// ─── parseUgImportText (inline format) ───
+
+describe('parseUgImportText with inline chords', () => {
+  it('converts inline-bracket lines into c/l pairs', () => {
+    const text = ['[Verse 1]', '[G]Amazing [D]grace, how [Em]sweet the [C]sound'].join('\n');
+    const result = parseUgImportText(text);
+    assert.equal(result.sections.length, 1);
+    assert.equal(result.sections[0].lines.length, 1);
+    assert.equal(result.sections[0].lines[0].l, 'Amazing grace, how sweet the sound');
+    assert.ok(result.sections[0].lines[0].c.includes('G'));
+  });
+
+  it('mixes classic and inline formats in the same song', () => {
+    const text = [
+      '[Verse 1]',
+      'G          D',
+      'Amazing grace, how sweet the sound',
+      '[Chorus]',
+      '[C]Praise [G]God from whom all blessings flow',
+    ].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections.map(s => s.label), ['Vers 1', 'Refräng']);
+    assert.equal(result.sections[1].lines[0].l, 'Praise God from whom all blessings flow');
   });
 });
