@@ -61,6 +61,11 @@ body {
 
 .sidebar-header {
   padding: 64px 24px 20px;
+  /* Installerad som PWA ritas appen kant-i-kant under statusfältet
+     (Android 15+/Chrome tvingar edge-to-edge), så rubriken behöver
+     statusfältets höjd utöver sin vanliga padding. Kräver
+     viewport-fit=cover i index.html för att ge ett värde ≠ 0. */
+  padding-top: calc(64px + env(safe-area-inset-top));
   border-bottom: 1px solid var(--border);
 }
 
@@ -189,6 +194,7 @@ body {
 
 .song-display {
   padding: 28px 32px;
+  padding-top: calc(28px + env(safe-area-inset-top));
   width: 100%;
   overflow-x: hidden;
 }
@@ -624,7 +630,10 @@ body {
   .overlay.open { display: block; }
   .main { margin-left: 0; }
 
-  .song-display { padding: 18px 12px; }
+  .song-display {
+    padding: 18px 12px;
+    padding-top: calc(18px + env(safe-area-inset-top));
+  }
   .columns-2c .song-body { column-count: 1; width: auto; }
 
   /* Mobil: hela raden fyller bredden — taktgrupper stretchar istället för att bara
