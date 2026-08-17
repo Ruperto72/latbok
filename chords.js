@@ -28,6 +28,150 @@ export function parseChordLine(chordStr) {
   return chords;
 }
 
+// ─── Ultimate Guitar-import ───
+// Tolkar text kopierad från Ultimate Guitars ackord-vy (klassiskt format med
+// ackordrad ovanför textrad, sektioner markerade med "[Vers]"-headers) och
+// bygger om den till Körhäftets låt-schema ({ label, lines: [{c, l}] }).
+// Eftersom kolumnpositionen i den inklistrade texten redan är korrekt
+// (ackordet står över den stavelse det hör till) sparas raderna rakt av som
+// c = ackordraden, l = textraden — chord-tag-positioneringen i renderSong()
+// bygger redan på tecken-index (parseChordLine), så ingen omräkning behövs.
+
+const UG_CHORD_TOKEN_RE = /^(?:N\.?C\.?|[A-G](?:#|b)?(?:maj7|maj9|maj|min7|min|m|sus2|sus4|sus|dim7|dim|aug|add9|add)?\d{0,2}(?:[#b](?:5|9|11|13))?(?:\/[A-G](?:#|b)?)?)$/i;
+const UG_REPEAT_TOKEN_RE = /^\(?[xX]?\d+[xX]?\)?$/;
+const UG_SECTION_HEADER_RE = /^\[(.+?)\]\s*$/;
+const UG_META_SKIP_RE = /^(tabbed by|tuning|difficulty|tab|album|submitter)\s*[:\-]/i;
+
+const UG_SECTION_LABELS = {
+  'intro': 'Intro',
+  'verse': 'Vers',
+  'chorus': 'Refräng',
+  'refrain': 'Refräng',
+  'pre-chorus': 'Pre-refräng',
+  'prechorus': 'Pre-refräng',
+  'bridge': 'Brygga',
+  'interlude': 'Mellanspel',
+  'instrumental': 'Instrumental',
+  'solo': 'Solo',
+  'outro': 'Outro',
+  'ending': 'Slut',
+  'hook': 'Hook',
+  'breakdown': 'Breakdown',
+};
+
+// Avgör om en rad ser ut att bestå enbart av ackord (ev. blandat med
+// repetitionsmarkörer som "x2") snarare än sångtext.
+export function isUgChordLine(line) {
+  const trimmed = line.trim();
+  if (!trimmed) return false;
+  const tokens = trimmed.split(/\s+/).filter(t => !UG_REPEAT_TOKEN_RE.test(t));
+  if (tokens.length === 0) return false;
+  return tokens.every(t => UG_CHORD_TOKEN_RE.test(t));
+}
+
+// Slår upp en sektionsrubrik ("Verse 1", "Chorus") mot svenska etiketter.
+// counts håller reda på hur många gånger varje ospecificerad rubrik setts
+// tidigare i låten, så upprepade "[Verse]"-headers blir "Vers", "Vers 2", ...
+function mapUgSectionLabel(raw, counts) {
+  const m = raw.trim().match(/^([A-Za-zÀ-ÿ\- ]+?)\s*(\d+)?$/);
+  if (!m) return raw.trim();
+  const baseKey = m[1].trim().toLowerCase().replace(/\s+/g, '-');
+  const explicitNum = m[2];
+  const mapped = UG_SECTION_LABELS[baseKey] || m[1].trim();
+  if (explicitNum) return `${mapped} ${explicitNum}`;
+  counts[baseKey] = (counts[baseKey] || 0) + 1;
+  return counts[baseKey] > 1 ? `${mapped} ${counts[baseKey]}` : mapped;
+}
+
+// Tolkar rå text (kopierad från Ultimate Guitar) till { title, artist, key,
+// capo, sections }. title/artist/key gissas bara om texten börjar med en
+// tydlig "Låtnamn by Artist"-rad resp. "Key: ..."/"Capo: ..."-rader —
+// annars lämnas de tomma så användaren fyller i dem själv.
+export function parseUgImportText(rawText) {
+  const detected = { title: '', artist: '', key: '', capo: '' };
+  const bodyLines = [];
+  let sawFirstLine = false;
+
+  (rawText || '').replace(/\r\n?/g, '\n').split('\n').forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) { bodyLines.push(line); return; }
+
+    const keyMatch = trimmed.match(/^key\s*[:\-]\s*(.+)$/i);
+    if (keyMatch) { detected.key = keyMatch[1].trim(); return; }
+
+    const capoMatch = trimmed.match(/^capo\s*[:\-]\s*(.+)$/i);
+    if (capoMatch) { detected.capo = capoMatch[1].trim(); return; }
+
+    if (UG_META_SKIP_RE.test(trimmed)) return;
+
+    if (!sawFirstLine) {
+      sawFirstLine = true;
+      const byMatch = trimmed.match(/^(.+?)\s+by\s+(.+)$/i);
+      if (byMatch && !isUgChordLine(trimmed) && !UG_SECTION_HEADER_RE.test(trimmed)) {
+        detected.title = byMatch[1].trim();
+        detected.artist = byMatch[2].trim();
+        return;
+      }
+    }
+
+    bodyLines.push(line);
+  });
+
+  const sections = [];
+  const labelCounts = {};
+  let current = null;
+  let currentIsAuto = false;
+  let autoVerseCount = 0;
+  let i = 0;
+
+  while (i < bodyLines.length) {
+    const raw = bodyLines[i];
+    const trimmed = raw.trim();
+
+    if (!trimmed) {
+      // Tom rad avslutar bara en auto-genererad sektion (utan [header]) —
+      // sektioner med explicit header behåller sina tomrader som styckepaus.
+      if (current && currentIsAuto) { current = null; }
+      i++;
+      continue;
+    }
+
+    const headerMatch = trimmed.match(UG_SECTION_HEADER_RE);
+    if (headerMatch) {
+      current = { label: mapUgSectionLabel(headerMatch[1], labelCounts), lines: [] };
+      sections.push(current);
+      currentIsAuto = false;
+      i++;
+      continue;
+    }
+
+    if (!current) {
+      autoVerseCount++;
+      current = { label: `Vers ${autoVerseCount}`, lines: [] };
+      sections.push(current);
+      currentIsAuto = true;
+    }
+
+    if (isUgChordLine(raw)) {
+      const next = bodyLines[i + 1];
+      const nextIsLyric = next !== undefined && next.trim() !== ''
+        && !isUgChordLine(next) && !UG_SECTION_HEADER_RE.test(next.trim());
+      if (nextIsLyric) {
+        current.lines.push({ c: raw.replace(/\s+$/, ''), l: next.replace(/\s+$/, '') });
+        i += 2;
+      } else {
+        current.lines.push({ c: raw.replace(/\s+$/, ''), l: '' });
+        i += 1;
+      }
+    } else {
+      current.lines.push({ c: '', l: raw.replace(/\s+$/, '') });
+      i += 1;
+    }
+  }
+
+  return { ...detected, sections: sections.filter(s => s.lines.length > 0) };
+}
+
 // Chord library: [strings low E to high E] = fret number, 0=open, -1=muted
 // Format: { frets: [E,A,D,G,B,e], fingers: [f,f,f,f,f,f], baseFret: 1 }
 export const CHORD_LIB = {

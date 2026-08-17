@@ -116,6 +116,9 @@ body {
 .sidebar-footer {
   padding: 8px;
   border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .reload-btn {
@@ -1270,6 +1273,101 @@ body {
 
 .variant-save-dialog-btn--primary:hover {
   opacity: 0.9;
+}
+
+.variant-save-dialog-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ─── Ultimate Guitar-import ─── */
+.ug-import-dialog {
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ug-import-textarea {
+  width: 100%;
+  min-height: 160px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  white-space: pre;
+  resize: vertical;
+}
+
+.ug-import-dialog-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.ug-import-dialog-col {
+  flex: 1;
+  min-width: 120px;
+  margin-bottom: 0;
+}
+
+.ug-import-dialog-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.ug-import-dialog-hint code {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.ug-import-preview {
+  background: var(--bg, #fff);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.ug-preview-empty {
+  color: var(--text-dim);
+  font-size: 12px;
+  margin: 0;
+}
+
+.ug-preview-section {
+  margin-bottom: 14px;
+}
+
+.ug-preview-section:last-child {
+  margin-bottom: 0;
+}
+
+.ug-preview-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary, #1976d2);
+  margin-bottom: 4px;
+}
+
+.ug-preview-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 0 0 6px;
+  color: var(--text, #333);
+}
+
+.ug-import-copy-note {
+  display: block;
+  font-size: 11px;
+  color: var(--accent);
+  min-height: 14px;
+  margin-top: 8px;
 }
 
 .variant-btn--primary {

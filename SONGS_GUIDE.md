@@ -1,5 +1,22 @@
 # Guide — Lägga till nya låtar
 
+## Importera från Ultimate Guitar
+
+Har du hittat en låt med ackord på Ultimate Guitar? Klistra in den direkt istället för
+att skriva om den för hand:
+
+1. Kopiera ackord/text från Ultimate Guitars ackordvy (chords-läge, inte tabs)
+2. Klicka **⭳ Importera från Ultimate Guitar** i sidopanelens fot (eller under ⚙ på mobil)
+3. Klistra in texten och klicka **Tolka text** — kontrollera förhandsvisningen
+4. Fyll i/justera titel, artist, tonart och svårighetsgrad
+5. **Spara till fil** (kräver `python server.py` lokalt) eller **Kopiera JSON** och klistra
+   in innehållet i en ny fil i `songs/` manuellt (fungerar även på GitHub Pages)
+6. Glöm inte lägga till filnamnet i `songs/index.json` om du sparade manuellt
+
+Importen kräver ackordrad ovanför textrad (t.ex. `G          D` ovanför lyrics) och
+tolkar `[Vers]`/`[Chorus]`-headers till svenska sektionsnamn. Fungerar bra som
+utgångspunkt — finjustera gärna resultatet i låtredaktören efteråt.
+
 ## Snabbstart
 
 1. Kopiera `songs/template.json`
