@@ -40,10 +40,11 @@ body {
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
+  min-height: 100dvh; /* undviker mobilens vh-bugg (se .main nedan) */
   overflow-x: hidden;
 }
 
-.app { display: flex; min-height: 100vh; }
+.app { display: flex; min-height: 100vh; min-height: 100dvh; }
 
 .sidebar {
   width: 280px;
@@ -177,6 +178,12 @@ body {
   margin-left: 280px;
   transition: margin-left 0.25s ease;
   min-height: 100vh;
+  /* 100vh på mobil mäts ofta mot layout-viewporten som om adressfältet var
+     dolt, vilket gör sidan lite högre än det som faktiskt syns innan man
+     scrollar en gång ("menyn/låt-ytan hamnar utanför skärmen"). 100dvh
+     följer istället det faktiskt synliga området. Äldre webbläsare utan
+     dvh-stöd ignorerar raden och behåller 100vh ovanför. */
+  min-height: 100dvh;
 }
 
 
