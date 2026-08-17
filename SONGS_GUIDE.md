@@ -13,8 +13,12 @@ att skriva om den för hand:
    in innehållet i en ny fil i `songs/` manuellt (fungerar även på GitHub Pages)
 6. Glöm inte lägga till filnamnet i `songs/index.json` om du sparade manuellt
 
-Importen kräver ackordrad ovanför textrad (t.ex. `G          D` ovanför lyrics) och
-tolkar `[Vers]`/`[Chorus]`-headers till svenska sektionsnamn. Fungerar bra som
+Importen tolkar `[Vers]`/`[Chorus]`-headers till svenska sektionsnamn och stödjer
+båda de vanliga UG-formaten:
+- **Ackordrad ovanför textrad** — `G          D` på en egen rad, lyrics under
+- **Inline-ackord** — `[G]Amazing [D]grace` med ackorden i hakparenteser mitt i texten
+
+Du kan blanda båda formaten i samma inklistrade text. Fungerar bra som
 utgångspunkt — finjustera gärna resultatet i låtredaktören efteråt.
 
 ## Snabbstart

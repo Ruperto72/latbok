@@ -115,6 +115,10 @@ body {
 
 .sidebar-footer {
   padding: 8px;
+  /* Bottom-baren (.mobile-bar) är fast positionerad över hela bredden på alla
+     skärmstorlekar och ligger ovanpå sidopanelens fot (samma bottom:0-hörn) —
+     samma padding-trick som .mobile-sheet använder för att inte hamna bakom den. */
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;

@@ -1000,7 +1000,7 @@ function openUgImportDialog() {
     </div>
     <div class="ug-import-dialog-row">
       <button class="variant-save-dialog-btn" id="ugImportParseBtn" onclick="parseUgImportPreview()">🔍 Tolka text</button>
-      <span class="ug-import-dialog-hint">Ackordrad direkt ovanför textrad, sektioner som <code>[Vers]</code>/<code>[Refräng]</code></span>
+      <span class="ug-import-dialog-hint">Ackordrad ovanför textrad eller inline som <code>[G]text</code>, sektioner som <code>[Vers]</code>/<code>[Refräng]</code></span>
     </div>
     <div class="variant-save-dialog-group">
       <label class="variant-save-dialog-label">Titel</label>

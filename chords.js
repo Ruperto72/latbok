@@ -29,13 +29,18 @@ export function parseChordLine(chordStr) {
 }
 
 // ─── Ultimate Guitar-import ───
-// Tolkar text kopierad från Ultimate Guitars ackord-vy (klassiskt format med
-// ackordrad ovanför textrad, sektioner markerade med "[Vers]"-headers) och
-// bygger om den till Körhäftets låt-schema ({ label, lines: [{c, l}] }).
-// Eftersom kolumnpositionen i den inklistrade texten redan är korrekt
-// (ackordet står över den stavelse det hör till) sparas raderna rakt av som
-// c = ackordraden, l = textraden — chord-tag-positioneringen i renderSong()
-// bygger redan på tecken-index (parseChordLine), så ingen omräkning behövs.
+// Tolkar text kopierad från Ultimate Guitars ackord-vy och bygger om den
+// till Körhäftets låt-schema ({ label, lines: [{c, l}] }). Två format stöds:
+//   1. Klassiskt: ackordrad ovanför textrad ("G          D" / lyrics-raden
+//      under). Kolumnpositionen i den inklistrade texten är redan korrekt
+//      (ackordet står över den stavelse det hör till), så raderna sparas
+//      rakt av som c = ackordraden, l = textraden — chord-tag-
+//      positioneringen i renderSong() bygger redan på tecken-index
+//      (parseChordLine), så ingen omräkning behövs.
+//   2. Inline: ackord i hakparenteser mitt i texten ("[G]Amazing [D]grace"),
+//      se isUgInlineChordLine/parseUgInlineChordLine som lyfter ut dem till
+//      en egen ackordrad i samma format som (1).
+// Sektioner markeras med "[Vers]"/"[Chorus]"-headers.
 
 const UG_CHORD_TOKEN_RE = /^(?:N\.?C\.?|[A-G](?:#|b)?(?:maj7|maj9|maj|min7|min|m|sus2|sus4|sus|dim7|dim|aug|add9|add)?\d{0,2}(?:[#b](?:5|9|11|13))?(?:\/[A-G](?:#|b)?)?)$/i;
 const UG_REPEAT_TOKEN_RE = /^\(?[xX]?\d+[xX]?\)?$/;
@@ -67,6 +72,58 @@ export function isUgChordLine(line) {
   const tokens = trimmed.split(/\s+/).filter(t => !UG_REPEAT_TOKEN_RE.test(t));
   if (tokens.length === 0) return false;
   return tokens.every(t => UG_CHORD_TOKEN_RE.test(t));
+}
+
+// Avgör om en rad är en sektionsrubrik, dvs. HELA raden är en enda
+// hakparentes vars innehåll INTE ser ut som ett ackord — "[Vers 1]" är en
+// rubrik, "[C]" är ett inline-ackord (se isUgInlineChordLine).
+function isUgSectionHeader(line) {
+  const m = line.trim().match(UG_SECTION_HEADER_RE);
+  if (!m) return false;
+  return !UG_CHORD_TOKEN_RE.test(m[1].trim());
+}
+
+// Avgör om en rad innehåller ackord skrivna inline i hakparenteser mitt i
+// texten, t.ex. "[G]Amazing [D]grace" — ett vanligt alternativt UG-format
+// till den klassiska ackordrad-ovanför-textrad-varianten.
+export function isUgInlineChordLine(line) {
+  if (isUgSectionHeader(line)) return false;
+  const re = /\[([^\]]+)\]/g;
+  let m;
+  while ((m = re.exec(line)) !== null) {
+    if (UG_CHORD_TOKEN_RE.test(m[1].trim())) return true;
+  }
+  return false;
+}
+
+// Bygger om en rad med inline-ackord ("[G]Amazing [D]grace") till { c, l } —
+// ackorden lyfts ut till en egen ackordrad med samma tecken-position som de
+// hade i den ursprungliga texten (kolliderande grannackord får minst ett
+// mellanslags marginal så de inte växer ihop till en enda token vid rendering).
+export function parseUgInlineChordLine(line) {
+  const re = /\[([^\]]+)\]/g;
+  let m;
+  let lastIndex = 0;
+  let plain = '';
+  const chords = [];
+
+  while ((m = re.exec(line)) !== null) {
+    plain += line.slice(lastIndex, m.index);
+    chords.push({ name: m[1].trim(), pos: plain.length });
+    lastIndex = re.lastIndex;
+  }
+  plain += line.slice(lastIndex);
+
+  let chordLine = '';
+  let cursor = 0;
+  chords.forEach(({ name, pos }) => {
+    const start = Math.max(pos, cursor);
+    if (chordLine.length < start) chordLine += ' '.repeat(start - chordLine.length);
+    chordLine += name;
+    cursor = chordLine.length + 1; // minst ett mellanslag innan nästa ackord
+  });
+
+  return { c: chordLine, l: plain };
 }
 
 // Slår upp en sektionsrubrik ("Verse 1", "Chorus") mot svenska etiketter.
@@ -107,7 +164,7 @@ export function parseUgImportText(rawText) {
     if (!sawFirstLine) {
       sawFirstLine = true;
       const byMatch = trimmed.match(/^(.+?)\s+by\s+(.+)$/i);
-      if (byMatch && !isUgChordLine(trimmed) && !UG_SECTION_HEADER_RE.test(trimmed)) {
+      if (byMatch && !isUgChordLine(trimmed) && !isUgSectionHeader(trimmed)) {
         detected.title = byMatch[1].trim();
         detected.artist = byMatch[2].trim();
         return;
@@ -136,8 +193,8 @@ export function parseUgImportText(rawText) {
       continue;
     }
 
-    const headerMatch = trimmed.match(UG_SECTION_HEADER_RE);
-    if (headerMatch) {
+    if (isUgSectionHeader(trimmed)) {
+      const headerMatch = trimmed.match(UG_SECTION_HEADER_RE);
       current = { label: mapUgSectionLabel(headerMatch[1], labelCounts), lines: [] };
       sections.push(current);
       currentIsAuto = false;
@@ -155,7 +212,7 @@ export function parseUgImportText(rawText) {
     if (isUgChordLine(raw)) {
       const next = bodyLines[i + 1];
       const nextIsLyric = next !== undefined && next.trim() !== ''
-        && !isUgChordLine(next) && !UG_SECTION_HEADER_RE.test(next.trim());
+        && !isUgChordLine(next) && !isUgSectionHeader(next);
       if (nextIsLyric) {
         current.lines.push({ c: raw.replace(/\s+$/, ''), l: next.replace(/\s+$/, '') });
         i += 2;
@@ -163,6 +220,9 @@ export function parseUgImportText(rawText) {
         current.lines.push({ c: raw.replace(/\s+$/, ''), l: '' });
         i += 1;
       }
+    } else if (isUgInlineChordLine(raw)) {
+      current.lines.push(parseUgInlineChordLine(raw.replace(/\s+$/, '')));
+      i += 1;
     } else {
       current.lines.push({ c: '', l: raw.replace(/\s+$/, '') });
       i += 1;
