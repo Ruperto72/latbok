@@ -105,6 +105,32 @@ Lägg till filnamnet i `songs/index.json`:
 ]
 ```
 
+## Häften
+
+Ett häfte är ett urval ur låtpoolen — en kör ser bara sitt eget häfte. Låtfilerna
+ligger alltid platt i `songs/`; häftena pekar bara ut vilka som ingår.
+
+```
+songs/index.json               hela poolen: alla låtfiler
+songs/haften/index.json        [{ "id": "demestkoren", "namn": "Demestkören" }]
+songs/haften/demestkoren.json  ["bella_ciao.json", "parleporten.json", ...]
+```
+
+Ordningen i häftesfilen är menyordningen — den sorteras aldrig om automatiskt.
+`songs/index.json` hålls alfabetiskt sorterad.
+
+**Lägga till en låt i ett häfte för hand:** lägg filnamnet i
+`songs/haften/<id>.json` (och i `songs/index.json` om låten är ny). Kör du
+`python server.py` går det snabbare via kryssrutorna längst ned i låtredigeraren.
+
+**Nytt häfte:** lägg till `{ "id": "...", "namn": "..." }` i
+`songs/haften/index.json` och skapa `songs/haften/<id>.json` med en tom array.
+Id:t måste matcha `[a-z0-9_-]+` — det används i URL:en (`?haft=<id>`) — och
+`__alla` är reserverat.
+
+Samma låt kan ingå i flera häften. Redigerar du låten slår ändringen igenom för
+alla körer som har den.
+
 ## Exempel: Amazing Grace
 
 ```json

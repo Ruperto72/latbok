@@ -40,16 +40,12 @@ readdirSync('songs').forEach(f => {
   }
 });
 
-// Copy archived songs if they exist
-try {
-  mkdirSync(join(DIST, 'songs', 'archive'), { recursive: true });
-  readdirSync(join('songs', 'archive')).forEach(f => {
-    if (f.endsWith('.json')) {
-      cpSync(join('songs', 'archive', f), join(DIST, 'songs', 'archive', f));
-    }
-  });
-} catch (e) {
-  // Ignore if archive doesn't exist
-}
+// Copy häften
+mkdirSync(join(DIST, 'songs', 'haften'), { recursive: true });
+readdirSync(join('songs', 'haften')).forEach(f => {
+  if (f.endsWith('.json')) {
+    cpSync(join('songs', 'haften', f), join(DIST, 'songs', 'haften', f));
+  }
+});
 
 console.log('Build complete → dist/');
