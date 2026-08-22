@@ -22,6 +22,9 @@
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Låtlista">
     <div class="sidebar-header">
       <h1>Körhäftet</h1>
+      <div class="haft-select-wrap" id="haftSelectWrap" style="display:none">
+        <select class="haft-select" id="haftSelect" aria-label="Välj häfte" onchange="changeHaft(this.value)"></select>
+      </div>
       <p aria-live="polite">Laddar låtar...</p>
     </div>
     <div class="song-list" id="songList" role="list" aria-label="Låtar"></div>

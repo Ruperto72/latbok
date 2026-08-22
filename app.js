@@ -6,6 +6,7 @@ import {
   getAllVoicings, chordSVG,
   parseUgImportText,
 } from './chords.js';
+import { ALL_SONGS_ID, parseHaftenIndex, resolveHaftId } from './haften.js';
 
 // Column layout modes
 const COL = {
@@ -18,6 +19,11 @@ const COL_CLASSES = [' columns-1c', ' columns-2c'];
 
 // Songs loaded dynamically from songs/ folder
 let songs = [];
+let haften = [];        // [{ id, namn }] — inklusive __alla lokalt
+let haftLists = {};     // { häftes-id: [filnamn] }
+let currentHaftId = null;
+let currentSongFile = null;
+let haftUrlConsumed = false;
 
 // ─── State ───
 let currentSong = 0;
@@ -46,11 +52,35 @@ const PREFS_KEY = 'korhaftet-preferences';
 async function loadSongs(bustCache = false) {
   const qs = bustCache ? `?t=${Date.now()}` : '';
   try {
-    const indexResp = await fetch(`songs/index.json${qs}`).catch(() => null);
-    const activeFiles = indexResp && indexResp.ok ? await indexResp.json() : [];
+    const poolResp = await fetch(`songs/index.json${qs}`).catch(() => null);
+    const poolFiles = poolResp && poolResp.ok ? await poolResp.json() : [];
 
-    const loadedActive = await Promise.all(
-      activeFiles.map(async (filename) => {
+    const haftenResp = await fetch(`songs/haften/index.json${qs}`).catch(() => null);
+    const haftenRaw = haftenResp && haftenResp.ok ? await haftenResp.json().catch(() => null) : null;
+    const definierade = parseHaftenIndex(haftenRaw);
+
+    haftLists = {};
+    await Promise.all(definierade.map(async (h) => {
+      const resp = await fetch(`songs/haften/${h.id}.json${qs}`).catch(() => null);
+      const lista = resp && resp.ok ? await resp.json().catch(() => null) : null;
+      haftLists[h.id] = Array.isArray(lista) ? lista : [];
+    }));
+
+    haften = definierade.length > 0 && isLocalHost()
+      ? [...definierade, { id: ALL_SONGS_ID, namn: 'Alla låtar' }]
+      : definierade;
+
+    const urlId = haftUrlConsumed ? null : new URLSearchParams(location.search).get('haft');
+    haftUrlConsumed = true;
+    currentHaftId = resolveHaftId(haften, urlId, currentHaftId);
+
+    // Utan häften (saknad eller trasig index.json) visas hela poolen.
+    const files = currentHaftId && currentHaftId !== ALL_SONGS_ID
+      ? haftLists[currentHaftId] || []
+      : poolFiles;
+
+    const loaded = await Promise.all(
+      files.map(async (filename) => {
         try {
           const resp = await fetch(`songs/${filename}${qs}`);
           if (!resp.ok) return null;
@@ -64,7 +94,12 @@ async function loadSongs(bustCache = false) {
       })
     );
 
-    songs = loadedActive.filter(s => s !== null);
+    songs = loaded.filter(s => s !== null);
+
+    const idx = songs.findIndex(s => s._filename === currentSongFile);
+    currentSong = idx !== -1 ? idx : 0;
+
+    renderHaftSelect();
 
     const subtitle = document.querySelector('.sidebar-header p');
     if (subtitle) subtitle.textContent = `${songs.length} låtar — ackord & text`;
@@ -82,6 +117,35 @@ async function loadSongs(bustCache = false) {
   }
 }
 
+function renderHaftSelect() {
+  const wrap = document.getElementById('haftSelectWrap');
+  const sel = document.getElementById('haftSelect');
+  if (!wrap || !sel) return;
+  if (haften.length < 2) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = '';
+  sel.innerHTML = haften.map(h =>
+    `<option value="${escHtml(h.id)}"${h.id === currentHaftId ? ' selected' : ''}>${escHtml(h.namn)}</option>`
+  ).join('');
+}
+
+async function changeHaft(id) {
+  if (id === currentHaftId) return;
+  if (scrollActive) toggleAutoScroll();
+  songEditorMode = false;
+  variantEditorMode = false;
+  variantEditorSong = null;
+  currentHaftId = id;
+  currentSongFile = null;
+  await loadSongs(true);
+  updateMobileEditorBtn();
+  renderSongList();
+  renderSong();
+  savePrefs();
+}
+
 // ─── Persistent Storage (localStorage) ───
 async function loadFromStorage() {
   try {
@@ -96,8 +160,9 @@ async function loadFromStorage() {
       else if (p.twoColumns !== undefined) columnsMode = p.twoColumns ? COL.TWO : COL.ONE;
       if (p.hideChords !== undefined) hideChords = p.hideChords;
       if (p.sidebarHidden !== undefined) sidebarHidden = p.sidebarHidden;
-      if (p.currentSong !== undefined) currentSong = p.currentSong;
       if (p.scrollLevel !== undefined) scrollLevel = p.scrollLevel;
+      if (p.haftId) currentHaftId = p.haftId;
+      if (p.currentSongFile) currentSongFile = p.currentSongFile;
     }
   } catch (e) {}
   storageReady = true;
@@ -106,7 +171,11 @@ async function loadFromStorage() {
 async function savePrefs() {
   if (!storageReady) return;
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ fontSize, columnsMode, hideChords, sidebarHidden, currentSong, scrollLevel }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({
+      fontSize, columnsMode, hideChords, sidebarHidden, scrollLevel,
+      haftId: currentHaftId,
+      currentSongFile: songs[currentSong]?._filename || null,
+    }));
   } catch (e) {
     console.error('Failed to save prefs:', e);
   }
@@ -124,9 +193,6 @@ async function init() {
         `<div style="padding:40px;color:#f66;font-family:monospace">Inga låtar laddades. Kontrollera konsolen.</div>`;
       return;
     }
-
-    // Clamp currentSong to valid range
-    if (currentSong >= songs.length) currentSong = 0;
 
     // Reset editor modes
     if (songEditorMode) { songEditorMode = false; updateMobileEditorBtn(); }
@@ -191,7 +257,6 @@ async function reloadSongs() {
   if (btn) btn.disabled = true;
   try {
     await loadSongs(true);
-    if (currentSong >= songs.length) currentSong = 0;
     renderSongList();
     renderSong();
   } finally {
@@ -386,6 +451,7 @@ function selectSong(idx) {
   if (scrollActive) toggleAutoScroll();
   if (songEditorMode) { songEditorMode = false; updateMobileEditorBtn(); }
   currentSong = idx;
+  currentSongFile = songs[idx]?._filename || null;
   transposeSemitones = 0;
   document.querySelectorAll('.song-item').forEach((el, i) => {
     el.className = 'song-item' + (i === idx ? ' active' : '');
@@ -1788,7 +1854,7 @@ async function saveSongEditorToFile() {
 
 // ─── Expose to HTML onclick handlers ───
 Object.assign(window, {
-  toggleSidebar, reloadSongs, changeFontSize, toggleColumns,
+  toggleSidebar, reloadSongs, changeHaft, changeFontSize, toggleColumns,
   toggleHideChords, transpose, toggleSongEditor, toggleAutoScroll,
   changeScrollSpeed, transposeSongData, selectSong, renderSongList,
   toggleSettingsSheet, closeSettingsSheet,

@@ -103,6 +103,19 @@ body {
   margin-top: 4px;
 }
 
+.haft-select {
+  width: 100%;
+  margin-top: 10px;
+  padding: 7px 9px;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+
 .song-list {
   flex: 1;
   overflow-y: auto;
