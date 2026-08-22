@@ -6,7 +6,7 @@ import {
   getAllVoicings, chordSVG,
   parseUgImportText,
 } from './chords.js';
-import { ALL_SONGS_ID, parseHaftenIndex, resolveHaftId } from './haften.js';
+import { ALL_SONGS_ID, parseHaftenIndex, resolveHaftId, withSongInHaften, haftenForSong } from './haften.js';
 
 // Column layout modes
 const COL = {
@@ -945,21 +945,13 @@ function filenameFromTitle(title) {
     .replace(/\s+/g, '_').replace(/[^\w_]/g, '') + '.json';
 }
 
-// Sparar en ny låtfil via den lokala servern och lägger till den i songs/index.json.
-// Kastar vid nätverksfel/icke-OK-svar (fångas av anroparen).
+// Sparar en ny låtfil via den lokala servern. Servern lägger själv till
+// filnamnet i songs/index.json. Kastar vid nätverksfel/icke-OK-svar.
 async function saveNewSongToBackend(filename, songObj) {
-  let resp = await fetch('/save-song', {
+  const resp = await fetch('/save-song', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filename, content: songObj }),
-  });
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-
-  const indexList = songs.map(s => s._filename).concat(filename);
-  resp = await fetch('/save-song', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ filename: 'index.json', content: indexList }),
   });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 }
@@ -1419,6 +1411,13 @@ function renderSongEditor() {
     html += `</div>`;
   }
 
+  const ingårI = haftenForSong(haftLists, s._filename);
+  const haftCheckboxes = isLocal
+    ? haften.filter(h => h.id !== ALL_SONGS_ID).map(h =>
+        `<label class="sed-haft-check"><input type="checkbox" value="${escHtml(h.id)}"${ingårI.includes(h.id) ? ' checked' : ''} onchange="setSongHaften()"> ${escHtml(h.namn)}</label>`
+      ).join('')
+    : '';
+
   // Save bar
   html += `<div class="sed-save-bar">
     <div class="sed-transpose-group">
@@ -1428,12 +1427,30 @@ function renderSongEditor() {
     </div>
     <button class="sed-save-btn"${isLocal ? '' : ' disabled'}${songErrors.length > 0 ? ' title="Åtgärda valideringsfel först"' : ''}>Spara till fil</button>
     ${isLocal ? `<button class="sed-btn" id="sed-clone-btn">🔄 Klona</button>` : ''}
+    ${haftCheckboxes ? `<span class="sed-save-note">Ingår i:</span>${haftCheckboxes}` : ''}
     <span class="sed-save-note">${isLocal ? `songs/${escHtml(s._filename || '?')}` : 'Sparning fungerar bara på localhost'}</span>
     <span class="sed-save-error" id="sed-save-error"></span>
   </div>`;
 
   html += `</div>`;
   return html;
+}
+
+async function setSongHaften() {
+  const s = songs[currentSong];
+  if (!s || !s._filename) return;
+  const valda = [...document.querySelectorAll('.sed-haft-check input:checked')].map(i => i.value);
+  try {
+    const resp = await fetch('/set-song-haften', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: s._filename, haften: valda }),
+    });
+    if (!resp.ok) throw new Error(await resp.text());
+    haftLists = withSongInHaften(haftLists, s._filename, valda);
+  } catch (e) {
+    alert('Kunde inte uppdatera häften: ' + e.message);
+  }
 }
 
 function renderEditorSection(s, sec, si, tplNames) {
@@ -1868,7 +1885,7 @@ async function saveSongEditorToFile() {
 
 // ─── Expose to HTML onclick handlers ───
 Object.assign(window, {
-  toggleSidebar, reloadSongs, changeHaft, changeFontSize, toggleColumns,
+  toggleSidebar, reloadSongs, changeHaft, setSongHaften, changeFontSize, toggleColumns,
   toggleHideChords, transpose, toggleSongEditor, toggleAutoScroll,
   changeScrollSpeed, transposeSongData, selectSong, renderSongList,
   toggleSettingsSheet, closeSettingsSheet,

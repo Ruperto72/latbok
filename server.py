@@ -5,7 +5,32 @@ Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till 
 
 import json
 import os
+import re
+import threading
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+
+HAFTEN_DIR = os.path.join('songs', 'haften')
+POOL_INDEX = os.path.join('songs', 'index.json')
+ID_RE = re.compile(r'^[a-z0-9_-]+$')
+
+index_lock = threading.Lock()
+
+
+def _read_json(path, default):
+    if not os.path.exists(path):
+        return default
+    with open(path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def _write_json(path, data):
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def _valid_song_filename(name):
+    return bool(name) and not any(c in name for c in '/\\:') and name.endswith('.json')
+
 
 class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):
@@ -28,6 +53,47 @@ class Handler(SimpleHTTPRequestHandler):
                 path = os.path.join('songs', filename)
                 with open(path, 'w', encoding='utf-8') as f:
                     json.dump(content, f, ensure_ascii=False, indent=2)
+
+                if filename not in ('index.json', 'template.json'):
+                    with index_lock:
+                        pool = _read_json(POOL_INDEX, [])
+                        if filename not in pool:
+                            pool.append(filename)
+                            pool.sort()
+                            _write_json(POOL_INDEX, pool)
+
+                self._respond(200, 'OK')
+            except Exception as e:
+                self._respond(500, str(e))
+        elif self.path == '/set-song-haften':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                data = json.loads(body)
+                filename = data.get('filename')
+                valda = data.get('haften')
+
+                if not _valid_song_filename(filename):
+                    self._respond(400, 'Ogiltigt filnamn')
+                    return
+                if not isinstance(valda, list):
+                    self._respond(400, 'haften måste vara en lista')
+                    return
+
+                with index_lock:
+                    for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
+                        hid = h.get('id')
+                        if not hid or not ID_RE.match(hid):
+                            continue
+                        path = os.path.join(HAFTEN_DIR, hid + '.json')
+                        lista = _read_json(path, [])
+                        if hid in valda and filename not in lista:
+                            lista.append(filename)
+                        elif hid not in valda and filename in lista:
+                            lista = [f for f in lista if f != filename]
+                        else:
+                            continue
+                        _write_json(path, lista)
 
                 self._respond(200, 'OK')
             except Exception as e:

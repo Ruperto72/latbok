@@ -2,7 +2,8 @@
 
 ## Projektöversikt
 
-PWA för körsånger, hostad på GitHub Pages. Ingen backend i produktion — `POST /save-song` fungerar bara lokalt via `python server.py`.
+PWA för körsånger, hostad på GitHub Pages. Ingen backend i produktion — `POST /save-song`
+och `POST /set-song-haften` fungerar bara lokalt via `python server.py`.
 
 ## Byggsystem
 
@@ -35,3 +36,18 @@ const CACHE_NAME = 'korhaftet-v3';  // öka versionsnumret
 - Song-filer hämtas **network-first** av service workern, så de uppdateras utan cache-bump
 
 **Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för steg-för-steg instruktioner när du lägger till nya låtar.**
+
+## Häften
+
+Ett häfte är ett urval ur låtpoolen — varje kör ser sitt eget.
+
+- `songs/index.json` — hela poolen, alla låtfiler (alfabetisk ordning)
+- `songs/haften/index.json` — `[{ "id": "demestkoren", "namn": "Demestkören" }]`
+- `songs/haften/<id>.json` — filnamnen som ingår, i menyordning (sortera aldrig om)
+
+Aktivt häfte väljs via `?haft=<id>` → `localStorage` → första häftet. Pseudo-häftet
+`__alla` ("Alla låtar") visar hela poolen och finns bara lokalt.
+
+Häftesmedlemskap ändras med kryssrutorna i låtredigeraren, som anropar
+`POST /set-song-haften` — bara lokalt. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för
+handredigering.

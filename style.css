@@ -116,6 +116,15 @@ body {
   cursor: pointer;
 }
 
+.sed-haft-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
 .song-list {
   flex: 1;
   overflow-y: auto;
