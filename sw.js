@@ -11,7 +11,6 @@ const PRECACHE_URLS = [
   './manifest.json',
   './icon.svg',
   './songs/index.json',
-  './songs/haften/index.json',
 ];
 
 // Install: precache core assets
@@ -31,7 +30,8 @@ self.addEventListener('install', (event) => {
       try {
         const resp = await fetch('./songs/haften/index.json');
         const haften = await resp.json();
-        await cache.addAll(haften.map(h => `./songs/haften/${h.id}.json`));
+        const haftenUrls = ['./songs/haften/index.json', ...haften.map(h => `./songs/haften/${h.id}.json`)];
+        await cache.addAll(haftenUrls);
       } catch (e) {
         console.warn('SW: could not precache häften', e);
       }
