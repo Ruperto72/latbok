@@ -1,0 +1,166 @@
+{
+  "title": "Somliga Går Med Trasiga Skor",
+  "artist": "Cornelis Vreeswijk",
+  "key": "Am",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Intro",
+      "lines": [
+        {
+          "c": "Am   E7   x2",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "Am                E7      Am",
+          "l": "  Somliga går med trasiga skor."
+        },
+        {
+          "c": "         G7         C       E7",
+          "l": "Säg vad beror det på?"
+        },
+        {
+          "c": "Am                 G        Em",
+          "l": "  Gud fader som i himmelen bor"
+        },
+        {
+          "c": "Am          Em7    Am     Em7",
+          "l": "kanske vill ha det så."
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "Am                E7       Am",
+          "l": "  Gud fader som i himmelen bor"
+        },
+        {
+          "c": "            G7      C       E7",
+          "l": "blundar och sover sött."
+        },
+        {
+          "c": "Am                         G        Em",
+          "l": "  Vem bryr sig om ett par trasiga skor,"
+        },
+        {
+          "c": "Am           Em7       Am     Em7",
+          "l": "när man är gammal och trött?"
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "Am                     E7      Am",
+          "l": "  Vem bryr sig om hur dagarna går?"
+        },
+        {
+          "c": "          G7         C       E7",
+          "l": "De vandrar som de vill."
+        },
+        {
+          "c": "Am               G         Em",
+          "l": "  Medborgare om ett hundra år,"
+        },
+        {
+          "c": "Am           Em7    Am     Em7",
+          "l": "finns du ej längre till."
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "Am                 E7        Am",
+          "l": "  Då har nån annan tagit din stol."
+        },
+        {
+          "c": "            G7         C       E7",
+          "l": "Det vet du inte av."
+        },
+        {
+          "c": "Am                 G          Em",
+          "l": "  Du känner varken regn eller sol"
+        },
+        {
+          "c": "Am           Em7    Am     Em7",
+          "l": "ner' i din mörka grav."
+        }
+      ]
+    },
+    {
+      "label": "Vers 5",
+      "lines": [
+        {
+          "c": "Am                    E7       Am",
+          "l": "  Vem bryr sig om hur nätterna far?"
+        },
+        {
+          "c": "             G7         C       E7",
+          "l": "Jag bryr mig inte ett spår."
+        },
+        {
+          "c": "Am                    G        Em",
+          "l": "  Bara jag får ha mitt ansikte kvar"
+        },
+        {
+          "c": "Am           Em7     Am     Em7",
+          "l": "dolt i min älsklings hår."
+        }
+      ]
+    },
+    {
+      "label": "Vers 6",
+      "lines": [
+        {
+          "c": "Am                E7      Am",
+          "l": "  Jag är en tvivelaktig figur."
+        },
+        {
+          "c": "           G7         C       E7",
+          "l": "Duger ej mycket till."
+        },
+        {
+          "c": "Am                    G        Em",
+          "l": "  Bakom ett hörn står döden på lur."
+        },
+        {
+          "c": "Am           Em7    Am     Em7",
+          "l": "Han tar mig när han vill."
+        }
+      ]
+    },
+    {
+      "label": "Vers 7",
+      "lines": [
+        {
+          "c": "Am                E7      Am",
+          "l": "  Somliga går med trasiga skor,"
+        },
+        {
+          "c": "              G7     C       E7",
+          "l": "tills de har slutat gå."
+        },
+        {
+          "c": "Am                 G        Em",
+          "l": "  Djävulen som i helvetet bor"
+        },
+        {
+          "c": "Am           Em7        Am     Em7",
+          "l": "får sig ett gott skratt då."
+        }
+      ]
+    }
+  ]
+}
