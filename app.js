@@ -98,6 +98,7 @@ async function loadSongs(bustCache = false) {
 
     const idx = songs.findIndex(s => s._filename === currentSongFile);
     currentSong = idx !== -1 ? idx : 0;
+    currentSongFile = songs[currentSong]?._filename || null;
 
     renderHaftSelect();
 
@@ -140,6 +141,12 @@ async function changeHaft(id) {
   currentHaftId = id;
   currentSongFile = null;
   await loadSongs(true);
+  if (songs.length === 0) {
+    document.getElementById('songDisplay').innerHTML = `
+      <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Häftet är tomt.</p>
+      </div>`;
+  }
   updateMobileEditorBtn();
   renderSongList();
   renderSong();
@@ -189,9 +196,16 @@ async function init() {
     await loadSongs();
 
     if (songs.length === 0) {
-      document.getElementById('songDisplay').innerHTML =
-        `<div style="padding:40px;color:#f66;font-family:monospace">Inga låtar laddades. Kontrollera konsolen.</div>`;
-      return;
+      if (haften.length >= 2) {
+        document.getElementById('songDisplay').innerHTML = `
+          <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
+            <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Häftet är tomt.</p>
+          </div>`;
+      } else {
+        document.getElementById('songDisplay').innerHTML =
+          `<div style="padding:40px;color:#f66;font-family:monospace">Inga låtar laddades. Kontrollera konsolen.</div>`;
+        return;
+      }
     }
 
     // Reset editor modes
