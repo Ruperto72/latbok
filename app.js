@@ -1208,11 +1208,12 @@ async function saveUgImportSong() {
     await saveNewSongToBackend(filename, song);
     const valda = [...document.querySelectorAll('.ug-haft-check:checked')].map(i => i.value);
     if (valda.length > 0) {
-      await fetch('/set-song-haften', {
+      const resp = await fetch('/set-song-haften', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename, haften: valda }),
       });
+      if (!resp.ok) throw new Error(await resp.text());
     }
     song._filename = filename;
     closeUgImportDialog();
@@ -1456,7 +1457,7 @@ function renderSongEditor() {
 async function setSongHaften() {
   const s = songs[currentSong];
   if (!s || !s._filename) return;
-  const valda = [...document.querySelectorAll('.sed-haft-check input:checked')].map(i => i.value);
+  const valda = [...document.querySelectorAll('.sed-save-bar .sed-haft-check input:checked')].map(i => i.value);
   try {
     const resp = await fetch('/set-song-haften', {
       method: 'POST',
