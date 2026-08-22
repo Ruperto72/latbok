@@ -1030,6 +1030,12 @@ function openUgImportDialog() {
 
   const local = isLocalHost();
 
+  const haftVal = local
+    ? haften.filter(h => h.id !== ALL_SONGS_ID).map(h =>
+        `<label class="sed-haft-check"><input type="checkbox" class="ug-haft-check" value="${escHtml(h.id)}"${h.id === currentHaftId ? ' checked' : ''}> ${escHtml(h.namn)}</label>`
+      ).join('')
+    : '';
+
   dialog.innerHTML = `
     <div class="variant-save-dialog-header">Importera från Ultimate Guitar</div>
     <div class="variant-save-dialog-group">
@@ -1068,6 +1074,10 @@ function openUgImportDialog() {
         <p class="ug-preview-empty">Klistra in text och klicka "Tolka text" ovan.</p>
       </div>
     </div>
+    ${haftVal ? `<div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Lägg i häfte</label>
+      <div>${haftVal}</div>
+    </div>` : ''}
     <span class="ug-import-copy-note" id="ugImportCopyNote" aria-live="polite"></span>
     <div class="variant-save-dialog-buttons">
       <button class="variant-save-dialog-btn" onclick="closeUgImportDialog()">Avbryt</button>
@@ -1196,8 +1206,15 @@ async function saveUgImportSong() {
 
   try {
     await saveNewSongToBackend(filename, song);
+    const valda = [...document.querySelectorAll('.ug-haft-check:checked')].map(i => i.value);
+    if (valda.length > 0) {
+      await fetch('/set-song-haften', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename, haften: valda }),
+      });
+    }
     song._filename = filename;
-    songs.push(song);
     closeUgImportDialog();
     alert(`Låten "${song.title}" importerades!`);
     loadSongs(true);
