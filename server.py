@@ -83,7 +83,10 @@ class Handler(SimpleHTTPRequestHandler):
                 with index_lock:
                     for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
                         hid = h.get('id')
-                        if not hid or not ID_RE.match(hid):
+                        namn = h.get('namn')
+                        if not hid or not ID_RE.match(hid) or hid == '__alla':
+                            continue
+                        if not isinstance(namn, str) or namn == '':
                             continue
                         path = os.path.join(HAFTEN_DIR, hid + '.json')
                         lista = _read_json(path, [])
