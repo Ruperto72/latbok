@@ -1521,31 +1521,3 @@ body {
 }
 
 .mobile-sheet-backdrop--active { display: block; }
-
-/* ─── Archive Page ─── */
-.archive-page {
-  padding: 24px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.archive-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.archive-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 16px 20px;
-  border-radius: 8px;
-  transition: background 0.15s;
-}
-
-.archive-item:hover {
-  background: var(--surface2);
-}

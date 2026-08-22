@@ -49,9 +49,6 @@ async function loadSongs(bustCache = false) {
     const indexResp = await fetch(`songs/index.json${qs}`).catch(() => null);
     const activeFiles = indexResp && indexResp.ok ? await indexResp.json() : [];
 
-    const archiveResp = await fetch(`songs/archive/index.json${qs}`).catch(() => null);
-    const archiveFiles = archiveResp && archiveResp.ok ? await archiveResp.json() : [];
-
     const loadedActive = await Promise.all(
       activeFiles.map(async (filename) => {
         try {
@@ -59,7 +56,6 @@ async function loadSongs(bustCache = false) {
           if (!resp.ok) return null;
           const song = await resp.json();
           song._filename = filename;
-          song.isArchived = false;
           return song;
         } catch (e) {
           console.warn(`Could not load songs/${filename}:`, e);
@@ -68,27 +64,10 @@ async function loadSongs(bustCache = false) {
       })
     );
 
-    const loadedArchive = await Promise.all(
-      archiveFiles.map(async (filename) => {
-        try {
-          const resp = await fetch(`songs/archive/${filename}${qs}`);
-          if (!resp.ok) return null;
-          const song = await resp.json();
-          song._filename = filename;
-          song.isArchived = true;
-          return song;
-        } catch (e) {
-          return null;
-        }
-      })
-    );
+    songs = loadedActive.filter(s => s !== null);
 
-    songs = [...loadedActive, ...loadedArchive].filter(s => s !== null);
-
-    // Update subtitle with song count
     const subtitle = document.querySelector('.sidebar-header p');
-    const activeCount = songs.filter(s => !s.isArchived).length;
-    if (subtitle) subtitle.textContent = `${activeCount} låtar — ackord & text`;
+    if (subtitle) subtitle.textContent = `${songs.length} låtar — ackord & text`;
 
   } catch (e) {
     console.error('Failed to load song index:', e);
@@ -167,8 +146,6 @@ async function init() {
     if (!isLocal) {
       const editorRow = document.getElementById('mobileEditorRow');
       if (editorRow) editorRow.style.display = 'none';
-      const archiveRow = document.getElementById('mobileArchiveRow');
-      if (archiveRow) archiveRow.style.display = 'none';
     }
     if (sidebarHidden && window.innerWidth > 768) {
       document.querySelector('.app').classList.add('sidebar-hidden');
@@ -187,7 +164,6 @@ function renderSongList(filter = '') {
   const f = filter.toLowerCase();
 
   songs.forEach((s, i) => {
-    if (s.isArchived) return; // Dölj arkiverade låtar från menyn
     if (f && !s.title.toLowerCase().includes(f) && !s.artist.toLowerCase().includes(f)) return;
     
     const div = document.createElement('div');
@@ -330,14 +306,6 @@ function updateMobileEditorBtn() {
   btn.setAttribute('aria-pressed', songEditorMode);
 }
 
-function updateMobileArchiveBtn() {
-  const btn = document.getElementById('mobileArchiveBtn');
-  if (!btn || !songs[currentSong]) return;
-  const isArchived = songs[currentSong].isArchived;
-  btn.textContent = isArchived ? 'Återställ' : 'Arkivera';
-  btn.className = 'mobile-sheet__toggle' + (isArchived ? ' mobile-sheet__toggle--on' : '');
-}
-
 function closeSettingsSheet() {
   const sheet = document.getElementById('mobileSheet');
   const btn = document.getElementById('mobileSettingsBtn');
@@ -366,7 +334,6 @@ function toggleSettingsSheet() {
     updateMobileChordsBtn();
     updateMobileColBtn();
     updateMobileEditorBtn();
-    updateMobileArchiveBtn();
     sheet.classList.add('mobile-sheet--open');
     sheet.setAttribute('aria-hidden', 'false');
     if (btn) { btn.classList.add('active'); btn.setAttribute('aria-expanded', 'true'); }
@@ -908,7 +875,7 @@ async function saveNewSongToBackend(filename, songObj) {
   });
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
-  const indexList = songs.filter(s => !s.isArchived).map(s => s._filename).concat(filename);
+  const indexList = songs.map(s => s._filename).concat(filename);
   resp = await fetch('/save-song', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -959,7 +926,6 @@ function saveVariantSong() {
   saveNewSongToBackend(filename, newSong)
     .then(() => {
       newSong._filename = filename;
-      newSong.isArchived = false;
       songs.push(newSong);
       closeVariantSaveDialog();
       alert(`Låten "${title}" sparades!`);
@@ -1159,7 +1125,6 @@ async function saveUgImportSong() {
   try {
     await saveNewSongToBackend(filename, song);
     song._filename = filename;
-    song.isArchived = false;
     songs.push(song);
     closeUgImportDialog();
     alert(`Låten "${song.title}" importerades!`);
@@ -1200,107 +1165,6 @@ function updateTemplateMeasure(tplName, index, newChord) {
   variantEditorSong.chordTemplates[tplName] = measures.join('|');
 
   renderSong();
-}
-
-async function toggleArchiveSong(filename = null) {
-  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  if (!isLocal) {
-    alert('Arkivering fungerar bara på localhost');
-    return;
-  }
-  
-  let s, isArchived;
-  if (filename) {
-    s = songs.find(x => x._filename === filename);
-    if (!s) return;
-    isArchived = s.isArchived;
-  } else {
-    s = songs[currentSong];
-    if (!s || !s._filename) return;
-    filename = s._filename;
-    isArchived = s.isArchived;
-  }
-
-  // Arkiverar vi låten som visas just nu försvinner den ur songs-arrayen,
-  // så currentSong måste återställas - annars visas/redigeras fel låt efter omladdning.
-  const archivingCurrentSong = !isArchived && filename === songs[currentSong]?._filename;
-  const currentFilename = songs[currentSong]?._filename;
-
-  const endpoint = isArchived ? '/unarchive-song' : '/archive-song';
-  try {
-    const resp = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename })
-    });
-    if (!resp.ok) throw new Error(await resp.text());
-
-    if (archivingCurrentSong) {
-      songEditorMode = false;
-      variantEditorMode = false;
-      currentSong = 0;
-    }
-
-    await reloadSongs();
-
-    if (!archivingCurrentSong) {
-      const newIdx = songs.findIndex(x => x._filename === currentFilename);
-      if (newIdx !== -1) currentSong = newIdx;
-    }
-
-    // If we are currently on the archive page, re-render it
-    const display = document.getElementById('songDisplay');
-    if (display.querySelector('.archive-page')) {
-      showArchivePage();
-    } else {
-      renderSong();
-    }
-  } catch (e) {
-    alert('Kunde inte arkivera/återställa: ' + e.message);
-  }
-}
-
-function showArchivePage() {
-  if (window.innerWidth <= 768) {
-    closeSettingsSheet();
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('overlay').classList.remove('open');
-  }
-  
-  const display = document.getElementById('songDisplay');
-  display.className = 'song-display';
-  
-  const archivedSongs = songs.filter(s => s.isArchived);
-  
-  let html = `<div class="archive-page">
-    <div class="header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:14px; margin-bottom:18px;">
-      <div>
-        <h2 style="margin:0; font-size:26px; font-weight:700;">Arkiverade låtar</h2>
-        <div class="info" style="margin-top:6px;">${archivedSongs.length} låtar i arkivet</div>
-      </div>
-      <button class="sed-btn" onclick="renderSong()">Stäng arkiv</button>
-    </div>
-    
-    <div class="archive-list">`;
-    
-  if (archivedSongs.length === 0) {
-    html += `<div style="padding:40px 0; color:var(--text-dim); text-align:center; font-family:'JetBrains Mono',monospace;">Arkivet är tomt.</div>`;
-  } else {
-    archivedSongs.forEach(s => {
-      html += `
-        <div class="archive-item">
-          <div>
-            <div style="font-weight:600; font-size:15px; margin-bottom:2px;">${escHtml(s.title)}</div>
-            <div style="font-size:12px; color:var(--text-dim);">${escHtml(s.artist)}</div>
-          </div>
-          <button class="sed-btn" onclick="toggleArchiveSong('${escHtml(s._filename)}')">Återställ</button>
-        </div>
-      `;
-    });
-  }
-  
-  html += `</div></div>`;
-  display.innerHTML = html;
 }
 
 function toggleSidebar() {
@@ -1476,7 +1340,6 @@ function renderSongEditor() {
   }
 
   // Save bar
-  const archiveLabel = s.isArchived ? 'Återställ' : 'Arkivera';
   html += `<div class="sed-save-bar">
     <div class="sed-transpose-group">
       <span class="sed-save-note">Transponera:</span>
@@ -1485,7 +1348,6 @@ function renderSongEditor() {
     </div>
     <button class="sed-save-btn"${isLocal ? '' : ' disabled'}${songErrors.length > 0 ? ' title="Åtgärda valideringsfel först"' : ''}>Spara till fil</button>
     ${isLocal ? `<button class="sed-btn" id="sed-clone-btn">🔄 Klona</button>` : ''}
-    <button class="sed-btn sed-btn--danger" onclick="toggleArchiveSong()"${isLocal ? '' : ' disabled'}>${archiveLabel}</button>
     <span class="sed-save-note">${isLocal ? `songs/${escHtml(s._filename || '?')}` : 'Sparning fungerar bara på localhost'}</span>
     <span class="sed-save-error" id="sed-save-error"></span>
   </div>`;
@@ -1929,7 +1791,7 @@ Object.assign(window, {
   toggleSidebar, reloadSongs, changeFontSize, toggleColumns,
   toggleHideChords, transpose, toggleSongEditor, toggleAutoScroll,
   changeScrollSpeed, transposeSongData, selectSong, renderSongList,
-  toggleSettingsSheet, closeSettingsSheet, toggleArchiveSong, showArchivePage,
+  toggleSettingsSheet, closeSettingsSheet,
   toggleVariantEditor, closeVariantEditor, closeVariantSaveDialog, saveVariantSong,
   transposeAllChords, extendAllMeasures, shortenAllMeasures, openVariantSaveDialog,
   updateTemplateMeasure, addMeasureToTemplate, removeMeasureFromTemplate,

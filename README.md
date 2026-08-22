@@ -31,11 +31,6 @@ Alla inställningar sparas lokalt på enheten.
 - **Jämnt flöde** — scrolla sidan automatiskt med ▶ Scrolla-knappen
 - **Hastighetskontroll** — skala 1–9 justerar scrollhastigheten
 
-### Arkivering (lokal server krävs)
-- **Håll rent i listan** — arkivera låtar du inte använder för att dölja dem från huvudmenyn
-- **Separat arkivsida** — hantera arkivet via "Öppna"-knappen i inställningsmenyn
-- **Återställ snabbt** — flytta tillbaka arkiverade låtar till den aktiva listan med ett klick
-
 ### Import från Ultimate Guitar
 Knappen **⭳ Importera från Ultimate Guitar** (sidopanelens fot, eller under ⚙ Inställningar på mobil) öppnar en dialog där du klistrar in ackord/text kopierat från Ultimate Guitars ackordvy:
 - **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Körhäftets format med bibehållen kolumnjustering
