@@ -31,6 +31,12 @@ Alla inställningar sparas lokalt på enheten.
 - **Jämnt flöde** — scrolla sidan automatiskt med ▶ Scrolla-knappen
 - **Hastighetskontroll** — skala 1–9 justerar scrollhastigheten
 
+### Häften per kör
+- **Välj häfte** — väljaren högst upp i sidopanelen (visas när det finns mer än ett häfte)
+- **Dela en länk** — `?haft=demestkoren` öppnar appen direkt i rätt häfte
+- **Delad låtpool** — samma låt kan ingå i flera häften; en rättning slår igenom för alla
+- **Alla låtar** — extra val som visar hela poolen, bara när appen körs lokalt
+
 ### Import från Ultimate Guitar
 Knappen **⭳ Importera från Ultimate Guitar** (sidopanelens fot, eller under ⚙ Inställningar på mobil) öppnar en dialog där du klistrar in ackord/text kopierat från Ultimate Guitars ackordvy:
 - **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Körhäftets format med bibehållen kolumnjustering

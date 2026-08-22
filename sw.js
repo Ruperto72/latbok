@@ -1,6 +1,6 @@
 // ─── Körhäftet — Service Worker ───
 
-const CACHE_NAME = 'korhaftet-v15';
+const CACHE_NAME = 'korhaftet-v16';
 
 const PRECACHE_URLS = [
   './',
@@ -11,6 +11,7 @@ const PRECACHE_URLS = [
   './manifest.json',
   './icon.svg',
   './songs/index.json',
+  './songs/haften/index.json',
 ];
 
 // Install: precache core assets
@@ -26,6 +27,13 @@ self.addEventListener('install', (event) => {
         await cache.addAll(songUrls);
       } catch (e) {
         console.warn('SW: could not precache song files', e);
+      }
+      try {
+        const resp = await fetch('./songs/haften/index.json');
+        const haften = await resp.json();
+        await cache.addAll(haften.map(h => `./songs/haften/${h.id}.json`));
+      } catch (e) {
+        console.warn('SW: could not precache häften', e);
       }
     })
   );
