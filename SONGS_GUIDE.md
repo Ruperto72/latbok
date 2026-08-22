@@ -6,7 +6,7 @@ Har du hittat en låt med ackord på Ultimate Guitar? Klistra in den direkt ist�
 att skriva om den för hand:
 
 1. Kopiera ackord/text från Ultimate Guitars ackordvy (chords-läge, inte tabs)
-2. Klicka **⭳ Importera från Ultimate Guitar** i sidopanelens fot (eller under ⚙ på mobil)
+2. Klicka **⚙ Inställningar** i bottenbaren och välj **⭳ Från Ultimate Guitar**
 3. Klistra in texten och klicka **Tolka text** — kontrollera förhandsvisningen
 4. Fyll i/justera titel, artist, tonart och svårighetsgrad
 5. **Spara till fil** (kräver `python server.py` lokalt) eller **Kopiera JSON** och klistra

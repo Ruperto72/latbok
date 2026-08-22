@@ -38,7 +38,7 @@ Alla inställningar sparas lokalt på enheten.
 - **Alla låtar** — extra val som visar hela poolen, bara när appen körs lokalt
 
 ### Import från Ultimate Guitar
-Knappen **⭳ Importera från Ultimate Guitar** (sidopanelens fot, eller under ⚙ Inställningar på mobil) öppnar en dialog där du klistrar in ackord/text kopierat från Ultimate Guitars ackordvy:
+Knappen **⭳ Från Ultimate Guitar** (under ⚙ Inställningar) öppnar en dialog där du klistrar in ackord/text kopierat från Ultimate Guitars ackordvy:
 - **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Körhäftets format med bibehållen kolumnjustering
 - **Gissar titel/artist/tonart** — från en "Låt by Artist"-rad samt `Key:`/`Capo:`-rader om de finns med i den inklistrade texten (annars fyller du i själv)
 - **Förhandsvisning** — se hur låten tolkats innan du sparar
