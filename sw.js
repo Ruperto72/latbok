@@ -1,6 +1,6 @@
 // ─── Körhäftet — Service Worker ───
 
-const CACHE_NAME = 'korhaftet-v16';
+const CACHE_NAME = 'korhaftet-v17';
 
 const PRECACHE_URLS = [
   './',
@@ -54,16 +54,20 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Song JSON files: network-first (so reloads get fresh data)
+  // Song JSON files: network-first (so reloads get fresh data).
+  // Cachas alltid utan query-sträng, annars skulle varje cache-bustad
+  // ?t=<timestamp>-hämtning lägga till en ny post i cachen.
   if (url.pathname.includes('/songs/')) {
     event.respondWith(
       fetch(event.request)
         .then((resp) => {
-          const clone = resp.clone();
-          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          if (resp.ok && event.request.method === 'GET') {
+            const clone = resp.clone();
+            caches.open(CACHE_NAME).then(c => c.put(url.origin + url.pathname, clone));
+          }
           return resp;
         })
-        .catch(() => caches.match(event.request))
+        .catch(() => caches.match(event.request, { ignoreSearch: true }))
     );
     return;
   }

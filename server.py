@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Lokal utvecklingsserver för Körhäftet.
-Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till disk.
+Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till disk
+och POST /set-song-haften för att uppdatera vilka häften en låt ingår i.
 """
 
 import json
@@ -11,7 +12,7 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 HAFTEN_DIR = os.path.join('songs', 'haften')
 POOL_INDEX = os.path.join('songs', 'index.json')
-ID_RE = re.compile(r'^[a-z0-9_-]+$')
+ID_RE = re.compile(r'[a-z0-9_-]+')
 
 index_lock = threading.Lock()
 
@@ -81,21 +82,27 @@ class Handler(SimpleHTTPRequestHandler):
                     return
 
                 with index_lock:
+                    # Bygg klart alla ändringar innan något skrivs, så ett fel
+                    # mitt i inte lämnar häftesfilerna halvuppdaterade.
+                    att_skriva = []
                     for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
                         hid = h.get('id')
                         namn = h.get('namn')
-                        if not hid or not ID_RE.match(hid) or hid == '__alla':
+                        if not hid or not ID_RE.fullmatch(hid) or hid == '__alla':
                             continue
                         if not isinstance(namn, str) or namn == '':
                             continue
                         path = os.path.join(HAFTEN_DIR, hid + '.json')
                         lista = _read_json(path, [])
                         if hid in valda and filename not in lista:
-                            lista.append(filename)
+                            lista = lista + [filename]
                         elif hid not in valda and filename in lista:
                             lista = [f for f in lista if f != filename]
                         else:
                             continue
+                        att_skriva.append((path, lista))
+
+                    for path, lista in att_skriva:
                         _write_json(path, lista)
 
                 self._respond(200, 'OK')

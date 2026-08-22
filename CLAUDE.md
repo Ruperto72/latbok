@@ -11,7 +11,7 @@ Källkod ligger i roten (`app.js`, `chords.js`, `sw.js`, `style.css`, `index.htm
 
 ```bash
 npm run dist   # bygger dist/ med esbuild + kopierar assets
-npm test       # enhetstester för chords.js
+npm test       # enhetstester för chords.js och haften.js
 ```
 
 När du ändrar en fil i roten ska motsvarande fil i `dist/` uppdateras också, antingen via `npm run dist` eller manuellt.
@@ -30,8 +30,8 @@ const CACHE_NAME = 'korhaftet-v3';  // öka versionsnumret
 
 ## Låtdata
 
-- `songs/index.json` — lista med filnamn för aktiva låtar, styr menyordningen
-- `songs/*.json` — en fil per aktiv låt
+- `songs/index.json` — hela poolen: filnamnen för alla låtar, i alfabetisk ordning. Styr inte menyordningen — det gör häftesfilen (se nedan)
+- `songs/*.json` — en fil per låt
 - `songs/template.json` — mall för nya låtar
 - Song-filer hämtas **network-first** av service workern, så de uppdateras utan cache-bump
 

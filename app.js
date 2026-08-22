@@ -107,6 +107,7 @@ async function loadSongs(bustCache = false) {
 
   } catch (e) {
     console.error('Failed to load song index:', e);
+    renderHaftSelect();
     document.getElementById('songDisplay').innerHTML = `
       <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
         <p style="font-size:40px;margin-bottom:12px">⚠️</p>
@@ -132,21 +133,26 @@ function renderHaftSelect() {
   ).join('');
 }
 
+function renderEmptyHaft() {
+  const display = document.getElementById('songDisplay');
+  if (!display) return;
+  display.innerHTML = `
+    <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
+      <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Häftet är tomt.</p>
+    </div>`;
+}
+
 async function changeHaft(id) {
   if (id === currentHaftId) return;
   if (scrollActive) toggleAutoScroll();
   songEditorMode = false;
   variantEditorMode = false;
   variantEditorSong = null;
+  transposeSemitones = 0;
   currentHaftId = id;
   currentSongFile = null;
   await loadSongs(true);
-  if (songs.length === 0) {
-    document.getElementById('songDisplay').innerHTML = `
-      <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
-        <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Häftet är tomt.</p>
-      </div>`;
-  }
+  if (songs.length === 0) renderEmptyHaft();
   updateMobileEditorBtn();
   renderSongList();
   renderSong();
@@ -196,15 +202,11 @@ async function init() {
     await loadSongs();
 
     if (songs.length === 0) {
-      if (haften.length >= 2) {
-        document.getElementById('songDisplay').innerHTML = `
-          <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
-            <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Häftet är tomt.</p>
-          </div>`;
+      if (currentHaftId) {
+        renderEmptyHaft();
       } else {
         document.getElementById('songDisplay').innerHTML =
           `<div style="padding:40px;color:#f66;font-family:monospace">Inga låtar laddades. Kontrollera konsolen.</div>`;
-        return;
       }
     }
 
@@ -231,6 +233,9 @@ async function init() {
       document.querySelector('.app').classList.add('sidebar-hidden');
     }
     renderSong();
+    // Persistera valt häfte (t.ex. från ?haft=) redan vid start. Hoppas över när
+    // inga häften kunde laddas, så ett misslyckat anrop inte nollar sparat val.
+    if (haften.length > 0) savePrefs();
   } catch (e) {
     console.error('init() kraschade:', e);
     document.getElementById('songDisplay').innerHTML =
@@ -271,6 +276,7 @@ async function reloadSongs() {
   if (btn) btn.disabled = true;
   try {
     await loadSongs(true);
+    if (songs.length === 0) renderEmptyHaft();
     renderSongList();
     renderSong();
   } finally {
@@ -996,13 +1002,12 @@ function saveVariantSong() {
   };
 
   saveNewSongToBackend(filename, newSong)
-    .then(() => {
+    .then(async () => {
       newSong._filename = filename;
-      songs.push(newSong);
       closeVariantSaveDialog();
       alert(`Låten "${title}" sparades!`);
       closeVariantEditor();
-      loadSongs(true);
+      await reloadSongs();
     })
     .catch(err => {
       console.error('Failed to save variant:', err);
@@ -1218,7 +1223,7 @@ async function saveUgImportSong() {
     song._filename = filename;
     closeUgImportDialog();
     alert(`Låten "${song.title}" importerades!`);
-    loadSongs(true);
+    await reloadSongs();
   } catch (err) {
     console.error('Failed to save UG import:', err);
     alert(`Fel vid sparning: ${err.message}`);

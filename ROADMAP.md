@@ -30,6 +30,16 @@ till en färdig låtfil, istället för att skriva om låtar för hand.
 med `[Vers]`/`[Chorus]`-headers, gissar titel/artist/tonart, visar förhandsvisning och
 sparar via lokal server eller som kopierbar JSON för manuell import på GitHub Pages.)*
 
-### ✅ Arkivering av låtar
+### ✅ Häften — ett urval per kör
+**Mål:** Låta flera körer använda samma app och var och en se sitt eget urval ur en
+delad låtpool.
+*(Implementerat 2026-08-22: `songs/index.json` är poolen, `songs/haften/<id>.json` listar
+låtarna i ett häfte i menyordning. Aktivt häfte väljs via `?haft=<id>`, sparas i
+`localStorage` och byts i väljaren i sidopanelen. Häftesmedlemskap kryssas i från
+låtredigeraren och UG-importen via `POST /set-song-haften` — bara lokalt.)*
+
+### ✅ Arkivering av låtar — borttagen
 **Mål:** Flytta låtar till ett arkiv för att hålla det aktiva urvalet rent.
-*(Implementerat 2026-05-05: Låtar döljs från huvudlistan och kan nås, hanteras och återställas från en separat arkivsida.)*
+*(Implementerat 2026-05-05, borttaget 2026-08-22: Ersatt av häften. Med en delad pool
+skulle en fysisk flytt till `songs/archive/` slå sönder andra körers häften — en låt
+ingår nu antingen i ett häfte eller inte.)*
