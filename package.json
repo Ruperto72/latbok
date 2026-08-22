@@ -9,7 +9,7 @@
     "build:dev": "esbuild app.js --bundle --outfile=dist/app.bundle.js --format=esm --sourcemap",
     "watch": "esbuild app.js --bundle --outfile=dist/app.bundle.js --format=esm --sourcemap --watch",
     "dist": "node scripts/build.js",
-    "test": "node --test tests/chords.test.js"
+    "test": "node --test tests/chords.test.js tests/haften.test.js"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"
