@@ -228,6 +228,8 @@ async function init() {
     if (!isLocal) {
       const editorRow = document.getElementById('mobileEditorRow');
       if (editorRow) editorRow.style.display = 'none';
+      const importRow = document.getElementById('mobileImportRow');
+      if (importRow) importRow.style.display = 'none';
     }
     if (sidebarHidden && window.innerWidth > 768) {
       document.querySelector('.app').classList.add('sidebar-hidden');
@@ -1022,6 +1024,9 @@ function isLocalHost() {
 }
 
 function openUgImportDialog() {
+  // Importen kräver backend (POST /save-song) och finns bara lokalt.
+  if (!isLocalHost()) return;
+
   ugImportParsed = null;
 
   const backdrop = document.createElement('div');
@@ -1033,13 +1038,9 @@ function openUgImportDialog() {
   dialog.setAttribute('role', 'dialog');
   dialog.setAttribute('aria-label', 'Importera låt från Ultimate Guitar');
 
-  const local = isLocalHost();
-
-  const haftVal = local
-    ? haften.filter(h => h.id !== ALL_SONGS_ID).map(h =>
-        `<label class="sed-haft-check"><input type="checkbox" class="ug-haft-check" value="${escHtml(h.id)}"${h.id === currentHaftId ? ' checked' : ''}> ${escHtml(h.namn)}</label>`
-      ).join('')
-    : '';
+  const haftVal = haften.filter(h => h.id !== ALL_SONGS_ID).map(h =>
+    `<label class="sed-haft-check"><input type="checkbox" class="ug-haft-check" value="${escHtml(h.id)}"${h.id === currentHaftId ? ' checked' : ''}> ${escHtml(h.namn)}</label>`
+  ).join('');
 
   dialog.innerHTML = `
     <div class="variant-save-dialog-header">Importera från Ultimate Guitar</div>
@@ -1087,9 +1088,8 @@ function openUgImportDialog() {
     <div class="variant-save-dialog-buttons">
       <button class="variant-save-dialog-btn" onclick="closeUgImportDialog()">Avbryt</button>
       <button class="variant-save-dialog-btn" id="ugImportCopyBtn" onclick="copyUgImportJson()" disabled>📋 Kopiera JSON</button>
-      <button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="ugImportSaveBtn" onclick="saveUgImportSong()"${local ? '' : ' disabled'}>💾 Spara till fil</button>
+      <button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="ugImportSaveBtn" onclick="saveUgImportSong()">💾 Spara till fil</button>
     </div>
-    ${!local ? '<span class="ug-import-dialog-hint">Sparning fungerar bara på localhost — använd "Kopiera JSON" och lägg filen i songs/ manuellt.</span>' : ''}
   `;
 
   backdrop.appendChild(dialog);
@@ -1146,7 +1146,7 @@ function parseUgImportPreview() {
   const saveBtn = document.getElementById('ugImportSaveBtn');
   const copyBtn = document.getElementById('ugImportCopyBtn');
   const hasContent = parsed.sections.length > 0;
-  if (saveBtn) saveBtn.disabled = !hasContent || !isLocalHost();
+  if (saveBtn) saveBtn.disabled = !hasContent;
   if (copyBtn) copyBtn.disabled = !hasContent;
 }
 

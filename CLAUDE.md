@@ -51,3 +51,10 @@ Aktivt häfte väljs via `?haft=<id>` → `localStorage` → första häftet. Ps
 Häftesmedlemskap ändras med kryssrutorna i låtredigeraren, som anropar
 `POST /set-song-haften` — bara lokalt. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för
 handredigering.
+
+## Import från Ultimate Guitar
+
+Importdialogen (`openUgImportDialog()`) sparar via `POST /save-song` och är därför
+**bara tillgänglig lokalt**, precis som låtredigeraren. Raden "Importera" i mobilbladet
+(`#mobileImportRow`) döljs via `isLocal`-checken i `init()`, och `openUgImportDialog()`
+returnerar direkt om appen inte körs på localhost.

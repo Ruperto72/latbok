@@ -3,15 +3,17 @@
 ## Importera från Ultimate Guitar
 
 Har du hittat en låt med ackord på Ultimate Guitar? Klistra in den direkt istället för
-att skriva om den för hand:
+att skriva om den för hand. Importen finns bara när appen körs lokalt (localhost) —
+knappen är dold på GitHub Pages, precis som låtredaktören:
 
-1. Kopiera ackord/text från Ultimate Guitars ackordvy (chords-läge, inte tabs)
-2. Klicka **⚙ Inställningar** i bottenbaren och välj **⭳ Från Ultimate Guitar**
-3. Klistra in texten och klicka **Tolka text** — kontrollera förhandsvisningen
-4. Fyll i/justera titel, artist, tonart och svårighetsgrad
-5. **Spara till fil** (kräver `python server.py` lokalt) eller **Kopiera JSON** och klistra
-   in innehållet i en ny fil i `songs/` manuellt (fungerar även på GitHub Pages)
-6. Glöm inte lägga till filnamnet i `songs/index.json` om du sparade manuellt
+1. Starta `python server.py` och öppna appen på `http://localhost:8000`
+2. Kopiera ackord/text från Ultimate Guitars ackordvy (chords-läge, inte tabs)
+3. Klicka **⚙ Inställningar** i bottenbaren och välj **⭳ Från Ultimate Guitar**
+4. Klistra in texten och klicka **Tolka text** — kontrollera förhandsvisningen
+5. Fyll i/justera titel, artist, tonart och svårighetsgrad
+6. **Spara till fil** eller **Kopiera JSON** och klistra in innehållet i en ny fil i
+   `songs/` manuellt
+7. Glöm inte lägga till filnamnet i `songs/index.json` om du sparade manuellt
 
 Importen tolkar `[Vers]`/`[Chorus]`-headers till svenska sektionsnamn och stödjer
 båda de vanliga UG-formaten:
