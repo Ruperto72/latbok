@@ -4,6 +4,7 @@ import {
   ALL_SONGS_ID,
   parseHaftenIndex, resolveHaftId,
   haftenForSong, withSongInHaften,
+  slugifyHaftId, uniqueHaftId, moveInList,
 } from '../haften.js';
 
 describe('parseHaftenIndex', () => {
@@ -113,5 +114,70 @@ describe('withSongInHaften', () => {
     const lists = { a: ['x.json'] };
     withSongInHaften(lists, 'y.json', ['a']);
     assert.deepEqual(lists, { a: ['x.json'] });
+  });
+});
+
+describe('slugifyHaftId', () => {
+  it('gör ett id av ett vanligt namn', () => {
+    assert.equal(slugifyHaftId('Demestkören'), 'demestkoren');
+    assert.equal(slugifyHaftId('Demestkören 2'), 'demestkoren-2');
+  });
+
+  it('ersätter svenska tecken och skiljetecken', () => {
+    assert.equal(slugifyHaftId('Ödåkra Ängs-kör!'), 'odakra-angs-kor');
+  });
+
+  it('trimmar bindestreck i kanterna', () => {
+    assert.equal(slugifyHaftId('  Vårkonsert  '), 'varkonsert');
+    assert.equal(slugifyHaftId('--Kör--'), 'kor');
+  });
+
+  it('faller tillbaka på "haft" när inget blir kvar', () => {
+    assert.equal(slugifyHaftId('###'), 'haft');
+    assert.equal(slugifyHaftId(''), 'haft');
+    assert.equal(slugifyHaftId(null), 'haft');
+  });
+
+  it('ger alltid ett id som passerar parseHaftenIndex', () => {
+    for (const namn of ['Demestkören', 'Ödåkra Ängs-kör!', '###', 'Kör 2026']) {
+      const id = slugifyHaftId(namn);
+      assert.deepEqual(parseHaftenIndex([{ id, namn: 'X' }]), [{ id, namn: 'X' }]);
+    }
+  });
+});
+
+describe('uniqueHaftId', () => {
+  it('behåller id:t när det är ledigt', () => {
+    assert.equal(uniqueHaftId('koren', ['annat']), 'koren');
+  });
+
+  it('räknar upp tills det blir ledigt', () => {
+    assert.equal(uniqueHaftId('a', ['a']), 'a-2');
+    assert.equal(uniqueHaftId('a', ['a', 'a-2']), 'a-3');
+  });
+
+  it('betraktar __alla som upptaget', () => {
+    assert.equal(uniqueHaftId(ALL_SONGS_ID, []), `${ALL_SONGS_ID}-2`);
+  });
+});
+
+describe('moveInList', () => {
+  it('flyttar framåt och bakåt', () => {
+    assert.deepEqual(moveInList(['a', 'b', 'c'], 0, 2), ['b', 'c', 'a']);
+    assert.deepEqual(moveInList(['a', 'b', 'c'], 2, 0), ['c', 'a', 'b']);
+    assert.deepEqual(moveInList(['a', 'b', 'c'], 1, 0), ['b', 'a', 'c']);
+  });
+
+  it('ger en oförändrad kopia vid ogiltiga index', () => {
+    const list = ['a', 'b'];
+    assert.deepEqual(moveInList(list, -1, 1), list);
+    assert.deepEqual(moveInList(list, 0, 5), list);
+    assert.deepEqual(moveInList(list, 1, 1), list);
+  });
+
+  it('muterar inte indata', () => {
+    const list = ['a', 'b', 'c'];
+    moveInList(list, 0, 2);
+    assert.deepEqual(list, ['a', 'b', 'c']);
   });
 });

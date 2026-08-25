@@ -37,7 +37,9 @@ delad låtpool.
 *(Implementerat 2026-08-22: `songs/index.json` är poolen, `songs/haften/<id>.json` listar
 låtarna i ett häfte i menyordning. Aktivt häfte väljs via `?haft=<id>`, sparas i
 `localStorage` och byts i väljaren i sidopanelen. Häftesmedlemskap kryssas i från
-låtredigeraren och UG-importen via `POST /set-song-haften` — bara lokalt.)*
+låtredigeraren och importen via `POST /set-song-haften` — bara lokalt. Kompletterad
+2026-08-25 med dialogen "Hantera häften": skapa häfte, byta namn och ordna om låtarna
+via `POST /save-haft`.)*
 
 ### ✅ Arkivering av låtar — borttagen
 **Mål:** Flytta låtar till ett arkiv för att hålla det aktiva urvalet rent.

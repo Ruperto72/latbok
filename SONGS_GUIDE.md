@@ -22,6 +22,20 @@ båda de vanliga ackordformaten:
 Du kan blanda båda formaten i samma inklistrade text. Fungerar bra som
 utgångspunkt — finjustera gärna resultatet i låtredaktören efteråt.
 
+## Häften — skapa och ordna
+
+Häften hanteras i appen när den körs lokalt: **⚙ Inställningar → ✎ Hantera häften**.
+
+- **Nytt häfte** — skriv ett namn och klicka **+ Skapa**. Id:t räknas ut från namnet
+  ("Vårkonsert 2026" → `varkonsert-2026`) och häftet blir aktivt direkt.
+- **Byt namn** — ändra namnet på det aktiva häftet och klicka **Spara häftet**.
+- **Ordna låtar** — dra raderna eller använd ▲▼. Ordningen är den låtarna får i menyn.
+- **✕** — tar bort låten ur häftet. Låtfilen ligger kvar i poolen (`songs/index.json`)
+  och kan läggas i häftet igen via kryssrutorna i låtredigeraren.
+
+Ändringarna skrivs till `songs/haften/<id>.json` och `songs/haften/index.json` — samma
+filer som du annars kan handredigera.
+
 ## Snabbstart
 
 1. Kopiera `songs/template.json`

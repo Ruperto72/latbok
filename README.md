@@ -36,6 +36,7 @@ Alla inställningar sparas lokalt på enheten.
 - **Dela en länk** — `?haft=demestkoren` öppnar appen direkt i rätt häfte
 - **Delad låtpool** — samma låt kan ingå i flera häften; en rättning slår igenom för alla
 - **Alla låtar** — extra val som visar hela poolen, bara när appen körs lokalt
+- **Hantera häften (lokalt)** — knappen **✎ Hantera häften** under ⚙ Inställningar skapar nya häften, byter namn på det aktiva häftet och ordnar om låtarna (dra raderna eller ▲▼); ✕ tar bort en låt ur häftet utan att röra låtfilen
 
 ### Import från urklipp (lokalt)
 Knappen **⭳ Från urklipp** (under ⚙ Inställningar) visas bara när appen körs lokalt, precis som låtredaktören. Den öppnar en dialog där du klistrar in ackord/text kopierad från valfri ackordsida (t.ex. Ultimate Guitar):

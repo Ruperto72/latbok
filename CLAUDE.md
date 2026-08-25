@@ -10,9 +10,12 @@ och `POST /set-song-haften` fungerar bara lokalt via `python server.py`.
 Källkod ligger i roten (`app.js`, `chords.js`, `sw.js`, `style.css`, `index.html`). GitHub Pages serverar direkt från roten — `dist/` är gitignorerad och används bara som lokal byggd kopia:
 
 ```bash
-npm run dist   # bygger dist/ med esbuild + kopierar assets
+npm run dist   # stämplar sw.js + bygger dist/ med esbuild + kopierar assets
 npm test       # enhetstester för chords.js och haften.js
 ```
+
+`.github/workflows/test.yml` kör `npm test` och `npm run cache:check` på varje push
+och pull request.
 
 När du ändrar en fil i roten ska motsvarande fil i `dist/` uppdateras också, antingen via `npm run dist` eller manuellt.
 
@@ -20,13 +23,17 @@ När du ändrar en fil i roten ska motsvarande fil i `dist/` uppdateras också, 
 
 `sw.js` (och `dist/sw.js`) cachar statiska filer med **cache-first**. Mobila enheter fastnar i gammal cache om `CACHE_NAME` inte byts.
 
-**Regel: bumpa `CACHE_NAME` varje gång `app.js`, `chords.js`, `style.css` eller `index.html` ändras och ska ut i produktion.**
+`CACHE_NAME` stämplas automatiskt med en hash av de cachade källfilerna
+(`index.html`, `app.js`, `chords.js`, `haften.js`, `style.css`, `manifest.json`):
 
-```js
-const CACHE_NAME = 'korhaftet-v3';  // öka versionsnumret
+```bash
+npm run cache         # stämplar sw.js — körs automatiskt av npm run dist
+npm run cache:check   # felar om sw.js inte matchar källfilerna (körs i CI)
 ```
 
-Ändringen måste göras i **både** `sw.js` och `dist/sw.js`.
+**Regel: kör `npm run dist` (eller `npm run cache`) innan du committar en ändring i
+någon av de filerna, och ta med `sw.js` i commiten.** CI kör `npm run cache:check`
+och felar annars. `dist/sw.js` skrivs av bygget och behöver inte röras för hand.
 
 ## Låtdata
 
@@ -51,6 +58,13 @@ Aktivt häfte väljs via `?haft=<id>` → `localStorage` → första häftet. Ps
 Häftesmedlemskap ändras med kryssrutorna i låtredigeraren, som anropar
 `POST /set-song-haften` — bara lokalt. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för
 handredigering.
+
+Häften skapas, byter namn och ordnas om i dialogen "Hantera häften"
+(`openHaftManagerDialog()`, under ⚙ Inställningar). Den sparar via `POST /save-haft`
+{ id, namn, filenames } och är precis som redigeraren bara tillgänglig lokalt —
+raden `#mobileHaftRow` döljs annars av `isLocal`-checken i `init()`. Id:t räknas ut
+från namnet med `slugifyHaftId()` + `uniqueHaftId()` i `haften.js`; låtordningen
+ändras med `moveInList()` och är den ordning låtarna får i menyn.
 
 ## Import från urklipp
 
