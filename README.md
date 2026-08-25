@@ -43,7 +43,6 @@ Knappen **⭳ Från Ultimate Guitar** (under ⚙ Inställningar) visas bara när
 - **Gissar titel/artist/tonart** — från en "Låt by Artist"-rad samt `Key:`/`Capo:`-rader om de finns med i den inklistrade texten (annars fyller du i själv)
 - **Förhandsvisning** — se hur låten tolkats innan du sparar
 - **Spara till fil** — skriver en ny låtfil via den lokala servern (`python server.py`), precis som låtredaktören
-- **Kopiera JSON** — kopiera den tolkade låten och lägg till den som en ny fil i `songs/` manuellt
 
 ### Låtredaktör (desktop)
 Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i webbläsaren:

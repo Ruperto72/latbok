@@ -1084,10 +1084,8 @@ function openUgImportDialog() {
       <label class="variant-save-dialog-label">Lägg i häfte</label>
       <div>${haftVal}</div>
     </div>` : ''}
-    <span class="ug-import-copy-note" id="ugImportCopyNote" aria-live="polite"></span>
     <div class="variant-save-dialog-buttons">
       <button class="variant-save-dialog-btn" onclick="closeUgImportDialog()">Avbryt</button>
-      <button class="variant-save-dialog-btn" id="ugImportCopyBtn" onclick="copyUgImportJson()" disabled>📋 Kopiera JSON</button>
       <button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="ugImportSaveBtn" onclick="saveUgImportSong()">💾 Spara till fil</button>
     </div>
   `;
@@ -1144,10 +1142,7 @@ function parseUgImportPreview() {
   }
 
   const saveBtn = document.getElementById('ugImportSaveBtn');
-  const copyBtn = document.getElementById('ugImportCopyBtn');
-  const hasContent = parsed.sections.length > 0;
-  if (saveBtn) saveBtn.disabled = !hasContent;
-  if (copyBtn) copyBtn.disabled = !hasContent;
+  if (saveBtn) saveBtn.disabled = parsed.sections.length === 0;
 }
 
 // Bygger ett komplett låtobjekt från senaste tolkningsresultatet + dialogens fält.
@@ -1178,26 +1173,9 @@ function buildUgImportSong() {
   };
 }
 
-async function copyUgImportJson() {
-  const song = buildUgImportSong();
-  if (!song) return;
-  const json = JSON.stringify(song, null, 2);
-  const note = document.getElementById('ugImportCopyNote');
-  try {
-    await navigator.clipboard.writeText(json);
-    if (note) {
-      note.textContent = `Kopierat! Spara som songs/${filenameFromTitle(song.title)} och lägg till filnamnet i songs/index.json.`;
-      setTimeout(() => { if (note) note.textContent = ''; }, 6000);
-    }
-  } catch (e) {
-    console.log(json);
-    alert('Kunde inte kopiera automatiskt (klippbordsåtkomst nekad). JSON:en loggades i konsolen istället.');
-  }
-}
-
 async function saveUgImportSong() {
   if (!isLocalHost()) {
-    alert('Sparning fungerar bara på localhost. Använd "Kopiera JSON" istället.');
+    alert('Importen fungerar bara på localhost.');
     return;
   }
   const song = buildUgImportSong();
@@ -1915,8 +1893,7 @@ Object.assign(window, {
   toggleVariantEditor, closeVariantEditor, closeVariantSaveDialog, saveVariantSong,
   transposeAllChords, extendAllMeasures, shortenAllMeasures, openVariantSaveDialog,
   updateTemplateMeasure, addMeasureToTemplate, removeMeasureFromTemplate,
-  openUgImportDialog, closeUgImportDialog, parseUgImportPreview,
-  copyUgImportJson, saveUgImportSong,
+  openUgImportDialog, closeUgImportDialog, parseUgImportPreview, saveUgImportSong,
 });
 
 // ─── Service Worker ───

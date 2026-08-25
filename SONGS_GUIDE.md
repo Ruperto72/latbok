@@ -11,9 +11,8 @@ knappen är dold på GitHub Pages, precis som låtredaktören:
 3. Klicka **⚙ Inställningar** i bottenbaren och välj **⭳ Från Ultimate Guitar**
 4. Klistra in texten och klicka **Tolka text** — kontrollera förhandsvisningen
 5. Fyll i/justera titel, artist, tonart och svårighetsgrad
-6. **Spara till fil** eller **Kopiera JSON** och klistra in innehållet i en ny fil i
-   `songs/` manuellt
-7. Glöm inte lägga till filnamnet i `songs/index.json` om du sparade manuellt
+6. **Spara till fil** — låten skrivs till `songs/` och läggs till i `songs/index.json`
+   automatiskt
 
 Importen tolkar `[Vers]`/`[Chorus]`-headers till svenska sektionsnamn och stödjer
 båda de vanliga UG-formaten:

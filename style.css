@@ -1404,14 +1404,6 @@ body {
   color: var(--text, #333);
 }
 
-.ug-import-copy-note {
-  display: block;
-  font-size: 11px;
-  color: var(--accent);
-  min-height: 14px;
-  margin-top: 8px;
-}
-
 .variant-btn--primary {
   background: var(--accent);
   border-color: var(--accent);
