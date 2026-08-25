@@ -37,8 +37,8 @@ Alla inställningar sparas lokalt på enheten.
 - **Delad låtpool** — samma låt kan ingå i flera häften; en rättning slår igenom för alla
 - **Alla låtar** — extra val som visar hela poolen, bara när appen körs lokalt
 
-### Import från Ultimate Guitar (lokalt)
-Knappen **⭳ Från Ultimate Guitar** (under ⚙ Inställningar) visas bara när appen körs lokalt, precis som låtredaktören. Den öppnar en dialog där du klistrar in ackord/text kopierat från Ultimate Guitars ackordvy:
+### Import från urklipp (lokalt)
+Knappen **⭳ Från urklipp** (under ⚙ Inställningar) visas bara när appen körs lokalt, precis som låtredaktören. Den öppnar en dialog där du klistrar in ackord/text kopierad från valfri ackordsida (t.ex. Ultimate Guitar):
 - **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Körhäftets format med bibehållen kolumnjustering
 - **Gissar titel/artist/tonart** — från en "Låt by Artist"-rad samt `Key:`/`Capo:`-rader om de finns med i den inklistrade texten (annars fyller du i själv)
 - **Förhandsvisning** — se hur låten tolkats innan du sparar

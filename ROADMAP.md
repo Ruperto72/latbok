@@ -23,12 +23,13 @@
 
 ## Genomförda funktioner
 
-### ✅ Import från Ultimate Guitar
-**Mål:** Kunna klistra in ackord/text kopierat från Ultimate Guitar och få det omvandlat
-till en färdig låtfil, istället för att skriva om låtar för hand.
-*(Implementerat 2026-08-17: Dialog i sidopanelen tolkar ackordrad-ovanför-textrad-format
+### ✅ Import från urklipp
+**Mål:** Kunna klistra in ackord/text kopierad från en ackordsida på webben (t.ex.
+Ultimate Guitar) och få det omvandlat till en färdig låtfil, istället för att skriva
+om låtar för hand.
+*(Implementerat 2026-08-17: Dialogen tolkar ackordrad-ovanför-textrad och inline-ackord
 med `[Vers]`/`[Chorus]`-headers, gissar titel/artist/tonart, visar förhandsvisning och
-sparar via lokal server eller som kopierbar JSON för manuell import på GitHub Pages.)*
+sparar via lokal server. Importen är bara tillgänglig lokalt, precis som låtredaktören.)*
 
 ### ✅ Häften — ett urval per kör
 **Mål:** Låta flera körer använda samma app och var och en se sitt eget urval ur en

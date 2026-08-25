@@ -1017,7 +1017,7 @@ function saveVariantSong() {
     });
 }
 
-// ─── Ultimate Guitar-import ───
+// ─── Import från urklipp ───
 
 function isLocalHost() {
   return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -1036,16 +1036,16 @@ function openUgImportDialog() {
   const dialog = document.createElement('div');
   dialog.className = 'variant-save-dialog ug-import-dialog';
   dialog.setAttribute('role', 'dialog');
-  dialog.setAttribute('aria-label', 'Importera låt från Ultimate Guitar');
+  dialog.setAttribute('aria-label', 'Importera låt från urklipp');
 
   const haftVal = haften.filter(h => h.id !== ALL_SONGS_ID).map(h =>
     `<label class="sed-haft-check"><input type="checkbox" class="ug-haft-check" value="${escHtml(h.id)}"${h.id === currentHaftId ? ' checked' : ''}> ${escHtml(h.namn)}</label>`
   ).join('');
 
   dialog.innerHTML = `
-    <div class="variant-save-dialog-header">Importera från Ultimate Guitar</div>
+    <div class="variant-save-dialog-header">Importera från urklipp</div>
     <div class="variant-save-dialog-group">
-      <label class="variant-save-dialog-label">Klistra in ackord/text (kopierat från Ultimate Guitars ackordvy)</label>
+      <label class="variant-save-dialog-label">Klistra in ackord/text (t.ex. kopierad från en ackordsida på webben)</label>
       <textarea class="variant-save-dialog-input ug-import-textarea" id="ugImportText" rows="12" placeholder="[Vers 1]&#10;G          D&#10;Amazing grace, how sweet the sound&#10;..."></textarea>
     </div>
     <div class="ug-import-dialog-row">

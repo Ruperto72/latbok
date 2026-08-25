@@ -52,9 +52,11 @@ Häftesmedlemskap ändras med kryssrutorna i låtredigeraren, som anropar
 `POST /set-song-haften` — bara lokalt. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för
 handredigering.
 
-## Import från Ultimate Guitar
+## Import från urklipp
 
 Importdialogen (`openUgImportDialog()`) sparar via `POST /save-song` och är därför
 **bara tillgänglig lokalt**, precis som låtredigeraren. Raden "Importera" i mobilbladet
 (`#mobileImportRow`) döljs via `isLocal`-checken i `init()`, och `openUgImportDialog()`
-returnerar direkt om appen inte körs på localhost.
+returnerar direkt om appen inte körs på localhost. Koden använder fortfarande
+`ug`-prefix internt (`ugImport*`, `.ug-import-*`) sedan funktionen var Ultimate
+Guitar-specifik — texten i gränssnittet är källoberoende.
