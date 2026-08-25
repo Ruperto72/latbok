@@ -268,26 +268,33 @@ Appen läser `songs/index.json` vid laddning och hämtar varje låtfil dynamiskt
 
 ## Ackordbibliotek
 
-Filen `chords.js` innehåller ~170 gitarrackord med fingersättningar, uppdelat i kategorier:
+Filen `chords.js` innehåller ~180 gitarrackord med fingersättningar plus ~120 alternativa
+grepp. **Samtliga kategorier täcker alla 12 grundtoner:**
 
 | Kategori | Täckning |
 |---|---|
 | Dur | Alla 12 grundtoner |
-| Moll | Alla vanliga (Am, Bm, Cm, Dm, Em, Fm, Gm, F#m, G#m, Bbm, C#m, Ebm) |
+| Moll | Alla 12 grundtoner |
 | 7 (dominant) | Alla 12 grundtoner |
 | m7 (moll 7) | Alla 12 grundtoner |
-| maj7 | C, D, G |
+| maj7 | Alla 12 grundtoner |
 | sus4 | Alla 12 grundtoner |
 | sus2 | Alla 12 grundtoner |
-| add9 | C, D, E, F, G, A |
-| dim | C, D, E, F, G, A, B |
-| dim7 | C, C#, D, Eb, E, F, G, A, B |
-| aug | C, D, E, F, G, A, B |
-| 9 (dominant) | A, B, C, D, E, G |
-| m7b5 (halvförminskad) | A, B, C#, D, E, F#, G |
+| add9 | Alla 12 grundtoner |
+| dim | Alla 12 grundtoner |
+| dim7 | Alla 12 grundtoner |
+| aug | Alla 12 grundtoner |
+| 9 (dominant) | Alla 12 grundtoner |
+| m7b5 (halvförminskad) | Alla 12 grundtoner |
+| 7+ (dominant #5) | Alla 12 grundtoner |
 | Slash-ackord | C/G, C/B, C/E, G/B, Am/E m.fl. |
 
-Diagram genereras som SVG direkt i webbläsaren. Ackord som saknas i biblioteket hoppas över (och visas som varning i redaktören).
+Enharmoniska namn slås upp automatiskt (`D#7` hittar `Eb7`), så en grundton per kategori
+räcker med en stavning. Diagram genereras som SVG direkt i webbläsaren. Ackord som saknas
+i biblioteket hoppas över (och visas som varning i redaktören).
+
+`tests/chords-lib.test.js` räknar ut vilka toner varje grepp faktiskt ger och jämför med
+ackordnamnet — nya grepp med fel band eller kategorier som tappar en grundton fastnar i CI.
 
 För att lägga till ett nytt ackord, utöka `CHORD_LIB` i `chords.js`:
 

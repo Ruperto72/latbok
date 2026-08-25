@@ -11,7 +11,7 @@ Källkod ligger i roten (`app.js`, `chords.js`, `sw.js`, `style.css`, `index.htm
 
 ```bash
 npm run dist   # stämplar sw.js + bygger dist/ med esbuild + kopierar assets
-npm test       # enhetstester för chords.js och haften.js
+npm test       # enhetstester för chords.js, haften.js och ackordbiblioteket
 ```
 
 `.github/workflows/test.yml` kör `npm test` och `npm run cache:check` på varje push
@@ -34,6 +34,16 @@ npm run cache:check   # felar om sw.js inte matchar källfilerna (körs i CI)
 **Regel: kör `npm run dist` (eller `npm run cache`) innan du committar en ändring i
 någon av de filerna, och ta med `sw.js` i commiten.** CI kör `npm run cache:check`
 och felar annars. `dist/sw.js` skrivs av bygget och behöver inte röras för hand.
+
+## Ackordbiblioteket
+
+`CHORD_LIB` i `chords.js` ska ha alla 12 grundtoner i varje kategori (dur, moll, 7, m7,
+maj7, sus4, sus2, add9, dim, dim7, aug, 9, m7b5, 7+). En stavning per grundton räcker —
+`lookupChord()` slår upp enharmoniska namn (`D#m` → `Ebm`).
+
+`tests/chords-lib.test.js` räknar ut tonerna ur `frets` (stämning E A D G B E) och jämför
+med ackordformeln, kollar att grundtonen ligger i basen och att alla greppade band ryms i
+diagramfönstret `baseFret`…`baseFret+3`. Lägg aldrig till ett grepp utan att köra `npm test`.
 
 ## Låtdata
 
