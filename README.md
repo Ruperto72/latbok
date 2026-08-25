@@ -36,14 +36,14 @@ Alla inställningar sparas lokalt på enheten.
 - **Dela en länk** — `?haft=demestkoren` öppnar appen direkt i rätt häfte
 - **Delad låtpool** — samma låt kan ingå i flera häften; en rättning slår igenom för alla
 - **Alla låtar** — extra val som visar hela poolen, bara när appen körs lokalt
+- **Hantera häften (lokalt)** — knappen **✎ Hantera häften** under ⚙ Inställningar skapar nya häften, byter namn på det aktiva häftet och ordnar om låtarna (dra raderna eller ▲▼); ✕ tar bort en låt ur häftet utan att röra låtfilen
 
-### Import från Ultimate Guitar
-Knappen **⭳ Från Ultimate Guitar** (under ⚙ Inställningar) öppnar en dialog där du klistrar in ackord/text kopierat från Ultimate Guitars ackordvy:
+### Import från urklipp (lokalt)
+Knappen **⭳ Från urklipp** (under ⚙ Inställningar) visas bara när appen körs lokalt, precis som låtredaktören. Den öppnar en dialog där du klistrar in ackord/text kopierad från valfri ackordsida (t.ex. Ultimate Guitar):
 - **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Körhäftets format med bibehållen kolumnjustering
 - **Gissar titel/artist/tonart** — från en "Låt by Artist"-rad samt `Key:`/`Capo:`-rader om de finns med i den inklistrade texten (annars fyller du i själv)
 - **Förhandsvisning** — se hur låten tolkats innan du sparar
-- **Spara till fil** — skriver en ny låtfil via den lokala servern (fungerar på localhost), precis som låtredaktören
-- **Kopiera JSON** — fungerar även utan lokal server (t.ex. på GitHub Pages): kopiera den tolkade låten och lägg till den som en ny fil i `songs/` manuellt
+- **Spara till fil** — skriver en ny låtfil via den lokala servern (`python server.py`), precis som låtredaktören
 
 ### Låtredaktör (desktop)
 Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i webbläsaren:

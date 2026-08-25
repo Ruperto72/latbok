@@ -6,7 +6,10 @@ import {
   getAllVoicings, chordSVG,
   parseUgImportText,
 } from './chords.js';
-import { ALL_SONGS_ID, parseHaftenIndex, resolveHaftId, withSongInHaften, haftenForSong } from './haften.js';
+import {
+  ALL_SONGS_ID, parseHaftenIndex, resolveHaftId, withSongInHaften, haftenForSong,
+  slugifyHaftId, uniqueHaftId, moveInList,
+} from './haften.js';
 
 // Column layout modes
 const COL = {
@@ -36,6 +39,8 @@ let songEditorMode = false;
 let variantEditorMode = false;
 let variantEditorSong = null; // Copy of original song being edited
 let ugImportParsed = null; // Senaste tolkningsresultatet från UG-importdialogen
+let haftManager = null;    // { id, namn, filenames } — häftet som redigeras i häftesdialogen
+let haftDragIndex = null;  // Raden som dras i häftesdialogens låtlista
 let storageReady = false;
 
 // ─── Auto-scroll ───
@@ -228,6 +233,10 @@ async function init() {
     if (!isLocal) {
       const editorRow = document.getElementById('mobileEditorRow');
       if (editorRow) editorRow.style.display = 'none';
+      const importRow = document.getElementById('mobileImportRow');
+      if (importRow) importRow.style.display = 'none';
+      const haftRow = document.getElementById('mobileHaftRow');
+      if (haftRow) haftRow.style.display = 'none';
     }
     if (sidebarHidden && window.innerWidth > 768) {
       document.querySelector('.app').classList.add('sidebar-hidden');
@@ -1015,13 +1024,198 @@ function saveVariantSong() {
     });
 }
 
-// ─── Ultimate Guitar-import ───
+// ─── Häfteshantering (lokalt) ───
+
+async function saveHaftToBackend(id, namn, filenames) {
+  const resp = await fetch('/save-haft', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, namn, filenames }),
+  });
+  if (!resp.ok) throw new Error(await resp.text().catch(() => `HTTP ${resp.status}`));
+}
+
+function openHaftManagerDialog() {
+  // Kräver backend (POST /save-haft) och finns bara lokalt.
+  if (!isLocalHost()) return;
+  closeHaftManagerDialog();   // stapla inte dialoger om knappen trycks två gånger
+
+  const aktivt = haften.find(h => h.id === currentHaftId && h.id !== ALL_SONGS_ID);
+  haftManager = aktivt
+    ? { id: aktivt.id, namn: aktivt.namn, filenames: [...(haftLists[aktivt.id] || [])] }
+    : null;
+  haftDragIndex = null;
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'variant-save-dialog-backdrop haft-manager-backdrop';
+  backdrop.id = 'haftManagerBackdrop';
+
+  const dialog = document.createElement('div');
+  dialog.className = 'variant-save-dialog haft-manager-dialog';
+  dialog.setAttribute('role', 'dialog');
+  dialog.setAttribute('aria-label', 'Hantera häften');
+
+  dialog.innerHTML = `
+    <div class="variant-save-dialog-header">Hantera häften</div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label" for="haftManagerNewName">Nytt häfte</label>
+      <div class="haft-manager-new">
+        <input type="text" class="variant-save-dialog-input" id="haftManagerNewName" placeholder="t.ex. Vårkonsert">
+        <button class="variant-save-dialog-btn haft-manager-new-btn" onclick="createHaft()">+ Skapa</button>
+      </div>
+    </div>
+    ${haftManager ? `
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label" for="haftManagerName">Namn</label>
+      <input type="text" class="variant-save-dialog-input" id="haftManagerName" value="${escHtml(haftManager.namn)}">
+    </div>
+    <div class="variant-save-dialog-group">
+      <label class="variant-save-dialog-label">Låtordning i häftet</label>
+      <div class="haft-manager-list" id="haftManagerList"></div>
+      <span class="haft-manager-hint">Dra raderna eller använd ▲▼. ✕ tar bort låten ur häftet — låtfilen ligger kvar i poolen.</span>
+    </div>` : `
+    <span class="haft-manager-hint">Välj ett häfte i sidopanelen för att ändra namn och låtordning.</span>`}
+    <div class="variant-save-dialog-buttons">
+      <button class="variant-save-dialog-btn" onclick="closeHaftManagerDialog()">Stäng</button>
+      ${haftManager ? `<button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="haftManagerSaveBtn" onclick="saveHaftManager()">💾 Spara häftet</button>` : ''}
+    </div>
+  `;
+
+  backdrop.appendChild(dialog);
+  document.body.appendChild(backdrop);
+
+  setTimeout(() => backdrop.classList.add('active'), 0);
+  renderHaftManagerList();
+  document.getElementById(haftManager ? 'haftManagerName' : 'haftManagerNewName')?.focus();
+
+  const onEscape = (e) => {
+    if (e.key === 'Escape') closeHaftManagerDialog();
+  };
+  document.addEventListener('keydown', onEscape);
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) closeHaftManagerDialog();
+  });
+  backdrop._escapeListener = onEscape;
+}
+
+function closeHaftManagerDialog() {
+  const backdrop = document.getElementById('haftManagerBackdrop');
+  if (backdrop) {
+    if (backdrop._escapeListener) document.removeEventListener('keydown', backdrop._escapeListener);
+    backdrop.remove();
+  }
+  haftManager = null;
+  haftDragIndex = null;
+}
+
+function haftSongTitle(filename) {
+  return songs.find(s => s._filename === filename)?.title || filename;
+}
+
+function renderHaftManagerList() {
+  const list = document.getElementById('haftManagerList');
+  if (!list || !haftManager) return;
+
+  const filer = haftManager.filenames;
+  if (filer.length === 0) {
+    list.innerHTML = `<p class="haft-manager-empty">Häftet är tomt — lägg till låtar via kryssrutorna i låtredigeraren.</p>`;
+    return;
+  }
+
+  list.innerHTML = filer.map((f, i) => `
+    <div class="haft-manager-item" draggable="true" data-index="${i}">
+      <span class="haft-manager-item__grip" aria-hidden="true">⠿</span>
+      <span class="haft-manager-item__title">${escHtml(haftSongTitle(f))}</span>
+      <span class="haft-manager-item__ctrl">
+        <button onclick="moveHaftSong(${i}, -1)" aria-label="Flytta upp"${i === 0 ? ' disabled' : ''}>▲</button>
+        <button onclick="moveHaftSong(${i}, 1)" aria-label="Flytta ner"${i === filer.length - 1 ? ' disabled' : ''}>▼</button>
+        <button onclick="removeHaftSong(${i})" aria-label="Ta bort ur häftet">✕</button>
+      </span>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.haft-manager-item').forEach(el => {
+    el.addEventListener('dragstart', () => { haftDragIndex = Number(el.dataset.index); });
+    el.addEventListener('dragend', () => {
+      haftDragIndex = null;
+      list.querySelectorAll('.haft-manager-item').forEach(r => r.classList.remove('drag-over'));
+    });
+    el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', (e) => {
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      if (haftDragIndex === null) return;
+      haftManager.filenames = moveInList(haftManager.filenames, haftDragIndex, Number(el.dataset.index));
+      haftDragIndex = null;
+      renderHaftManagerList();
+    });
+  });
+}
+
+function moveHaftSong(index, delta) {
+  if (!haftManager) return;
+  haftManager.filenames = moveInList(haftManager.filenames, index, index + delta);
+  renderHaftManagerList();
+}
+
+function removeHaftSong(index) {
+  if (!haftManager) return;
+  haftManager.filenames = haftManager.filenames.filter((_, i) => i !== index);
+  renderHaftManagerList();
+}
+
+async function createHaft() {
+  const namn = document.getElementById('haftManagerNewName')?.value.trim();
+  if (!namn) {
+    alert('Ge häftet ett namn.');
+    return;
+  }
+  const id = uniqueHaftId(slugifyHaftId(namn), haften.map(h => h.id));
+  try {
+    await saveHaftToBackend(id, namn, []);
+    closeHaftManagerDialog();
+    await changeHaft(id);
+    openHaftManagerDialog();
+  } catch (err) {
+    console.error('Kunde inte skapa häfte:', err);
+    alert(`Fel vid sparning: ${err.message}`);
+  }
+}
+
+async function saveHaftManager() {
+  if (!haftManager) return;
+  const namn = document.getElementById('haftManagerName')?.value.trim();
+  if (!namn) {
+    alert('Häftet måste ha ett namn.');
+    return;
+  }
+  const btn = document.getElementById('haftManagerSaveBtn');
+  if (btn) btn.disabled = true;
+  try {
+    await saveHaftToBackend(haftManager.id, namn, haftManager.filenames);
+    closeHaftManagerDialog();
+    await loadSongs(true);
+    if (songs.length === 0) renderEmptyHaft();
+    renderSongList();
+    renderSong();
+  } catch (err) {
+    console.error('Kunde inte spara häftet:', err);
+    alert(`Fel vid sparning: ${err.message}`);
+    if (btn) btn.disabled = false;
+  }
+}
+
+// ─── Import från urklipp ───
 
 function isLocalHost() {
   return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 }
 
 function openUgImportDialog() {
+  // Importen kräver backend (POST /save-song) och finns bara lokalt.
+  if (!isLocalHost()) return;
+
   ugImportParsed = null;
 
   const backdrop = document.createElement('div');
@@ -1031,20 +1225,16 @@ function openUgImportDialog() {
   const dialog = document.createElement('div');
   dialog.className = 'variant-save-dialog ug-import-dialog';
   dialog.setAttribute('role', 'dialog');
-  dialog.setAttribute('aria-label', 'Importera låt från Ultimate Guitar');
+  dialog.setAttribute('aria-label', 'Importera låt från urklipp');
 
-  const local = isLocalHost();
-
-  const haftVal = local
-    ? haften.filter(h => h.id !== ALL_SONGS_ID).map(h =>
-        `<label class="sed-haft-check"><input type="checkbox" class="ug-haft-check" value="${escHtml(h.id)}"${h.id === currentHaftId ? ' checked' : ''}> ${escHtml(h.namn)}</label>`
-      ).join('')
-    : '';
+  const haftVal = haften.filter(h => h.id !== ALL_SONGS_ID).map(h =>
+    `<label class="sed-haft-check"><input type="checkbox" class="ug-haft-check" value="${escHtml(h.id)}"${h.id === currentHaftId ? ' checked' : ''}> ${escHtml(h.namn)}</label>`
+  ).join('');
 
   dialog.innerHTML = `
-    <div class="variant-save-dialog-header">Importera från Ultimate Guitar</div>
+    <div class="variant-save-dialog-header">Importera från urklipp</div>
     <div class="variant-save-dialog-group">
-      <label class="variant-save-dialog-label">Klistra in ackord/text (kopierat från Ultimate Guitars ackordvy)</label>
+      <label class="variant-save-dialog-label">Klistra in ackord/text (t.ex. kopierad från en ackordsida på webben)</label>
       <textarea class="variant-save-dialog-input ug-import-textarea" id="ugImportText" rows="12" placeholder="[Vers 1]&#10;G          D&#10;Amazing grace, how sweet the sound&#10;..."></textarea>
     </div>
     <div class="ug-import-dialog-row">
@@ -1083,13 +1273,10 @@ function openUgImportDialog() {
       <label class="variant-save-dialog-label">Lägg i häfte</label>
       <div>${haftVal}</div>
     </div>` : ''}
-    <span class="ug-import-copy-note" id="ugImportCopyNote" aria-live="polite"></span>
     <div class="variant-save-dialog-buttons">
       <button class="variant-save-dialog-btn" onclick="closeUgImportDialog()">Avbryt</button>
-      <button class="variant-save-dialog-btn" id="ugImportCopyBtn" onclick="copyUgImportJson()" disabled>📋 Kopiera JSON</button>
-      <button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="ugImportSaveBtn" onclick="saveUgImportSong()"${local ? '' : ' disabled'}>💾 Spara till fil</button>
+      <button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="ugImportSaveBtn" onclick="saveUgImportSong()">💾 Spara till fil</button>
     </div>
-    ${!local ? '<span class="ug-import-dialog-hint">Sparning fungerar bara på localhost — använd "Kopiera JSON" och lägg filen i songs/ manuellt.</span>' : ''}
   `;
 
   backdrop.appendChild(dialog);
@@ -1144,10 +1331,7 @@ function parseUgImportPreview() {
   }
 
   const saveBtn = document.getElementById('ugImportSaveBtn');
-  const copyBtn = document.getElementById('ugImportCopyBtn');
-  const hasContent = parsed.sections.length > 0;
-  if (saveBtn) saveBtn.disabled = !hasContent || !isLocalHost();
-  if (copyBtn) copyBtn.disabled = !hasContent;
+  if (saveBtn) saveBtn.disabled = parsed.sections.length === 0;
 }
 
 // Bygger ett komplett låtobjekt från senaste tolkningsresultatet + dialogens fält.
@@ -1178,26 +1362,9 @@ function buildUgImportSong() {
   };
 }
 
-async function copyUgImportJson() {
-  const song = buildUgImportSong();
-  if (!song) return;
-  const json = JSON.stringify(song, null, 2);
-  const note = document.getElementById('ugImportCopyNote');
-  try {
-    await navigator.clipboard.writeText(json);
-    if (note) {
-      note.textContent = `Kopierat! Spara som songs/${filenameFromTitle(song.title)} och lägg till filnamnet i songs/index.json.`;
-      setTimeout(() => { if (note) note.textContent = ''; }, 6000);
-    }
-  } catch (e) {
-    console.log(json);
-    alert('Kunde inte kopiera automatiskt (klippbordsåtkomst nekad). JSON:en loggades i konsolen istället.');
-  }
-}
-
 async function saveUgImportSong() {
   if (!isLocalHost()) {
-    alert('Sparning fungerar bara på localhost. Använd "Kopiera JSON" istället.');
+    alert('Importen fungerar bara på localhost.');
     return;
   }
   const song = buildUgImportSong();
@@ -1915,8 +2082,9 @@ Object.assign(window, {
   toggleVariantEditor, closeVariantEditor, closeVariantSaveDialog, saveVariantSong,
   transposeAllChords, extendAllMeasures, shortenAllMeasures, openVariantSaveDialog,
   updateTemplateMeasure, addMeasureToTemplate, removeMeasureFromTemplate,
-  openUgImportDialog, closeUgImportDialog, parseUgImportPreview,
-  copyUgImportJson, saveUgImportSong,
+  openHaftManagerDialog, closeHaftManagerDialog, createHaft, saveHaftManager,
+  moveHaftSong, removeHaftSong,
+  openUgImportDialog, closeUgImportDialog, parseUgImportPreview, saveUgImportSong,
 });
 
 // ─── Service Worker ───

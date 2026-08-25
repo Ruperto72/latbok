@@ -90,9 +90,13 @@
         <span class="mobile-sheet__label">Ladda om</span>
         <button class="mobile-sheet__toggle" id="mobileReloadBtn" onclick="reloadSongs()">↺ Läs in låtar</button>
       </div>
-      <div class="mobile-sheet__row">
+      <div class="mobile-sheet__row" id="mobileImportRow">
         <span class="mobile-sheet__label">Importera</span>
-        <button class="mobile-sheet__toggle" onclick="openUgImportDialog()">⭳ Från Ultimate Guitar</button>
+        <button class="mobile-sheet__toggle" onclick="openUgImportDialog()">⭳ Från urklipp</button>
+      </div>
+      <div class="mobile-sheet__row" id="mobileHaftRow">
+        <span class="mobile-sheet__label">Häften</span>
+        <button class="mobile-sheet__toggle" onclick="openHaftManagerDialog()">✎ Hantera häften</button>
       </div>
     </div>
     <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop" onclick="closeSettingsSheet()" aria-hidden="true"></div>

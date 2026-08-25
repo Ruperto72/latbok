@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Lokal utvecklingsserver för Körhäftet.
-Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till disk
-och POST /set-song-haften för att uppdatera vilka häften en låt ingår i.
+Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till disk,
+POST /set-song-haften för att uppdatera vilka häften en låt ingår i och
+POST /save-haft för att skapa/byta namn på ett häfte och spara dess låtordning.
 """
 
 import json
@@ -104,6 +105,53 @@ class Handler(SimpleHTTPRequestHandler):
 
                     for path, lista in att_skriva:
                         _write_json(path, lista)
+
+                self._respond(200, 'OK')
+            except Exception as e:
+                self._respond(500, str(e))
+        elif self.path == '/save-haft':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                data = json.loads(body)
+                hid = data.get('id')
+                namn = data.get('namn')
+                filenames = data.get('filenames')
+
+                if not isinstance(hid, str) or not ID_RE.fullmatch(hid) or hid == '__alla':
+                    self._respond(400, 'Ogiltigt häftes-id')
+                    return
+                if not isinstance(namn, str) or namn.strip() == '':
+                    self._respond(400, 'Häftet måste ha ett namn')
+                    return
+                if filenames is None:
+                    filenames = []
+                if not isinstance(filenames, list) or not all(_valid_song_filename(f) for f in filenames):
+                    self._respond(400, 'filenames måste vara en lista med låtfilnamn')
+                    return
+                if len(set(filenames)) != len(filenames):
+                    self._respond(400, 'filenames innehåller dubbletter')
+                    return
+
+                with index_lock:
+                    pool = _read_json(POOL_INDEX, [])
+                    saknade = [f for f in filenames if f not in pool]
+                    if saknade:
+                        self._respond(400, f'Okända låtar: {", ".join(saknade)}')
+                        return
+
+                    os.makedirs(HAFTEN_DIR, exist_ok=True)
+                    _write_json(os.path.join(HAFTEN_DIR, hid + '.json'), filenames)
+
+                    index_path = os.path.join(HAFTEN_DIR, 'index.json')
+                    index = _read_json(index_path, [])
+                    for h in index:
+                        if h.get('id') == hid:
+                            h['namn'] = namn.strip()
+                            break
+                    else:
+                        index.append({'id': hid, 'namn': namn.strip()})
+                    _write_json(index_path, index)
 
                 self._respond(200, 'OK')
             except Exception as e:

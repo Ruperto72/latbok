@@ -8,8 +8,10 @@
     "build": "esbuild app.js --bundle --outfile=dist/app.bundle.js --format=esm --minify --sourcemap",
     "build:dev": "esbuild app.js --bundle --outfile=dist/app.bundle.js --format=esm --sourcemap",
     "watch": "esbuild app.js --bundle --outfile=dist/app.bundle.js --format=esm --sourcemap --watch",
-    "dist": "node scripts/build.js",
-    "test": "node --test tests/chords.test.js tests/haften.test.js"
+    "dist": "npm run cache && node scripts/build.js",
+    "test": "node --test tests/chords.test.js tests/haften.test.js",
+    "cache": "node scripts/cache-version.js",
+    "cache:check": "node scripts/cache-version.js --check"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"

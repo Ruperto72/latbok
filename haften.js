@@ -36,3 +36,32 @@ export function withSongInHaften(haftLists, filename, valdaIds) {
   }
   return out;
 }
+
+// Gör ett häftes-id av ett fritt namn: "Demestkören 2" → "demestkoren-2".
+export function slugifyHaftId(namn) {
+  const slug = String(namn ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')   // ta bort diakriter: å/ä → a, ö → o
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return slug || 'haft';
+}
+
+// Lägger till -2, -3 … tills id:t är ledigt. ALL_SONGS_ID är alltid upptaget.
+export function uniqueHaftId(base, taken) {
+  const upptagna = new Set([...taken, ALL_SONGS_ID]);
+  if (!upptagna.has(base)) return base;
+  let n = 2;
+  while (upptagna.has(`${base}-${n}`)) n++;
+  return `${base}-${n}`;
+}
+
+// Flyttar ett element i en lista. Ogiltiga index ger en oförändrad kopia.
+export function moveInList(list, from, to) {
+  const out = [...list];
+  if (from < 0 || from >= out.length || to < 0 || to >= out.length || from === to) return out;
+  const [item] = out.splice(from, 1);
+  out.splice(to, 0, item);
+  return out;
+}

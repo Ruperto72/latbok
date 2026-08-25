@@ -1,25 +1,40 @@
 # Guide — Lägga till nya låtar
 
-## Importera från Ultimate Guitar
+## Importera från urklipp
 
-Har du hittat en låt med ackord på Ultimate Guitar? Klistra in den direkt istället för
-att skriva om den för hand:
+Har du hittat en låt med ackord på nätet? Klistra in den direkt istället för
+att skriva om den för hand. Importen finns bara när appen körs lokalt (localhost) —
+knappen är dold på GitHub Pages, precis som låtredaktören:
 
-1. Kopiera ackord/text från Ultimate Guitars ackordvy (chords-läge, inte tabs)
-2. Klicka **⚙ Inställningar** i bottenbaren och välj **⭳ Från Ultimate Guitar**
-3. Klistra in texten och klicka **Tolka text** — kontrollera förhandsvisningen
-4. Fyll i/justera titel, artist, tonart och svårighetsgrad
-5. **Spara till fil** (kräver `python server.py` lokalt) eller **Kopiera JSON** och klistra
-   in innehållet i en ny fil i `songs/` manuellt (fungerar även på GitHub Pages)
-6. Glöm inte lägga till filnamnet i `songs/index.json` om du sparade manuellt
+1. Starta `python server.py` och öppna appen på `http://localhost:8000`
+2. Kopiera ackord/text från ackordsidan (ackordvy, inte tabulatur)
+3. Klicka **⚙ Inställningar** i bottenbaren och välj **⭳ Från urklipp**
+4. Klistra in texten och klicka **Tolka text** — kontrollera förhandsvisningen
+5. Fyll i/justera titel, artist, tonart och svårighetsgrad
+6. **Spara till fil** — låten skrivs till `songs/` och läggs till i `songs/index.json`
+   automatiskt
 
 Importen tolkar `[Vers]`/`[Chorus]`-headers till svenska sektionsnamn och stödjer
-båda de vanliga UG-formaten:
+båda de vanliga ackordformaten:
 - **Ackordrad ovanför textrad** — `G          D` på en egen rad, lyrics under
 - **Inline-ackord** — `[G]Amazing [D]grace` med ackorden i hakparenteser mitt i texten
 
 Du kan blanda båda formaten i samma inklistrade text. Fungerar bra som
 utgångspunkt — finjustera gärna resultatet i låtredaktören efteråt.
+
+## Häften — skapa och ordna
+
+Häften hanteras i appen när den körs lokalt: **⚙ Inställningar → ✎ Hantera häften**.
+
+- **Nytt häfte** — skriv ett namn och klicka **+ Skapa**. Id:t räknas ut från namnet
+  ("Vårkonsert 2026" → `varkonsert-2026`) och häftet blir aktivt direkt.
+- **Byt namn** — ändra namnet på det aktiva häftet och klicka **Spara häftet**.
+- **Ordna låtar** — dra raderna eller använd ▲▼. Ordningen är den låtarna får i menyn.
+- **✕** — tar bort låten ur häftet. Låtfilen ligger kvar i poolen (`songs/index.json`)
+  och kan läggas i häftet igen via kryssrutorna i låtredigeraren.
+
+Ändringarna skrivs till `songs/haften/<id>.json` och `songs/haften/index.json` — samma
+filer som du annars kan handredigera.
 
 ## Snabbstart
 
