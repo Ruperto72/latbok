@@ -1,0 +1,161 @@
+{
+  "title": "Av Längtan Till Dig",
+  "artist": "Cajsa Stina Åkerström",
+  "key": "C",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "     C       F         G7",
+          "l": "I en evighet levde jag som om du inte fanns"
+        },
+        {
+          "c": "       C                   F       Dm        G7",
+          "l": "I alla drömmar var du ändå nära så underbart nära"
+        },
+        {
+          "c": "        C          F            G7",
+          "l": "Och jag trodde jag fann dig men du var någon annanstans"
+        },
+        {
+          "c": "        C                        F",
+          "l": "Varenda gång jag funnit någon så såg jag"
+        },
+        {
+          "c": "    G7               C",
+          "l": "att drömmen inte var sann"
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "          C          F         C            G7",
+          "l": "Tänk alla famnar jag lämnat av längtan till dig"
+        },
+        {
+          "c": "        Am         F            Dm      G7",
+          "l": "för jag trodde att du fanns och väntade mig"
+        },
+        {
+          "c": "          C         F          C           G7",
+          "l": "Tänk alla dagar jag vandrat så sorgsen och trött"
+        },
+        {
+          "c": "        Am       F         G7                  C",
+          "l": "för att möta den vackraste människa jag nånsin mött"
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "        C          F          G7",
+          "l": "Det var enkelt och vackert du sa att du väntat mig"
+        },
+        {
+          "c": "          C                    F         Dm         G7",
+          "l": "Jag kunde ana att det fanns en himmel på jorden jag såg den"
+        },
+        {
+          "c": "       C           F         G7",
+          "l": "Och du bad mig att leva mitt liv alltid nära dig"
+        },
+        {
+          "c": "           C                      F        G7                     C",
+          "l": "Jag följde dina steg och allt jag någonsin drömt om fanns där för mig"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 2",
+      "lines": [
+        {
+          "c": "          C          F         C            G7",
+          "l": "Tänk alla famnar jag lämnat av längtan till dig"
+        },
+        {
+          "c": "        Am         F            Dm      G7",
+          "l": "för jag trodde att du fanns och väntade mig"
+        },
+        {
+          "c": "          C         F          C           G7",
+          "l": "Tänk alla dagar jag vandrat så sorgsen och trött"
+        },
+        {
+          "c": "        Am       F         G7                  C",
+          "l": "för att möta den vackraste människa jag nånsin mött"
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "          C         F           G7",
+          "l": "Det finns ingen som lockat mitt hjärta så underbart"
+        },
+        {
+          "c": "            C                     F          Dm    G7",
+          "l": "Med all din ömhet får du sorg och smärta att sakta försvinna"
+        },
+        {
+          "c": "     C            F          G7",
+          "l": "Alla skuggor allt mörker som förr var så uppenbart"
+        },
+        {
+          "c": "             C                      F          G7                C",
+          "l": "Det skingras och tillsammans ser vi ljuset som stiger med solens fart"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 3",
+      "lines": [
+        {
+          "c": "          C          F         C            G7",
+          "l": "Tänk alla famnar jag lämnat av längtan till dig"
+        },
+        {
+          "c": "        Am         F            Dm      G7",
+          "l": "för jag trodde att du fanns och väntade mig"
+        },
+        {
+          "c": "          C         F          C           G7",
+          "l": "Tänk alla dagar jag vandrat så sorgsen och trött"
+        },
+        {
+          "c": "        Am       F         G7                  C",
+          "l": "för att möta den vackraste människa jag nånsin mött"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 4",
+      "lines": [
+        {
+          "c": "          C          F         C            G7",
+          "l": "Tänk alla famnar jag lämnat av längtan till dig"
+        },
+        {
+          "c": "        Am         F            Dm      G7",
+          "l": "för jag trodde att du fanns och väntade mig"
+        },
+        {
+          "c": "          C         F          C           G7",
+          "l": "Tänk alla dagar jag vandrat så sorgsen och trött"
+        },
+        {
+          "c": "        Am       F         G7                  C",
+          "l": "för att möta den vackraste människa jag nånsin mött"
+        }
+      ]
+    }
+  ]
+}
