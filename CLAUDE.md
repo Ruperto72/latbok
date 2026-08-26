@@ -1,4 +1,4 @@
-# CLAUDE.md — Körhäftet
+# CLAUDE.md — Låtbok
 
 ## Projektöversikt
 

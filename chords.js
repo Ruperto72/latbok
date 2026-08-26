@@ -30,7 +30,7 @@ export function parseChordLine(chordStr) {
 
 // ─── Import från urklipp ───
 // Tolkar text kopierad från Ultimate Guitars ackord-vy och bygger om den
-// till Körhäftets låt-schema ({ label, lines: [{c, l}] }). Två format stöds:
+// till Låtboks låt-schema ({ label, lines: [{c, l}] }). Två format stöds:
 //   1. Klassiskt: ackordrad ovanför textrad ("G          D" / lyrics-raden
 //      under). Kolumnpositionen i den inklistrade texten är redan korrekt
 //      (ackordet står över den stavelse det hör till), så raderna sparas

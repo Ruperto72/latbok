@@ -1,6 +1,6 @@
-// ─── Körhäftet — Service Worker ───
+// ─── Låtbok — Service Worker ───
 
-const CACHE_NAME = 'korhaftet-ced6c308';
+const CACHE_NAME = 'latbok-81c6963c';
 
 const PRECACHE_URLS = [
   './',

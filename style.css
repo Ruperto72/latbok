@@ -129,6 +129,10 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 8px;
+  /* Bottom-baren (.mobile-bar) är fast positionerad över hela bredden på alla
+     skärmstorlekar och ligger ovanpå sidopanelens fot (samma bottom:0-hörn) —
+     samma padding-trick som .mobile-sheet använder för att inte hamna bakom den. */
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 .sidebar-section-header {
@@ -140,34 +144,6 @@ body {
   color: var(--text-dim);
   padding: 16px 12px 8px;
 }
-
-.sidebar-footer {
-  padding: 8px;
-  /* Bottom-baren (.mobile-bar) är fast positionerad över hela bredden på alla
-     skärmstorlekar och ligger ovanpå sidopanelens fot (samma bottom:0-hörn) —
-     samma padding-trick som .mobile-sheet använder för att inte hamna bakom den. */
-  padding-bottom: calc(72px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.reload-btn {
-  width: 100%;
-  padding: 8px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text-dim);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-}
-
-.reload-btn:hover { color: var(--text); border-color: var(--accent); }
-.reload-btn:disabled { opacity: 0.4; cursor: default; }
 
 .song-list::-webkit-scrollbar { width: 4px; }
 .song-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }

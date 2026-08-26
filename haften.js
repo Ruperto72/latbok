@@ -1,4 +1,4 @@
-// ─── Körhäftet — häften (låturval per kör) ───
+// ─── Låtbok — häften (låturval per kör) ───
 
 export const ALL_SONGS_ID = '__alla';
 

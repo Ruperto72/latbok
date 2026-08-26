@@ -1,4 +1,4 @@
-# Körhäftet — Ackord & Text
+# Låtbok — Ackord & Text
 
 En modern webbapp för körsånger med ackord, byggd som en PWA för GitHub Pages. ES-moduler, offline-stöd via Service Worker och valfritt byggsystem med esbuild.
 
@@ -40,7 +40,7 @@ Alla inställningar sparas lokalt på enheten.
 
 ### Import från urklipp (lokalt)
 Knappen **⭳ Från urklipp** (under ⚙ Inställningar) visas bara när appen körs lokalt, precis som låtredaktören. Den öppnar en dialog där du klistrar in ackord/text kopierad från valfri ackordsida (t.ex. Ultimate Guitar):
-- **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Körhäftets format med bibehållen kolumnjustering
+- **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Låtboks format med bibehållen kolumnjustering
 - **Gissar titel/artist/tonart** — från en "Låt by Artist"-rad samt `Key:`/`Capo:`-rader om de finns med i den inklistrade texten (annars fyller du i själv)
 - **Förhandsvisning** — se hur låten tolkats innan du sparar
 - **Spara till fil** — skriver en ny låtfil via den lokala servern (`python server.py`), precis som låtredaktören
@@ -73,7 +73,7 @@ Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i
 ## Projektstruktur
 
 ```
-korhaftet/
+latbok/
 ├── index.html          ← Huvudsida (HTML-skelett)
 ├── style.css           ← All styling
 ├── app.js              ← Huvudlogik (rendering, redaktör, autoscroll) — ES-modul

@@ -1,4 +1,4 @@
-// ─── Körhäftet — app.js ───
+// ─── Låtbok — app.js ───
 
 import {
   transposeChordName, parseChordLine,
@@ -51,7 +51,7 @@ let scrollLastTime = null;
 let scrollAccum = 0;
 let wakeLock = null;
 
-const PREFS_KEY = 'korhaftet-preferences';
+const PREFS_KEY = 'latbok-preferences';
 
 // ─── Song Loading ───
 async function loadSongs(bustCache = false) {
@@ -281,7 +281,7 @@ function renderSongList(filter = '') {
 }
 
 async function reloadSongs() {
-  const btn = document.getElementById('reloadSongsBtn');
+  const btn = document.getElementById('mobileReloadBtn');
   if (btn) btn.disabled = true;
   try {
     await loadSongs(true);

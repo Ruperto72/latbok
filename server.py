@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lokal utvecklingsserver för Körhäftet.
+"""Lokal utvecklingsserver för Låtbok.
 Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till disk,
 POST /set-song-haften för att uppdatera vilka häften en låt ingår i och
 POST /save-haft för att skapa/byta namn på ett häfte och spara dess låtordning.
@@ -175,5 +175,5 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
     port = 8005
-    print(f'Körhäftet-server startar på http://localhost:{port}')
+    print(f'Låtbok-server startar på http://localhost:{port}')
     ThreadingHTTPServer(('', port), Handler).serve_forever()

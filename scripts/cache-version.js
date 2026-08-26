@@ -25,7 +25,7 @@ export function cacheNameFor(files = HASHED_FILES) {
     hash.update(f);
     hash.update(readFileSync(f));
   }
-  return `korhaftet-${hash.digest('hex').slice(0, 8)}`;
+  return `latbok-${hash.digest('hex').slice(0, 8)}`;
 }
 
 function readSw() {
