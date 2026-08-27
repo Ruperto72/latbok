@@ -1,6 +1,6 @@
 // ─── Låtbok — Service Worker ───
 
-const CACHE_NAME = 'latbok-a03e18da';
+const CACHE_NAME = 'latbok-777d527e';
 
 const PRECACHE_URLS = [
   './',

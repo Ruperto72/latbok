@@ -19,11 +19,13 @@ const HASHED_FILES = [
 const SW_FILE = 'sw.js';
 const CACHE_NAME_RE = /const CACHE_NAME = '([^']*)';/;
 
+// Radslut normaliseras till LF — arbetsträdet har CRLF på Windows (core.autocrlf)
+// men LF på CI-runnern, och hashen måste bli densamma i båda.
 export function cacheNameFor(files = HASHED_FILES) {
   const hash = createHash('sha256');
   for (const f of files) {
     hash.update(f);
-    hash.update(readFileSync(f));
+    hash.update(readFileSync(f, 'utf8').replace(/\r\n/g, '\n'));
   }
   return `latbok-${hash.digest('hex').slice(0, 8)}`;
 }
