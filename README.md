@@ -35,7 +35,7 @@ Alla inställningar sparas lokalt på enheten.
 <td width="50%"><img src="docs/screenshots/installningar.png" alt="Inställningsbladet"></td>
 </tr>
 <tr>
-<td><em>Mobilvy — ackord över text och grepp för låtens ackord</em></td>
+<td><em>Mobilvy — en 4-taktersrad ombruten till 2+2</em></td>
 <td><em>Inställningsbladet (⚙)</em></td>
 </tr>
 </table>

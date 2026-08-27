@@ -178,6 +178,10 @@ body {
 
 .main {
   flex: 1;
+  /* Flex-item har min-width: auto som default, vilket gör att .main vägrar
+     krympa under sitt min-content-mått. En bred låtrad kunde därför tvinga
+     hela sidan bredare än skärmen på mobil. */
+  min-width: 0;
   margin-left: 280px;
   transition: margin-left 0.25s ease;
   min-height: 100vh;
