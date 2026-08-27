@@ -2,6 +2,8 @@
 
 En modern webbapp för körsånger med ackord, byggd som en PWA för GitHub Pages. ES-moduler, offline-stöd via Service Worker och valfritt byggsystem med esbuild.
 
+![Låtboken på desktop — häftesväljare, låtlista, taktbaserad layout och ackorddiagram](docs/screenshots/desktop-huvudvy.png)
+
 ## Funktioner
 
 ### Visning
@@ -10,6 +12,10 @@ En modern webbapp för körsånger med ackord, byggd som en PWA för GitHub Page
 - **Responsiv layout** — på mobil wrappas 4-taktsrader om till 2+2 utan att text pressas ihop
 - **2-kolumnläge** — komprimera långa låtar med balanserade kolumner (desktop)
 - **Justerbar textstorlek** — versrubriker och avstånd skalas proportionellt
+
+Klicka på ett ackorddiagram för att se alternativa grepp för samma ackord:
+
+![Greppvarianter för F-ackordet](docs/screenshots/ackordgrepp.png)
 
 ### Gränssnitt
 En fast **bottenrad** används på alla enheter med tre knappar:
@@ -22,6 +28,17 @@ På **desktop** finns även i inställningsbladet:
 - **Redigera låt** — öppna låtredaktören
 
 Alla inställningar sparas lokalt på enheten.
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/mobil-huvudvy.png" alt="Mobilvy med ackord över text"></td>
+<td width="50%"><img src="docs/screenshots/installningar.png" alt="Inställningsbladet"></td>
+</tr>
+<tr>
+<td><em>Mobilvy — ackord över text och grepp för låtens ackord</em></td>
+<td><em>Inställningsbladet (⚙)</em></td>
+</tr>
+</table>
 
 ### Transponering
 - **Tonartsbyte** med ♭/♯-knappar
@@ -44,6 +61,8 @@ Knappen **⭳ Från urklipp** (under ⚙ Inställningar) visas bara när appen k
 - **Gissar titel/artist/tonart** — från en "Låt by Artist"-rad samt `Key:`/`Capo:`-rader om de finns med i den inklistrade texten (annars fyller du i själv)
 - **Förhandsvisning** — se hur låten tolkats innan du sparar
 - **Spara till fil** — skriver en ny låtfil via den lokala servern (`python server.py`), precis som låtredaktören
+
+![Importdialogen med tolkad förhandsvisning](docs/screenshots/import.png)
 
 ### Låtredaktör (desktop)
 Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i webbläsaren:
