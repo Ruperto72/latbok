@@ -1,48 +1,41 @@
 {
   "title": "Uti Vår Hage",
-  "artist": "Richard Dybeck",
+  "artist": "Misc Traditional",
   "key": "Am",
-  "timeSignature": "3/4",
+  "timeSignature": "4/4",
   "difficulty": "Lätt",
-  "chordTemplates": {
-    "vers_1": "Am|Am|F    G|C",
-    "vers_2": "C    F|C",
-    "vers_3": "Am|Am|D7|G",
-    "ref_1": "E    Am|E",
-    "ref_2": "E    Am|Dm",
-    "ref_3": "Dm   Am   E|Am"
-  },
+  "chordTemplates": {},
   "sections": [
     {
       "label": "Vers 1",
       "lines": [
         {
-          "c": "@vers_1",
-          "l": "Uti vår |hage där |växa blå |bär"
+          "c": "Am               F    G   C",
+          "l": "Uti vår hage där växa blå bär"
         },
         {
-          "c": "@vers_2",
-          "l": "Kom hjärtans |fröjd!"
+          "c": "    F        C",
+          "l": "Kom hjärtans fröjd!"
         },
         {
-          "c": "@vers_3",
-          "l": "Vill du mig |något så |träffas vi |där."
+          "c": "Am                   D7          G",
+          "l": "Vill du mig något så träffas vi där."
         },
         {
-          "c": "@ref_1",
-          "l": "Kom liljor och |akvileja,"
+          "c": " E  Am              E",
+          "l": "Kom liljor och akvileja,"
         },
         {
-          "c": "@ref_1",
-          "l": "kom rosor och |salivia"
+          "c": "    Am            E",
+          "l": "kom rosor och salivia"
         },
         {
-          "c": "@ref_2",
-          "l": "Kom ljuva |krusmynta,"
+          "c": "    Am         Dm",
+          "l": "Kom ljuva krusmynta,"
         },
         {
-          "c": "@ref_3",
-          "l": "kom, hjärtans |fröjd."
+          "c": "    Am    E     Am",
+          "l": "kom, hjärtans fröjd."
         }
       ]
     },
@@ -50,32 +43,32 @@
       "label": "Vers 2",
       "lines": [
         {
-          "c": "@vers_1",
-          "l": "Fagra små  |blommor där |bjuda till |dans."
+          "c": "Am                     F    G    C",
+          "l": "Fagra små blommor där bjuda till dans."
         },
         {
-          "c": "@vers_2",
-          "l": "Kom hjärtans |fröjd!"
+          "c": "    F        C",
+          "l": "Kom hjärtans fröjd!"
         },
         {
-          "c": "@vers_3",
-          "l": "Vill du så |binder jag |åt dig en |krans."
+          "c": "Am                    D7        G",
+          "l": "Vill du så binder jag åt dig en krans."
         },
         {
-          "c": "@ref_1",
-          "l": "Kom liljor och |akvileja,"
+          "c": " E  Am              E",
+          "l": "Kom liljor och akvileja,"
         },
         {
-          "c": "@ref_1",
-          "l": "kom rosor och |salivia"
+          "c": "    Am            E",
+          "l": "kom rosor och salivia"
         },
         {
-          "c": "@ref_2",
-          "l": "Kom ljuva |krusmynta,"
+          "c": "    Am         Dm",
+          "l": "Kom ljuva krusmynta,"
         },
         {
-          "c": "@ref_3",
-          "l": "kom, hjärtans |fröjd."
+          "c": "    Am    E     Am",
+          "l": "kom, hjärtans fröjd."
         }
       ]
     },
@@ -83,32 +76,32 @@
       "label": "Vers 3",
       "lines": [
         {
-          "c": "@vers_1",
-          "l": "Kransen den |sätter jag |sen i ditt |hår."
+          "c": "Am                      F    G    C",
+          "l": "Kransen den sätter jag sen i ditt hår."
         },
         {
-          "c": "@vers_2",
-          "l": "Kom hjärtans |fröjd!"
+          "c": "    F        C",
+          "l": "Kom hjärtans fröjd!"
         },
         {
-          "c": "@vers_3",
-          "l": "Solen den |dalar, men |hoppet |uppgår."
+          "c": "Am                   D7        G",
+          "l": "Solen den dalar, men hoppet uppgår."
         },
         {
-          "c": "@ref_1",
-          "l": "Kom liljor och |akvileja,"
+          "c": " E  Am              E",
+          "l": "Kom liljor och akvileja,"
         },
         {
-          "c": "@ref_1",
-          "l": "kom rosor och |salivia"
+          "c": "    Am            E",
+          "l": "kom rosor och salivia"
         },
         {
-          "c": "@ref_2",
-          "l": "Kom ljuva |krusmynta,"
+          "c": "    Am         Dm",
+          "l": "Kom ljuva krusmynta,"
         },
         {
-          "c": "@ref_3",
-          "l": "kom, hjärtans |fröjd."
+          "c": "    Am    E     Am",
+          "l": "kom, hjärtans fröjd."
         }
       ]
     },
@@ -116,32 +109,32 @@
       "label": "Vers 4",
       "lines": [
         {
-          "c": "@vers_1",
-          "l": "Uti vår |hage finns |blommor och |bär."
+          "c": "Am                 F       G   C",
+          "l": "Uti vår hage finns blommor och bär."
         },
         {
-          "c": "@vers_2",
-          "l": "Kom hjärtans |fröjd!"
+          "c": "    F        C",
+          "l": "Kom hjärtans fröjd!"
         },
         {
-          "c": "@vers_3",
-          "l": "Men utav |alla du |kärast mig |är."
+          "c": "Am               D7         G",
+          "l": "Men utav alla du kärast mig är."
         },
         {
-          "c": "@ref_1",
-          "l": "Kom liljor och |akvileja,"
+          "c": " E  Am              E",
+          "l": "Kom liljor och akvileja,"
         },
         {
-          "c": "@ref_1",
-          "l": "kom rosor och |salivia"
+          "c": "    Am            E",
+          "l": "kom rosor och salivia"
         },
         {
-          "c": "@ref_2",
-          "l": "Kom ljuva |krusmynta,"
+          "c": "    Am         Dm",
+          "l": "Kom ljuva krusmynta,"
         },
         {
-          "c": "@ref_3",
-          "l": "kom, hjärtans |fröjd."
+          "c": "    Am    E     Am",
+          "l": "kom, hjärtans fröjd."
         }
       ]
     }

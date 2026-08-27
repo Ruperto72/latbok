@@ -1,34 +1,29 @@
 {
-  "title": "Sång till Friheten",
+  "title": "Sång Till Friheten",
   "artist": "Björn Afzelius",
   "key": "C",
   "timeSignature": "4/4",
   "difficulty": "Medel",
-  "chordTemplates": {
-    "vers_a": "C |F    G|C |F    G",
-    "vers_b": "C|F    Dm|G|G",
-    "vers_c": "Dm|G|C|Am7",
-    "vers_d": "F|Dm|G|G"
-  },
+  "chordTemplates": {},
   "sections": [
     {
       "label": "Vers 1",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "Du är det |finaste jag |vet.|"
+          "c": "C         F    G      C  F G",
+          "l": "Du är det finaste jag vet."
         },
         {
-          "c": "@vers_b",
-          "l": "Du är det |dyraste i |världen.|"
+          "c": "C          F    Dm   G",
+          "l": "Du är det dyraste i världen."
         },
         {
-          "c": "@vers_c",
-          "l": "Du är som |stjärnorna, som |vindarna, som |vågorna, som "
+          "c": "Dm           G             C             Am7",
+          "l": "Du är som stjärnorna, som vindarna, som vågorna,"
         },
         {
-          "c": "@vers_d",
-          "l": "fåglarna, som |blommorna på |marken.|"
+          "c": "     F              Dm       G",
+          "l": "som fåglarna, som blommorna på marken."
         }
       ]
     },
@@ -36,20 +31,20 @@
       "label": "Vers 2",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "Du är min |ledstjärna och |vän. |"
+          "c": "C          F       G      C  F G",
+          "l": "Du är min ledstjärna och vän."
         },
         {
-          "c": "@vers_b",
-          "l": "Du är min |tro, mitt hopp, min |kärlek.|"
+          "c": "C          F         Dm        G",
+          "l": "Du är min tro, mitt hopp, min kärlek."
         },
         {
-          "c": "@vers_c",
-          "l": "Du är mitt |blod och mina |lungor, mina |ögon, mina"
+          "c": "Dm           G            C           Am7",
+          "l": "Du är mitt blod och mina lungor, mina ögon,"
         },
         {
-          "c": "@vers_d",
-          "l": "skuldror, mina |händer och mitt |hjärta.|"
+          "c": "       F             Dm             G",
+          "l": "mina skuldror, mina händer och mitt hjärta."
         }
       ]
     },
@@ -57,20 +52,20 @@
       "label": "Vers 3",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "Friheten |är ditt vackra |namn.|"
+          "c": "C        F        G      C  F G",
+          "l": "Friheten är ditt vackra namn."
         },
         {
-          "c": "@vers_b",
-          "l": "Vänskapen |är din stolta |moder.|"
+          "c": "C         F        Dm    G",
+          "l": "Vänskapen är din stolta moder."
         },
         {
-          "c": "@vers_c",
-          "l": "Rättvisan |är din broder, |freden är din |syster, kampen "
+          "c": "Dm        G                C            Am7",
+          "l": "Rättvisan är din broder, freden är din syster,"
         },
         {
-          "c": "@vers_d",
-          "l": "är din fader, |framtiden ditt |ansvar.|"
+          "c": "        F          Dm           G",
+          "l": "kampen är din fader, framtiden ditt ansvar."
         }
       ]
     },
@@ -78,20 +73,20 @@
       "label": "Vers 4",
       "lines": [
         {
-          "c": "@vers_a",
-          "l": "Du är det |finaste jag |vet.|"
+          "c": "C          F    G      C  F G",
+          "l": "Du är det finaste jag vet."
         },
         {
-          "c": "@vers_b",
-          "l": "Du är det |dyraste i |världen.|"
+          "c": " C         F    Dm   G",
+          "l": "Du är det dyraste i världen."
         },
         {
-          "c": "@vers_c",
-          "l": "Du är som |stjärnorna, som |vindarna, som |vågorna, som "
+          "c": " Dm          G             C             Am7",
+          "l": "Du är som stjärnorna, som vindarna, som vågorna,"
         },
         {
-          "c": "@vers_d",
-          "l": " fåglarna, som |blommorna på |marken.|"
+          "c": "     F              Dm          G",
+          "l": "som fåglarna, som blommorna på marken."
         }
       ]
     },
@@ -99,20 +94,32 @@
       "label": "Brygga",
       "lines": [
         {
-          "c": "D         |G    A      |D   |G  A",
-          "l": "Du är det |finaste jag |vet.|"
+          "c": " D            G      A       D   G A",
+          "l": "Du är det finaste jag vet."
         },
         {
-          "c": "D         |G   Em    |A   |A",
-          "l": "Du är det |dyraste i |världen.|"
+          "c": " D             G      Em  A",
+          "l": "Du är det dyraste i världen."
         },
         {
-          "c": "Em        |A               |D             |Bm7",
-          "l": "Du är som |stjärnorna, som |vindarna, som |vågorna, som "
+          "c": " Em           A",
+          "l": "Du är som stjärnorna,"
         },
         {
-          "c": "G             |Em           |A|A",
-          "l": "fåglarna, som |blommorna på |marken.|"
+          "c": "    D",
+          "l": "som vindarna,"
+        },
+        {
+          "c": "    Bm7",
+          "l": "som vågorna,"
+        },
+        {
+          "c": "    G",
+          "l": "som fåglarna,"
+        },
+        {
+          "c": "Em                   A",
+          "l": "som blommorna på marken."
         }
       ]
     }
