@@ -129,6 +129,10 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 8px;
+  /* Bottom-baren (.mobile-bar) är fast positionerad över hela bredden på alla
+     skärmstorlekar och ligger ovanpå sidopanelens fot (samma bottom:0-hörn) —
+     samma padding-trick som .mobile-sheet använder för att inte hamna bakom den. */
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 .sidebar-section-header {
@@ -140,34 +144,6 @@ body {
   color: var(--text-dim);
   padding: 16px 12px 8px;
 }
-
-.sidebar-footer {
-  padding: 8px;
-  /* Bottom-baren (.mobile-bar) är fast positionerad över hela bredden på alla
-     skärmstorlekar och ligger ovanpå sidopanelens fot (samma bottom:0-hörn) —
-     samma padding-trick som .mobile-sheet använder för att inte hamna bakom den. */
-  padding-bottom: calc(72px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.reload-btn {
-  width: 100%;
-  padding: 8px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text-dim);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-}
-
-.reload-btn:hover { color: var(--text); border-color: var(--accent); }
-.reload-btn:disabled { opacity: 0.4; cursor: default; }
 
 .song-list::-webkit-scrollbar { width: 4px; }
 .song-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -1317,6 +1293,17 @@ body {
   opacity: 0.9;
 }
 
+.variant-save-dialog-btn--danger {
+  border-color: rgba(200, 80, 80, 0.5);
+  color: #c85050;
+}
+
+.variant-save-dialog-btn--danger:hover {
+  border-color: #c85050;
+  color: #c85050;
+  background: rgba(200, 80, 80, 0.1);
+}
+
 .variant-save-dialog-btn:disabled {
   opacity: 0.4;
   cursor: default;
@@ -1541,10 +1528,142 @@ body {
 
 /* ─── Häfteshantering ─── */
 .haft-manager-dialog {
-  max-width: 460px;
+  max-width: 780px;
   max-height: 85vh;
   overflow-y: auto;
 }
+
+.haft-manager-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 620px) {
+  .haft-manager-top { grid-template-columns: 1fr; }
+}
+
+.haft-manager-field {
+  margin-bottom: 12px;
+}
+
+.haft-manager-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+@media (max-width: 620px) {
+  .haft-manager-cols { grid-template-columns: 1fr; }
+}
+
+.haft-manager-col {
+  min-width: 0;
+}
+
+.haft-manager-col__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.haft-manager-col__head .variant-save-dialog-label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.haft-manager-search {
+  flex: 1;
+  padding: 5px 9px;
+  font-size: 12px;
+}
+
+.haft-manager-pool {
+  background: var(--bg, #fff);
+  border: 1px solid var(--border, #ddd);
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.haft-manager-pool-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border, #eee);
+  cursor: pointer;
+}
+
+.haft-manager-pool-item:last-child { border-bottom: none; }
+
+.haft-manager-pool-item.is-in {
+  background: rgba(200, 168, 75, 0.12);
+}
+
+.haft-manager-pool-item input {
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.haft-manager-pool-item__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.haft-manager-pool-item__title {
+  font-size: 13px;
+  color: var(--text, #333);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.haft-manager-pool-item__artist {
+  font-size: 11px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Antal ANDRA häften låten redan ingår i — varning för att den delas. */
+.haft-manager-pool-item__badge {
+  flex: 0 0 auto;
+  min-width: 17px;
+  padding: 1px 5px;
+  border-radius: 9px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-align: center;
+}
+
+.haft-manager-item__nr {
+  flex: 0 0 auto;
+  min-width: 16px;
+  color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-align: right;
+}
+
+.haft-manager-dirty {
+  flex: 1;
+  font-size: 11px;
+  color: var(--accent);
+  align-self: center;
+}
+
+.haft-manager-dialog .variant-save-dialog-buttons { align-items: center; }
+.haft-manager-dialog .variant-save-dialog-btn { flex: 0 0 auto; padding: 8px 16px; }
 
 .haft-manager-new {
   display: flex;
@@ -1573,9 +1692,10 @@ body {
   overflow-y: auto;
 }
 
-/* Låg skärm: korta listan så Spara-knappen syns utan att dialogen scrollas. */
+/* Låg skärm: korta listorna så Spara-knappen syns utan att dialogen scrollas. */
 @media (max-height: 720px) {
-  .haft-manager-list { max-height: 180px; }
+  .haft-manager-list,
+  .haft-manager-pool { max-height: 180px; }
 }
 
 .haft-manager-empty {

@@ -1,0 +1,368 @@
+{
+  "title": "Årstider",
+  "artist": "Allan Edwall",
+  "key": "Am",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Vers",
+      "lines": [
+        {
+          "c": "   Am                    A7",
+          "l": "Nu är den sköna sommaren här"
+        },
+        {
+          "c": "    D7       G7      C          Am7",
+          "l": "Med lust och fägring stor"
+        },
+        {
+          "c": "    Dm7   G7      C     F",
+          "l": "Och bruna ben och tunna skor"
+        },
+        {
+          "c": "    E7    E7/G# Am     A7",
+          "l": "Och mesen som i holken bor"
+        },
+        {
+          "c": "    Dm7     G7       C    F",
+          "l": "Och doft av hägg och kaffekask"
+        },
+        {
+          "c": "    E7             Am",
+          "l": "Och burken full av mask"
+        },
+        {
+          "c": "    Am                       A7",
+          "l": "Och knappt har solen sjunkit ner"
+        },
+        {
+          "c": "   D7     G7     C          Am7",
+          "l": "Så börjar den gå opp"
+        },
+        {
+          "c": "    Dm7 G7     C      F",
+          "l": "Och i fabriken är det stopp"
+        },
+        {
+          "c": "   E7       E7/G#  Am     A7",
+          "l": "På skorstenspipans högsta topp"
+        },
+        {
+          "c": "    Dm7  G7    C          F",
+          "l": "Har sädesärlan byggt sitt bo"
+        },
+        {
+          "c": "     E7             Am",
+          "l": "Allt andas frid och ro"
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "          Am         A7/C#",
+          "l": "Och vår fabriks direktör"
+        },
+        {
+          "c": "           Dm     Dm/F",
+          "l": "Går det strålande för"
+        },
+        {
+          "c": "        G7       G/B",
+          "l": "Han tog kosingen med sig"
+        },
+        {
+          "c": "    C              E7/B",
+          "l": "Och stack, som dom gör"
+        },
+        {
+          "c": "        Am       A7/C#",
+          "l": "Från en tyngande skatt"
+        },
+        {
+          "c": "       Dm         Dm/F",
+          "l": "Och nu ryktas det att"
+        },
+        {
+          "c": "        Dm6        E7      Am",
+          "l": "Han med skattmasen leker tafatt"
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "    Am                   A7",
+          "l": "Sen är den sköna hösten här"
+        },
+        {
+          "c": "    D7      G7     C          Am7",
+          "l": "Som vi har väntat på"
+        },
+        {
+          "c": "    Dm7   G7      C     F",
+          "l": "Med gula löv och mogna bär"
+        },
+        {
+          "c": "     E7   E7/G#   Am      A7",
+          "l": "Och äppelträn med äpplen på"
+        },
+        {
+          "c": "    Dm7    G7        C    F",
+          "l": "Och kylig natt och blåsig dag"
+        },
+        {
+          "c": "    E7        Am   A7",
+          "l": "Och litet socialbidrag"
+        },
+        {
+          "c": "    Dm7      G7      C     F",
+          "l": "Som man kan dra sig fram uppå"
+        },
+        {
+          "c": "    E7           Am",
+          "l": "Så varför gnälla då?"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 2",
+      "lines": [
+        {
+          "c": "         Am       A7/C#",
+          "l": "Och vår chefsingenjör"
+        },
+        {
+          "c": "           Dm     Dm/F",
+          "l": "Går det strålande för"
+        },
+        {
+          "c": "          G7       G/B",
+          "l": "Han fick kosing av staten"
+        },
+        {
+          "c": "     C        E7/B",
+          "l": "Att fortsätta för"
+        },
+        {
+          "c": "      Am          A7/C#",
+          "l": "Lika glatt som förut"
+        },
+        {
+          "c": "      Dm       Dm/F",
+          "l": "Någonstans söderut"
+        },
+        {
+          "c": "        Dm6      E7       Am",
+          "l": "Går han på i parti och minut"
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "    Am                   A7",
+          "l": "Sen är den sköna vintern här"
+        },
+        {
+          "c": "    D7      G7     C          Am7",
+          "l": "Som vi har väntat på"
+        },
+        {
+          "c": "    Dm7     G7        C     F",
+          "l": "På vintrig hård och frusen mark"
+        },
+        {
+          "c": "    E7    E7/G#  Am      A7",
+          "l": "Vi färdas på en gammal spark"
+        },
+        {
+          "c": "       Dm7   G7      C    F",
+          "l": "Först biten till förmedlingen"
+        },
+        {
+          "c": "     E7          Am   A7",
+          "l": "Och sedan åter   hem igen"
+        },
+        {
+          "c": "    Dm7    G7     C    F",
+          "l": "Med samma avslag som förut"
+        },
+        {
+          "c": "     E7              Am",
+          "l": "Och sen tar vintern slut"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 3",
+      "lines": [
+        {
+          "c": "       Am        A7/C#",
+          "l": "Men fabrikens kamrer"
+        },
+        {
+          "c": "         Dm        Dm/F",
+          "l": "Får vi knappast se mer"
+        },
+        {
+          "c": "         G7            G/B",
+          "l": "För han fick det som lagen"
+        },
+        {
+          "c": "     C          E7/B",
+          "l": "Åt brottslingar ger"
+        },
+        {
+          "c": "      Am         A7/C#",
+          "l": "Något år får han gå"
+        },
+        {
+          "c": "     Dm           Dm/F",
+          "l": "I en kåk, ful och grå"
+        },
+        {
+          "c": "         Dm6        E7         Am",
+          "l": "För dom siffror som han trodde på"
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "     Am                 A7",
+          "l": "Sen kommer vårens sköna tid"
+        },
+        {
+          "c": "    D7       G7   C          Am7",
+          "l": "Som vi har väntat på"
+        },
+        {
+          "c": "     Dm7    G7     C        F",
+          "l": "När bäcken porlar glad och strid"
+        },
+        {
+          "c": "     E7     E7/G#   Am     A7",
+          "l": "Och lärkan sina   drillar slå"
+        },
+        {
+          "c": "     Dm7    G7       C     A7",
+          "l": "Och marken gror och går i knopp"
+        },
+        {
+          "c": "    E7            Am    A7",
+          "l": "Runtom min sysslolösa kropp"
+        },
+        {
+          "c": "    Dm7     G7     C      F",
+          "l": "Och uppåt stiger trädens sav"
+        },
+        {
+          "c": "     E7             Am",
+          "l": "Som det blir sommar av"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 4",
+      "lines": [
+        {
+          "c": "           Am       A7/C#",
+          "l": "Och nu ska udda bli jämnt"
+        },
+        {
+          "c": "            Dm      Dm/F",
+          "l": "Det har kommunen bestämt"
+        },
+        {
+          "c": "       G7         G/B",
+          "l": "För fabriken, som utsikten"
+        },
+        {
+          "c": " C         E7/B",
+          "l": "Länge har skämt"
+        },
+        {
+          "c": "         Am       A7/C#",
+          "l": "Och där möda och slit"
+        },
+        {
+          "c": "        Dm             Dm/F",
+          "l": "Luktar blod, svett och skit"
+        },
+        {
+          "c": "        Dm6          E7     Am",
+          "l": "Tar man bort med en dos dynamit"
+        }
+      ]
+    },
+    {
+      "label": "Vers 5",
+      "lines": [
+        {
+          "c": "    Am                    A7",
+          "l": "Sen är den sköna sommaren här"
+        },
+        {
+          "c": "    D7       G7      C          Am7",
+          "l": "Med lust och fägring stor"
+        },
+        {
+          "c": "    Dm7   G7      C     F",
+          "l": "Och bruna ben och tunna skor"
+        },
+        {
+          "c": "    E7    E7/G# Am     A7",
+          "l": "Och mesen som i holken bor"
+        },
+        {
+          "c": "     Dm7  G7        C      F",
+          "l": "Och kaffekask och dragspelslåt"
+        },
+        {
+          "c": "    E7             Am  A7",
+          "l": "Och getingbon och motorbåt"
+        },
+        {
+          "c": "    Dm7       G7     C      F",
+          "l": "Och Mjölkcentralens kalla glass"
+        },
+        {
+          "c": "     E7         Am  A7",
+          "l": "Och utedans och utedass"
+        },
+        {
+          "c": "     Dm7    G7      C    F",
+          "l": "Och dunket från en fiskesmack"
+        },
+        {
+          "c": "     E7          Am",
+          "l": "Och juice i tetrapack"
+        }
+      ]
+    },
+    {
+      "label": "Outro",
+      "lines": [
+        {
+          "c": "            Am       A7/C#",
+          "l": "Och man är ledig och fri"
+        },
+        {
+          "c": "         Dm        Dm/F",
+          "l": "Och det skiter man i"
+        },
+        {
+          "c": "          Dm6         E7          Am",
+          "l": "För det kvittar snart hur det ska bli"
+        }
+      ]
+    }
+  ]
+}

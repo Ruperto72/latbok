@@ -5,6 +5,7 @@ import {
   parseHaftenIndex, resolveHaftId,
   haftenForSong, withSongInHaften,
   slugifyHaftId, uniqueHaftId, moveInList,
+  toggleInHaft, sameFileList, matchesSongQuery,
 } from '../haften.js';
 
 describe('parseHaftenIndex', () => {
@@ -117,6 +118,73 @@ describe('withSongInHaften', () => {
   });
 });
 
+describe('toggleInHaft', () => {
+  it('lägger till sist', () => {
+    assert.deepEqual(toggleInHaft(['x.json'], 'y.json', true), ['x.json', 'y.json']);
+  });
+
+  it('tar bort utan att röra ordningen på resten', () => {
+    assert.deepEqual(toggleInHaft(['x.json', 'y.json', 'z.json'], 'y.json', false), ['x.json', 'z.json']);
+  });
+
+  it('duplicerar inte en låt som redan ingår', () => {
+    assert.deepEqual(toggleInHaft(['x.json'], 'x.json', true), ['x.json']);
+  });
+
+  it('är oförändrad när låten redan saknas', () => {
+    assert.deepEqual(toggleInHaft(['x.json'], 'y.json', false), ['x.json']);
+  });
+
+  it('muterar inte indata', () => {
+    const lista = ['x.json'];
+    toggleInHaft(lista, 'y.json', true);
+    assert.deepEqual(lista, ['x.json']);
+  });
+});
+
+describe('sameFileList', () => {
+  it('är sann för samma innehåll i samma ordning', () => {
+    assert.equal(sameFileList(['a.json', 'b.json'], ['a.json', 'b.json']), true);
+    assert.equal(sameFileList([], []), true);
+  });
+
+  it('är falsk när ordningen skiljer', () => {
+    assert.equal(sameFileList(['a.json', 'b.json'], ['b.json', 'a.json']), false);
+  });
+
+  it('är falsk när längden skiljer', () => {
+    assert.equal(sameFileList(['a.json'], ['a.json', 'b.json']), false);
+    assert.equal(sameFileList(['a.json'], []), false);
+  });
+});
+
+describe('matchesSongQuery', () => {
+  const meta = { title: 'Vem kan segla förutan vind', artist: 'Trad.', filename: 'vem-kan-segla.json' };
+
+  it('matchar allt på tom sökning', () => {
+    assert.equal(matchesSongQuery(meta, ''), true);
+    assert.equal(matchesSongQuery(meta, '   '), true);
+  });
+
+  it('matchar titel oavsett versaler', () => {
+    assert.equal(matchesSongQuery(meta, 'SEGLA'), true);
+  });
+
+  it('matchar artist och filnamn', () => {
+    assert.equal(matchesSongQuery(meta, 'trad'), true);
+    assert.equal(matchesSongQuery(meta, 'vem-kan'), true);
+  });
+
+  it('är falsk när inget fält matchar', () => {
+    assert.equal(matchesSongQuery(meta, 'stilla natt'), false);
+  });
+
+  it('klarar poster utan titel och artist', () => {
+    assert.equal(matchesSongQuery({ filename: 'x.json' }, 'x'), true);
+    assert.equal(matchesSongQuery({ filename: 'x.json' }, 'y'), false);
+  });
+});
+
 describe('slugifyHaftId', () => {
   it('gör ett id av ett vanligt namn', () => {
     assert.equal(slugifyHaftId('Demestkören'), 'demestkoren');
@@ -158,6 +226,24 @@ describe('uniqueHaftId', () => {
 
   it('betraktar __alla som upptaget', () => {
     assert.equal(uniqueHaftId(ALL_SONGS_ID, []), `${ALL_SONGS_ID}-2`);
+  });
+
+  // "index" skulle peka ut songs/haften/index.json — själva häftesregistret.
+  it('betraktar index som upptaget', () => {
+    assert.equal(uniqueHaftId('index', []), 'index-2');
+  });
+});
+
+describe('reserverade häftes-id', () => {
+  it('parseHaftenIndex kastar poster med id "index"', () => {
+    const raw = [{ id: 'index', namn: 'Index' }, { id: 'ok', namn: 'OK' }];
+    assert.deepEqual(parseHaftenIndex(raw), [{ id: 'ok', namn: 'OK' }]);
+  });
+
+  it('ett häfte som heter "Index" får ett id som inte krockar', () => {
+    const id = uniqueHaftId(slugifyHaftId('Index'), ['demestkoren']);
+    assert.notEqual(id, 'index');
+    assert.deepEqual(parseHaftenIndex([{ id, namn: 'Index' }]), [{ id, namn: 'Index' }]);
   });
 });
 

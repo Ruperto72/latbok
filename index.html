@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Körhäftet — Ackord & Text</title>
+<title>Låtbok — Ackord & Text</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#c8a84b">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Körhäftet">
+<meta name="apple-mobile-web-app-title" content="Låtbok">
 </head>
 <body>
 
@@ -21,16 +21,13 @@
 <div class="app">
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Låtlista">
     <div class="sidebar-header">
-      <h1>Körhäftet</h1>
+      <h1>Låtbok</h1>
       <div class="haft-select-wrap" id="haftSelectWrap" style="display:none">
         <select class="haft-select" id="haftSelect" aria-label="Välj häfte" onchange="changeHaft(this.value)"></select>
       </div>
       <p aria-live="polite">Laddar låtar...</p>
     </div>
     <div class="song-list" id="songList" role="list" aria-label="Låtar"></div>
-    <div class="sidebar-footer">
-      <button class="reload-btn" id="reloadSongsBtn" onclick="reloadSongs()">↺ Ladda om låtar</button>
-    </div>
   </aside>
 
   <main class="main" id="mainContent">

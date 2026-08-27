@@ -1,4 +1,4 @@
-# CLAUDE.md — Körhäftet
+# CLAUDE.md — Låtbok
 
 ## Projektöversikt
 
@@ -65,16 +65,51 @@ Ett häfte är ett urval ur låtpoolen — varje kör ser sitt eget.
 Aktivt häfte väljs via `?haft=<id>` → `localStorage` → första häftet. Pseudo-häftet
 `__alla` ("Alla låtar") visar hela poolen och finns bara lokalt.
 
-Häftesmedlemskap ändras med kryssrutorna i låtredigeraren, som anropar
-`POST /set-song-haften` — bara lokalt. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för
-handredigering.
+**Reserverade id:n:** `RESERVED_HAFT_IDS` i `haften.js` (`__alla` och `index`) speglas av
+`RESERVED_HAFT_IDS` i `server.py`, och båda måste hållas i synk. `index` är reserverat för
+att `songs/haften/<id>.json` annars pekar ut häftesregistret självt — ett häfte som heter
+"Index" får därför id `index-2` via `uniqueHaftId()`.
 
-Häften skapas, byter namn och ordnas om i dialogen "Hantera häften"
-(`openHaftManagerDialog()`, under ⚙ Inställningar). Den sparar via `POST /save-haft`
-{ id, namn, filenames } och är precis som redigeraren bara tillgänglig lokalt —
-raden `#mobileHaftRow` döljs annars av `isLocal`-checken i `init()`. Id:t räknas ut
-från namnet med `slugifyHaftId()` + `uniqueHaftId()` i `haften.js`; låtordningen
-ändras med `moveInList()` och är den ordning låtarna får i menyn.
+Häften administreras i dialogen "Hantera häften" (`openHaftManagerDialog()`, under
+⚙ Inställningar) — häftesväljare, namnfält, **+ Skapa**, och två kolumner: hela
+låtpoolen med kryssruta per låt till vänster, häftets låtar i menyordning till höger.
+Bara lokalt; raden `#mobileHaftRow` döljs annars av `isLocal`-checken i `init()`.
+
+- Ändringar hålls i `haftManager` tills **💾 Spara häftet** → ett `POST /save-haft`
+  `{ id, namn, filenames }`. `haftManagerDirty()` jämför mot `sparatNamn`/`sparadeFiler`
+  och varnar innan man byter häfte eller stänger
+- Id:t räknas ut från namnet med `slugifyHaftId()` + `uniqueHaftId()`; ordningen ändras
+  med `moveInList()`, medlemskap med `toggleInHaft()` (nya låtar hamnar sist)
+- `renderHaftManagerPool()` ritar bara om vid sökning eller häftesbyte —
+  `syncHaftManagerPoolChecks()` uppdaterar kryssrutorna på plats så scrollpositionen
+  överlever ett klick
+
+`songs` innehåller bara **aktivt häftes** låtar, så poolkolumnen kan inte hämta titlar
+därifrån. `pool` + `poolMeta` på modulnivå i `app.js` håller hela poolen; `ensurePoolMeta()`
+fyller på titlar för resten och måste köras om efter `loadSongs(true)`, som nollställer
+`poolMeta`.
+
+Kryssrutorna i låtredigeraren finns kvar som genväg för enstaka låtar och anropar
+`POST /set-song-haften`. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för handredigering.
+
+## Radering
+
+Två endpoints i `server.py`, båda bara lokalt och båda bakom en `confirm()` som visar
+konsekvensen:
+
+- `POST /delete-haft { id }` — tar bort posten ur `songs/haften/index.json` och raderar
+  `songs/haften/<id>.json`. Låtfilerna rörs inte. Knappen 🗑 Radera häftet i häftesvyn
+- `POST /delete-song { filename }` — plockar låten ur `songs/index.json`, ur varje häfte
+  som innehåller den, och raderar `songs/<filnamn>`. Knappen 🗑 Radera låt i låtredigeraren
+
+`/delete-song` kräver att filnamnet finns i `songs/index.json`, vilket samtidigt spärrar
+`index.json` och `template.json` från att raderas. **Referenserna skrivs före filen tas
+bort** — ett avbrott mitt i ska lämna en föräldralös fil, inte ett häfte som pekar på
+något som saknas.
+
+Efter en radering kör klienten `loadSongs(true)`, som bygger om `pool`, `poolMeta`,
+`haften` och `haftLists` från disk. Raderas det aktiva häftet nollställs `currentHaftId`
+först så att `resolveHaftId()` väljer ett nytt.
 
 ## Import från urklipp
 

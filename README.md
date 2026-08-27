@@ -1,4 +1,4 @@
-# Körhäftet — Ackord & Text
+# Låtbok — Ackord & Text
 
 En modern webbapp för körsånger med ackord, byggd som en PWA för GitHub Pages. ES-moduler, offline-stöd via Service Worker och valfritt byggsystem med esbuild.
 
@@ -36,11 +36,11 @@ Alla inställningar sparas lokalt på enheten.
 - **Dela en länk** — `?haft=demestkoren` öppnar appen direkt i rätt häfte
 - **Delad låtpool** — samma låt kan ingå i flera häften; en rättning slår igenom för alla
 - **Alla låtar** — extra val som visar hela poolen, bara när appen körs lokalt
-- **Hantera häften (lokalt)** — knappen **✎ Hantera häften** under ⚙ Inställningar skapar nya häften, byter namn på det aktiva häftet och ordnar om låtarna (dra raderna eller ▲▼); ✕ tar bort en låt ur häftet utan att röra låtfilen
+- **Hantera häften (lokalt)** — knappen **✎ Hantera häften** under ⚙ Inställningar öppnar en administrationsvy med hela låtpoolen till vänster och häftets menyordning till höger: kryssa i låtar, sök på titel/artist, byt namn, skapa nya häften och dra raderna (eller ▲▼) för att ordna om. Allt sparas med **💾 Spara häftet**; **🗑 Radera häftet** tar bort urvalet utan att röra låtfilerna
 
 ### Import från urklipp (lokalt)
 Knappen **⭳ Från urklipp** (under ⚙ Inställningar) visas bara när appen körs lokalt, precis som låtredaktören. Den öppnar en dialog där du klistrar in ackord/text kopierad från valfri ackordsida (t.ex. Ultimate Guitar):
-- **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Körhäftets format med bibehållen kolumnjustering
+- **Tolkar automatiskt** — både ackordrader ovanför textrader och ackord inline i hakparenteser (`[G]text`), samt `[Vers]`/`[Refräng]`-headers, byggs om till Låtboks format med bibehållen kolumnjustering
 - **Gissar titel/artist/tonart** — från en "Låt by Artist"-rad samt `Key:`/`Capo:`-rader om de finns med i den inklistrade texten (annars fyller du i själv)
 - **Förhandsvisning** — se hur låten tolkats innan du sparar
 - **Spara till fil** — skriver en ny låtfil via den lokala servern (`python server.py`), precis som låtredaktören
@@ -52,6 +52,7 @@ Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i
 - **Delar & rader** — lägg till/ta bort delar och rader; välj ackordmall per rad eller skriv ackord fritt
 - **Texteditering** — redigera lyrics direkt; använd `|` för att markera taktgränser
 - **Spara till fil** — skriver ändringarna tillbaka till JSON-filen via en lokal server (fungerar på localhost)
+- **Radera låt** — **🗑 Radera låt** tar bort låtfilen och städar bort låten ur alla häften den ingår i; bekräftelserutan visar vilka häften som berörs
 - **Validering** — visar varningar för saknade fält, ogiltig taktart och okända ackord i realtid
 
 ### Tillgänglighet
@@ -73,7 +74,7 @@ Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i
 ## Projektstruktur
 
 ```
-korhaftet/
+latbok/
 ├── index.html          ← Huvudsida (HTML-skelett)
 ├── style.css           ← All styling
 ├── app.js              ← Huvudlogik (rendering, redaktör, autoscroll) — ES-modul

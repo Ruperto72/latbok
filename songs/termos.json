@@ -1,0 +1,190 @@
+{
+  "title": "Termos",
+  "artist": "Eddie Meduza",
+  "key": "Dm",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "",
+          "l": "Intro: Dm Gm A"
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "Dm       Gm          Dm",
+          "l": "Ja hade köpt mej en termos"
+        },
+        {
+          "c": "Dm     Gm         Dm",
+          "l": "I en affär ner i Målilla"
+        },
+        {
+          "c": "F          C",
+          "l": "Den var jättefin"
+        },
+        {
+          "c": "Dm               C",
+          "l": "Tills jag slog i kaffe"
+        },
+        {
+          "c": "Bb           A        Dm",
+          "l": "Då gick den uti tusen bitar"
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "Dm         Gm           Dm",
+          "l": "Då ringde jag ner till Hakan"
+        },
+        {
+          "c": "Dm         Gm           Dm",
+          "l": "Så kallas han som har affären (Han har  en väldigt stor haka)"
+        },
+        {
+          "c": "F            C",
+          "l": "Och sa som såhär:"
+        },
+        {
+          "c": "Dm            C",
+          "l": "Min termos é sönder"
+        },
+        {
+          "c": "Bb             A           Dm",
+          "l": "Finns det nån garanti på sånna?"
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "C                          F",
+          "l": "Njaa, sade Hakan, mycket grovt och mycket långsamt"
+        },
+        {
+          "c": "C                     F",
+          "l": "Han talade väldigt långsamt... Å grovt..."
+        },
+        {
+          "c": "Bb               C",
+          "l": "Var den röd min gosse"
+        },
+        {
+          "c": "F              Dm    C",
+          "l": "Så får du vara utan"
+        },
+        {
+          "c": "Bb           A            Dm    Bb  A",
+          "l": "Men var den grön får du en ny"
+        },
+        {
+          "c": "Dm",
+          "l": "(Han byter nämligen bara ut gröna saker)"
+        }
+      ]
+    },
+    {
+      "label": "Vers 5",
+      "lines": [
+        {
+          "c": "",
+          "l": "Mellanspel: Dm Gm A"
+        }
+      ]
+    },
+    {
+      "label": "Vers 6",
+      "lines": [
+        {
+          "c": "Dm        Gm            Dm",
+          "l": "Då sade jag såhär till Hakan:"
+        },
+        {
+          "c": "Dm            Gm            Dm",
+          "l": "Jag känner stor sorg och försakan, så att säga"
+        },
+        {
+          "c": "F             C",
+          "l": "Termosen var grön"
+        },
+        {
+          "c": "Dm            C",
+          "l": "Som sommarens gräs"
+        },
+        {
+          "c": "Bb          A                       Dm",
+          "l": "Det var så poetiskt, så han började gråta"
+        }
+      ]
+    },
+    {
+      "label": "Vers 7",
+      "lines": [
+        {
+          "c": "C                           F",
+          "l": "Med stockad röst sa han: Du får två nya termosar"
+        },
+        {
+          "c": "C                             F",
+          "l": "Jag har några liggande här på lagret"
+        },
+        {
+          "c": "Bb               C",
+          "l": "Som jag har fått ut"
+        },
+        {
+          "c": "F                 Dm   C",
+          "l": "Försäkringspengar på"
+        },
+        {
+          "c": "Bb       A          Dm   Bb A",
+          "l": "Å dom e gröna båda två"
+        },
+        {
+          "c": "Dm",
+          "l": "Ja, så fick ja två nya termosar då..."
+        }
+      ]
+    },
+    {
+      "label": "Vers 8",
+      "lines": [
+        {
+          "c": "Dm",
+          "l": "Termosar som är så röda dom får"
+        },
+        {
+          "c": "Gm                            A",
+          "l": "Man inte byta men gröna termosar"
+        },
+        {
+          "c": "A                      Dm",
+          "l": "Dom får man byta byta byt ah.."
+        },
+        {
+          "c": "",
+          "l": "Om man vill..."
+        },
+        {
+          "c": "",
+          "l": "Om han handlar hos Hakan vill säga..."
+        },
+        {
+          "c": "",
+          "l": "I Målilla..."
+        }
+      ]
+    }
+  ]
+}

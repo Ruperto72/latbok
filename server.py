@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Lokal utvecklingsserver för Körhäftet.
+"""Lokal utvecklingsserver för Låtbok.
 Hanterar statiska filer + POST /save-song för att spara JSON-filer direkt till disk,
-POST /set-song-haften för att uppdatera vilka häften en låt ingår i och
-POST /save-haft för att skapa/byta namn på ett häfte och spara dess låtordning.
+POST /set-song-haften för att uppdatera vilka häften en låt ingår i,
+POST /save-haft för att skapa/byta namn på ett häfte och spara dess låtordning,
+POST /delete-song för att radera en låt och städa bort den ur alla häften och
+POST /delete-haft för att radera ett häfte (låtfilerna rörs inte).
 """
 
 import json
@@ -14,6 +16,9 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 HAFTEN_DIR = os.path.join('songs', 'haften')
 POOL_INDEX = os.path.join('songs', 'index.json')
 ID_RE = re.compile(r'[a-z0-9_-]+')
+# Måste spegla RESERVED_HAFT_IDS i haften.js: __alla är pseudo-häftet, och
+# "index" skulle peka ut songs/haften/index.json — själva häftesregistret.
+RESERVED_HAFT_IDS = {'__alla', 'index'}
 
 index_lock = threading.Lock()
 
@@ -32,6 +37,19 @@ def _write_json(path, data):
 
 def _valid_song_filename(name):
     return bool(name) and not any(c in name for c in '/\\:') and name.endswith('.json')
+
+
+def _valid_haft_id(hid):
+    return isinstance(hid, str) and bool(ID_RE.fullmatch(hid)) and hid not in RESERVED_HAFT_IDS
+
+
+def _iter_haften():
+    """Yieldar (post, sökväg, låtlista) för varje häfte med giltigt id i registret."""
+    for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
+        if not _valid_haft_id(h.get('id')):
+            continue
+        path = os.path.join(HAFTEN_DIR, h['id'] + '.json')
+        yield h, path, _read_json(path, [])
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -86,15 +104,11 @@ class Handler(SimpleHTTPRequestHandler):
                     # Bygg klart alla ändringar innan något skrivs, så ett fel
                     # mitt i inte lämnar häftesfilerna halvuppdaterade.
                     att_skriva = []
-                    for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
-                        hid = h.get('id')
+                    for h, path, lista in _iter_haften():
+                        hid = h['id']
                         namn = h.get('namn')
-                        if not hid or not ID_RE.fullmatch(hid) or hid == '__alla':
-                            continue
                         if not isinstance(namn, str) or namn == '':
                             continue
-                        path = os.path.join(HAFTEN_DIR, hid + '.json')
-                        lista = _read_json(path, [])
                         if hid in valda and filename not in lista:
                             lista = lista + [filename]
                         elif hid not in valda and filename in lista:
@@ -118,7 +132,7 @@ class Handler(SimpleHTTPRequestHandler):
                 namn = data.get('namn')
                 filenames = data.get('filenames')
 
-                if not isinstance(hid, str) or not ID_RE.fullmatch(hid) or hid == '__alla':
+                if not _valid_haft_id(hid):
                     self._respond(400, 'Ogiltigt häftes-id')
                     return
                 if not isinstance(namn, str) or namn.strip() == '':
@@ -156,6 +170,73 @@ class Handler(SimpleHTTPRequestHandler):
                 self._respond(200, 'OK')
             except Exception as e:
                 self._respond(500, str(e))
+        elif self.path == '/delete-song':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                data = json.loads(body)
+                filename = data.get('filename')
+
+                if not _valid_song_filename(filename):
+                    self._respond(400, 'Ogiltigt filnamn')
+                    return
+
+                with index_lock:
+                    pool = _read_json(POOL_INDEX, [])
+                    # Kravet att låten finns i poolen spärrar samtidigt
+                    # index.json och template.json från att raderas.
+                    if filename not in pool:
+                        self._respond(404, f'Okänd låt: {filename}')
+                        return
+
+                    # Bygg klart alla ändringar innan något skrivs, och skriv
+                    # referenserna före filen — ett avbrott ska lämna en
+                    # föräldralös fil, inte ett häfte som pekar på något som
+                    # saknas.
+                    att_skriva = [(POOL_INDEX, [f for f in pool if f != filename])]
+
+                    for _h, path, lista in _iter_haften():
+                        if filename in lista:
+                            att_skriva.append((path, [f for f in lista if f != filename]))
+
+                    for path, lista in att_skriva:
+                        _write_json(path, lista)
+
+                    song_path = os.path.join('songs', filename)
+                    if os.path.exists(song_path):
+                        os.remove(song_path)
+
+                self._respond(200, 'OK')
+            except Exception as e:
+                self._respond(500, str(e))
+        elif self.path == '/delete-haft':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                data = json.loads(body)
+                hid = data.get('id')
+
+                if not _valid_haft_id(hid):
+                    self._respond(400, 'Ogiltigt häftes-id')
+                    return
+
+                with index_lock:
+                    index_path = os.path.join(HAFTEN_DIR, 'index.json')
+                    index = _read_json(index_path, [])
+                    if not any(h.get('id') == hid for h in index):
+                        self._respond(404, f'Okänt häfte: {hid}')
+                        return
+
+                    _write_json(index_path, [h for h in index if h.get('id') != hid])
+
+                    # Låtfilerna rörs inte — bara urvalet försvinner.
+                    haft_path = os.path.join(HAFTEN_DIR, hid + '.json')
+                    if os.path.exists(haft_path):
+                        os.remove(haft_path)
+
+                self._respond(200, 'OK')
+            except Exception as e:
+                self._respond(500, str(e))
         else:
             self._respond(404, 'Not found')
 
@@ -175,5 +256,5 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
     port = 8005
-    print(f'Körhäftet-server startar på http://localhost:{port}')
+    print(f'Låtbok-server startar på http://localhost:{port}')
     ThreadingHTTPServer(('', port), Handler).serve_forever()

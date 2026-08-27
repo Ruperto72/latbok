@@ -1,6 +1,6 @@
 {
-  "name": "Körhäftet",
-  "short_name": "Körhäftet",
+  "name": "Låtbok",
+  "short_name": "Låtbok",
   "description": "Ackord och text för kören",
   "start_url": "/latbok/",
   "display": "standalone",
