@@ -4,6 +4,7 @@ import {
   transposeChordName, parseChordLine,
   escHtml, renderChordDiagrams, lookupChord,
   getAllVoicings, chordSVG,
+  renderChordFlow,
   parseUgImportText,
 } from './chords.js';
 import {
@@ -20,6 +21,9 @@ const COL = {
 };
 
 const COL_CLASSES = [' columns-1c', ' columns-2c'];
+
+// Speglar brytpunkten i @media (max-width: 768px) i style.css
+const MOBILE_BREAKPOINT = 768;
 
 // Songs loaded dynamically from songs/ folder
 let songs = [];
@@ -321,6 +325,15 @@ function setupGlobalEvents() {
     searchInput.addEventListener('input', (e) => renderSongList(e.target.value));
   }
 
+  // Taktbredderna sätts som inline-stil utifrån skärmbredden, så de måste
+  // räknas om när vyn ändrar storlek — annars ligger t.ex. desktopbredderna
+  // kvar efter att telefonen roterats till porträtt.
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(alignMeasureColumns, 150);
+  });
+
   // Återaktivera Wake Lock om fliken blir synlig igen under scroll
   document.addEventListener('visibilitychange', async () => {
     if (scrollActive && document.visibilityState === 'visible') {
@@ -330,8 +343,19 @@ function setupGlobalEvents() {
 }
 
 function alignMeasureColumns() {
+  // Kolumnjusteringen låser varje takt till sitt innehålls bredd. På smala
+  // skärmar ryms inte de bredderna, och eftersom de sätts som inline-stil
+  // vinner de över mobilreglerna i @media (max-width: 768px) som annars låter
+  // takterna stretcha och radbrytas — resultatet blev en rad som spillde
+  // utanför skärmen. Rensa inline-stilarna där och låt CSS:en styra.
+  const isNarrow = window.innerWidth <= MOBILE_BREAKPOINT;
+
   document.querySelectorAll('.song-block').forEach(block => {
     const cells = block.querySelectorAll('.cl-abs-pair[data-mi]');
+    if (isNarrow) {
+      cells.forEach(c => { c.style.flex = ''; c.style.minWidth = ''; });
+      return;
+    }
     // Sätt flex: 0 0 auto så varje cell mäter sitt eget innehåll (inte flex:1-medelvärdet)
     cells.forEach(c => { c.style.flex = '0 0 auto'; c.style.minWidth = ''; });
     
@@ -640,15 +664,20 @@ function renderSong() {
           html += `</div>`;
         } else {
           html += `<div class="cl-abs-pair">`;
-          html += `<div class="cl-abs-chord-row">`;
-          chords.forEach(ch => {
-            const name = transposeSemitones !== 0
-              ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-            html += `<span class="chord-tag" style="left:${ch.pos}ch"><span>${escHtml(name)}</span></span>`;
-          });
-          html += `</div>`;
           if (lyric.trim()) {
-            html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+            // Ackorden vävs in i textflödet så att de följer med sin stavelse
+            // när raden radbryts (se renderChordFlow i chords.js).
+            html += `<div class="cl-flow">${renderChordFlow(lyric, chords, transposeSemitones)}</div>`;
+          } else {
+            // Ackordrad utan text (intro, mellanspel) — inget flöde att haka i,
+            // så här behålls den teckenpositionerade ackordraden.
+            html += `<div class="cl-abs-chord-row">`;
+            chords.forEach(ch => {
+              const name = transposeSemitones !== 0
+                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+              html += `<span class="chord-tag" style="left:${ch.pos}ch"><span>${escHtml(name)}</span></span>`;
+            });
+            html += `</div>`;
           }
           html += `</div>`;
         }

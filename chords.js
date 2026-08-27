@@ -232,6 +232,40 @@ export function parseUgImportText(rawText) {
   return { ...detected, sections: sections.filter(s => s.lines.length > 0) };
 }
 
+// Bygger en textrad där ackorden ligger som nollbreda ankare inne i själva
+// texten, i stället för på en egen rad ovanför den.
+//
+// Den gamla lösningen ritade ackorden absolutpositionerade på teckenoffset
+// (`left: 23ch`) i en ackordrad som alltid är exakt en rad hög. Så fort
+// textraden radbröts kände ackorden inte till brytpunkten: de som hörde till
+// den ombrutna delen blev kvar på första radens ackordrad, och de som hamnade
+// bortom radbredden klipptes bort helt.
+//
+// Ankaret här har noll bredd och deltar i det normala textflödet, så det följer
+// med sin stavelse till nästa rad vid en radbrytning. Ackordnamnet hängs upp
+// absolut ovanför ankaret (se .cl-anchor i style.css).
+//
+// chords är utdata från parseChordLine(): [{ name, pos }] med pos i tecken.
+export function renderChordFlow(lyric, chords, transposeSemitones = 0) {
+  const text = lyric || '';
+  let html = '';
+  let cursor = 0;
+
+  chords.forEach(ch => {
+    // Ackordoffset kan peka bortom radens slut (ackordraden är ibland längre
+    // än texten) — klamra då till slutet i stället för att tappa ackordet.
+    const pos = Math.max(cursor, Math.min(ch.pos, text.length));
+    if (pos > cursor) html += escHtml(text.slice(cursor, pos));
+    const name = transposeSemitones !== 0
+      ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+    html += `<span class="cl-anchor"><span class="chord-tag"><span>${escHtml(name)}</span></span></span>`;
+    cursor = pos;
+  });
+
+  html += escHtml(text.slice(cursor));
+  return html;
+}
+
 // Chord library: [strings low E to high E] = fret number, 0=open, -1=muted
 // Format: { frets: [E,A,D,G,B,e], fingers: [f,f,f,f,f,f], baseFret: 1 }
 // Varje kategori nedan täcker alla 12 grundtoner — en stavning per grundton

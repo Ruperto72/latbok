@@ -178,6 +178,10 @@ body {
 
 .main {
   flex: 1;
+  /* Flex-item har min-width: auto som default, vilket gör att .main vägrar
+     krympa under sitt min-content-mått. En bred låtrad kunde därför tvinga
+     hela sidan bredare än skärmen på mobil. */
+  min-width: 0;
   margin-left: 280px;
   transition: margin-left 0.25s ease;
   min-height: 100vh;
@@ -572,6 +576,40 @@ body {
 .hide-chords .chord-name { visibility: hidden; }
 .hide-chords .cl-chord-only { display: none; }
 .hide-chords .chord-diagrams-strip { display: none; }
+
+/* ─── Textrad med inflätade ackord (fritt format) ─── */
+/* Ackorden ligger som nollbreda ankare i textflödet, se renderChordFlow i
+   chords.js. Radhöjden ger plats åt ett ackord ovanför VARJE ombruten rad,
+   och overline ritar linjen under ackorden — till skillnad från en border
+   upprepas den automatiskt per radbrytning. */
+.cl-flow {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  line-height: 2.5;
+  text-decoration: overline;
+  text-decoration-color: rgba(232,200,106,0.15);
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: none;
+}
+
+.cl-anchor {
+  position: relative;
+  display: inline;
+}
+
+.cl-anchor .chord-tag {
+  top: auto;
+  bottom: 100%;
+  left: 0;
+  line-height: 1.2;
+}
+
+/* Dolda ackord: ta bort både ackorden och utrymmet de reserverar */
+.hide-chords .cl-flow {
+  line-height: 1.5;
+  text-decoration: none;
+}
+.hide-chords .cl-anchor .chord-tag { display: none; }
 
 .chord-tag {
   position: absolute;
