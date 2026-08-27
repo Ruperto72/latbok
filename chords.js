@@ -299,6 +299,20 @@ export const CHORD_LIB = {
   'Gm7':    { frets: [3,5,3,3,3,3], fingers: [1,3,1,1,1,1], baseFret: 3, barre: 3 },
   'Abm7':   { frets: [-1,-1,6,8,7,7], fingers: [0,0,1,3,2,2], baseFret: 6 },
 
+  // ─── Minor 6th ───
+  'Cm6':    { frets: [-1,3,5,-1,4,5], fingers: [0,1,3,0,2,4], baseFret: 3 },
+  'C#m6':   { frets: [-1,4,6,-1,5,6], fingers: [0,1,3,0,2,4], baseFret: 4 },
+  'Dm6':    { frets: [-1,-1,0,2,0,1], fingers: [0,0,0,2,0,1] },
+  'Ebm6':   { frets: [-1,-1,1,3,1,2], fingers: [0,0,1,3,1,2], barre: 1 },
+  'Em6':    { frets: [0,2,2,0,2,0], fingers: [0,2,3,0,4,0] },
+  'Fm6':    { frets: [1,3,3,1,3,1], fingers: [1,2,3,1,4,1], barre: 1 },
+  'F#m6':   { frets: [2,4,4,2,4,2], fingers: [1,2,3,1,4,1], baseFret: 2, barre: 2 },
+  'Gm6':    { frets: [3,5,5,3,5,3], fingers: [1,2,3,1,4,1], baseFret: 3, barre: 3 },
+  'G#m6':   { frets: [4,6,6,4,6,4], fingers: [1,2,3,1,4,1], baseFret: 4, barre: 4 },
+  'Am6':    { frets: [-1,0,2,2,1,2], fingers: [0,0,2,3,1,4] },
+  'Bbm6':   { frets: [-1,1,3,-1,2,3], fingers: [0,1,3,0,2,4] },
+  'Bm6':    { frets: [-1,2,4,-1,3,4], fingers: [0,1,3,0,2,4], baseFret: 2 },
+
   // ─── Major 7th ───
   'Cmaj7':  { frets: [-1,3,2,0,0,0], fingers: [0,3,2,0,0,0] },
   'Dmaj7':  { frets: [-1,-1,0,2,2,2], fingers: [0,0,0,1,2,3] },
@@ -437,6 +451,10 @@ export const CHORD_LIB = {
   'G/B':    { frets: [-1,2,0,0,0,3], fingers: [0,1,0,0,0,3] },
   'G/D':    { frets: [-1,-1,0,0,0,3], fingers: [0,0,0,0,0,3] },
   'Am/E':   { frets: [0,0,2,2,1,0], fingers: [0,0,2,3,1,0] },
+  'Dm/F':   { frets: [-1,-1,3,2,3,1], fingers: [0,0,3,2,4,1] },
+  'E7/G#':  { frets: [4,2,0,1,0,0], fingers: [4,2,0,1,0,0] },
+  'E7/B':   { frets: [-1,2,0,1,0,0], fingers: [0,2,0,1,0,0] },
+  'A7/C#':  { frets: [-1,4,2,0,2,0], fingers: [0,3,1,0,2,0] },
 
   // ─── 7+ / augmented 7 ───
   'E7+':    { frets: [0,3,0,1,1,0], fingers: [0,2,0,1,1,0] },

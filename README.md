@@ -268,7 +268,7 @@ Appen läser `songs/index.json` vid laddning och hämtar varje låtfil dynamiskt
 
 ## Ackordbibliotek
 
-Filen `chords.js` innehåller ~180 gitarrackord med fingersättningar plus ~120 alternativa
+Filen `chords.js` innehåller ~200 gitarrackord med fingersättningar plus ~120 alternativa
 grepp. **Samtliga kategorier täcker alla 12 grundtoner:**
 
 | Kategori | Täckning |
@@ -277,6 +277,7 @@ grepp. **Samtliga kategorier täcker alla 12 grundtoner:**
 | Moll | Alla 12 grundtoner |
 | 7 (dominant) | Alla 12 grundtoner |
 | m7 (moll 7) | Alla 12 grundtoner |
+| m6 (moll 6) | Alla 12 grundtoner |
 | maj7 | Alla 12 grundtoner |
 | sus4 | Alla 12 grundtoner |
 | sus2 | Alla 12 grundtoner |
@@ -287,7 +288,7 @@ grepp. **Samtliga kategorier täcker alla 12 grundtoner:**
 | 9 (dominant) | Alla 12 grundtoner |
 | m7b5 (halvförminskad) | Alla 12 grundtoner |
 | 7+ (dominant #5) | Alla 12 grundtoner |
-| Slash-ackord | C/G, C/B, C/E, G/B, Am/E m.fl. |
+| Slash-ackord | C/G, C/B, C/E, G/B, Am/E, Dm/F, E7/G#, E7/B, A7/C# m.fl. |
 
 Enharmoniska namn slås upp automatiskt (`D#7` hittar `Eb7`), så en grundton per kategori
 räcker med en stavning. Diagram genereras som SVG direkt i webbläsaren. Ackord som saknas
