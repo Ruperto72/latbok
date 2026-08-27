@@ -26,15 +26,28 @@ utgångspunkt — finjustera gärna resultatet i låtredaktören efteråt.
 
 Häften hanteras i appen när den körs lokalt: **⚙ Inställningar → ✎ Hantera häften**.
 
-- **Nytt häfte** — skriv ett namn och klicka **+ Skapa**. Id:t räknas ut från namnet
-  ("Vårkonsert 2026" → `varkonsert-2026`) och häftet blir aktivt direkt.
-- **Byt namn** — ändra namnet på det aktiva häftet och klicka **Spara häftet**.
-- **Ordna låtar** — dra raderna eller använd ▲▼. Ordningen är den låtarna får i menyn.
-- **✕** — tar bort låten ur häftet. Låtfilen ligger kvar i poolen (`songs/index.json`)
-  och kan läggas i häftet igen via kryssrutorna i låtredigeraren.
+Vyn har en väljare för vilket häfte du redigerar och två kolumner: **Låtpool** med hela
+låtsamlingen till vänster, **I häftet** med menyordningen till höger.
 
-Ändringarna skrivs till `songs/haften/<id>.json` och `songs/haften/index.json` — samma
-filer som du annars kan handredigera.
+- **Nytt häfte** — skriv ett namn och klicka **+ Skapa**. Id:t räknas ut från namnet
+  ("Vårkonsert 2026" → `varkonsert-2026`).
+- **Lägg till låtar** — kryssa i dem i poolen; de hamnar sist i häftet. Sökfältet filtrerar
+  på titel och artist. Siffran till höger om en låt visar hur många *andra* häften den
+  redan ingår i.
+- **Byt namn** — ändra namnfältet.
+- **Ordna låtar** — dra raderna eller använd ▲▼. Ordningen är den låtarna får i menyn.
+- **✕** — tar bort låten ur häftet. Låtfilen ligger kvar i poolen (`songs/index.json`).
+
+Inget sparas förrän du klickar **💾 Spara häftet** — dessförinnan står det
+"● Osparade ändringar" nere till vänster, och du blir varnad om du byter häfte eller
+stänger. Ändringarna skrivs till `songs/haften/<id>.json` och `songs/haften/index.json` —
+samma filer som du annars kan handredigera.
+
+Att **ta bort** ett häfte går inte i appen; radera `songs/haften/<id>.json` och posten i
+`songs/haften/index.json` för hand.
+
+Kryssrutorna längst ner i låtredigeraren finns kvar som genväg när du står i en enskild
+låt — t.ex. direkt efter en import.
 
 ## Snabbstart
 

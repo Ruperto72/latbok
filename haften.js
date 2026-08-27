@@ -37,6 +37,25 @@ export function withSongInHaften(haftLists, filename, valdaIds) {
   return out;
 }
 
+// Lägger till eller tar bort en enskild låt i ett häftes låtlista. Nya låtar
+// hamnar sist — ordningen på resten är menyordningen och rörs aldrig.
+export function toggleInHaft(filenames, filename, skaIngå) {
+  const ingårRedan = filenames.includes(filename);
+  if (skaIngå) return ingårRedan ? [...filenames] : [...filenames, filename];
+  return ingårRedan ? filenames.filter(f => f !== filename) : [...filenames];
+}
+
+export function sameFileList(a, b) {
+  return a.length === b.length && a.every((f, i) => f === b[i]);
+}
+
+export function matchesSongQuery(meta, query) {
+  const q = String(query ?? '').trim().toLowerCase();
+  if (q === '') return true;
+  return [meta.title, meta.artist, meta.filename]
+    .some(v => typeof v === 'string' && v.toLowerCase().includes(q));
+}
+
 // Gör ett häftes-id av ett fritt namn: "Demestkören 2" → "demestkoren-2".
 export function slugifyHaftId(namn) {
   const slug = String(namn ?? '')

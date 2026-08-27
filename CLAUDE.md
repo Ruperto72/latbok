@@ -65,16 +65,29 @@ Ett häfte är ett urval ur låtpoolen — varje kör ser sitt eget.
 Aktivt häfte väljs via `?haft=<id>` → `localStorage` → första häftet. Pseudo-häftet
 `__alla` ("Alla låtar") visar hela poolen och finns bara lokalt.
 
-Häftesmedlemskap ändras med kryssrutorna i låtredigeraren, som anropar
-`POST /set-song-haften` — bara lokalt. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för
-handredigering.
+Häften administreras i dialogen "Hantera häften" (`openHaftManagerDialog()`, under
+⚙ Inställningar) — häftesväljare, namnfält, **+ Skapa**, och två kolumner: hela
+låtpoolen med kryssruta per låt till vänster, häftets låtar i menyordning till höger.
+Bara lokalt; raden `#mobileHaftRow` döljs annars av `isLocal`-checken i `init()`.
 
-Häften skapas, byter namn och ordnas om i dialogen "Hantera häften"
-(`openHaftManagerDialog()`, under ⚙ Inställningar). Den sparar via `POST /save-haft`
-{ id, namn, filenames } och är precis som redigeraren bara tillgänglig lokalt —
-raden `#mobileHaftRow` döljs annars av `isLocal`-checken i `init()`. Id:t räknas ut
-från namnet med `slugifyHaftId()` + `uniqueHaftId()` i `haften.js`; låtordningen
-ändras med `moveInList()` och är den ordning låtarna får i menyn.
+- Ändringar hålls i `haftManager` tills **💾 Spara häftet** → ett `POST /save-haft`
+  `{ id, namn, filenames }`. `haftManagerDirty()` jämför mot `sparatNamn`/`sparadeFiler`
+  och varnar innan man byter häfte eller stänger
+- Id:t räknas ut från namnet med `slugifyHaftId()` + `uniqueHaftId()`; ordningen ändras
+  med `moveInList()`, medlemskap med `toggleInHaft()` (nya låtar hamnar sist)
+- `renderHaftManagerPool()` ritar bara om vid sökning eller häftesbyte —
+  `syncHaftManagerPoolChecks()` uppdaterar kryssrutorna på plats så scrollpositionen
+  överlever ett klick
+
+`songs` innehåller bara **aktivt häftes** låtar, så poolkolumnen kan inte hämta titlar
+därifrån. `pool` + `poolMeta` på modulnivå i `app.js` håller hela poolen; `ensurePoolMeta()`
+fyller på titlar för resten och måste köras om efter `loadSongs(true)`, som nollställer
+`poolMeta`.
+
+Kryssrutorna i låtredigeraren finns kvar som genväg för enstaka låtar och anropar
+`POST /set-song-haften`. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för handredigering.
+
+Att **ta bort** ett häfte stöds inte — `/save-haft` kan bara skapa och uppdatera.
 
 ## Import från urklipp
 

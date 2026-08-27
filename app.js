@@ -9,6 +9,7 @@ import {
 import {
   ALL_SONGS_ID, parseHaftenIndex, resolveHaftId, withSongInHaften, haftenForSong,
   slugifyHaftId, uniqueHaftId, moveInList,
+  toggleInHaft, sameFileList, matchesSongQuery,
 } from './haften.js';
 
 // Column layout modes
@@ -24,6 +25,8 @@ const COL_CLASSES = [' columns-1c', ' columns-2c'];
 let songs = [];
 let haften = [];        // [{ id, namn }] — inklusive __alla lokalt
 let haftLists = {};     // { häftes-id: [filnamn] }
+let pool = [];          // hela låtpoolen (songs/index.json) — inte bara aktivt häfte
+let poolMeta = {};      // { filnamn: { title, artist } } — titlar för hela poolen, fylls vid behov
 let currentHaftId = null;
 let currentSongFile = null;
 let haftUrlConsumed = false;
@@ -41,6 +44,7 @@ let variantEditorSong = null; // Copy of original song being edited
 let ugImportParsed = null; // Senaste tolkningsresultatet från UG-importdialogen
 let haftManager = null;    // { id, namn, filenames } — häftet som redigeras i häftesdialogen
 let haftDragIndex = null;  // Raden som dras i häftesdialogens låtlista
+let haftPoolQuery = '';    // Sökfältet i häftesdialogens poolkolumn
 let storageReady = false;
 
 // ─── Auto-scroll ───
@@ -59,6 +63,8 @@ async function loadSongs(bustCache = false) {
   try {
     const poolResp = await fetch(`songs/index.json${qs}`).catch(() => null);
     const poolFiles = poolResp && poolResp.ok ? await poolResp.json() : [];
+    pool = Array.isArray(poolFiles) ? poolFiles : [];
+    if (bustCache) poolMeta = {};
 
     const haftenResp = await fetch(`songs/haften/index.json${qs}`).catch(() => null);
     const haftenRaw = haftenResp && haftenResp.ok ? await haftenResp.json().catch(() => null) : null;
@@ -100,6 +106,7 @@ async function loadSongs(bustCache = false) {
     );
 
     songs = loaded.filter(s => s !== null);
+    for (const s of songs) poolMeta[s._filename] = { title: s.title, artist: s.artist };
 
     const idx = songs.findIndex(s => s._filename === currentSongFile);
     currentSong = idx !== -1 ? idx : 0;
@@ -1035,16 +1042,58 @@ async function saveHaftToBackend(id, namn, filenames) {
   if (!resp.ok) throw new Error(await resp.text().catch(() => `HTTP ${resp.status}`));
 }
 
-function openHaftManagerDialog() {
+// songs[] innehåller bara det aktiva häftets låtar, så häftesvyn måste hämta
+// titlarna för resten av poolen själv. Sker en gång per session — filerna är
+// ändå precachade av service workern.
+async function ensurePoolMeta() {
+  const saknade = pool.filter(f => !poolMeta[f]);
+  if (saknade.length === 0) return;
+  await Promise.all(saknade.map(async (filename) => {
+    try {
+      const resp = await fetch(`songs/${filename}`);
+      if (!resp.ok) return;
+      const song = await resp.json();
+      poolMeta[filename] = { title: song.title, artist: song.artist };
+    } catch (e) {
+      console.warn(`Could not load songs/${filename}:`, e);
+    }
+  }));
+}
+
+function poolSongMeta(filename) {
+  const m = poolMeta[filename] || {};
+  return { filename, title: m.title || filename, artist: m.artist || '' };
+}
+
+function redigerbaraHaften() {
+  return haften.filter(h => h.id !== ALL_SONGS_ID);
+}
+
+function haftManagerLoad(id) {
+  const h = redigerbaraHaften().find(x => x.id === id);
+  if (!h) {
+    haftManager = null;
+    return;
+  }
+  const filenames = [...(haftLists[h.id] || [])];
+  haftManager = { id: h.id, namn: h.namn, filenames, sparatNamn: h.namn, sparadeFiler: [...filenames] };
+}
+
+function haftManagerDirty() {
+  if (!haftManager) return false;
+  return haftManager.namn.trim() !== haftManager.sparatNamn
+    || !sameFileList(haftManager.filenames, haftManager.sparadeFiler);
+}
+
+async function openHaftManagerDialog() {
   // Kräver backend (POST /save-haft) och finns bara lokalt.
   if (!isLocalHost()) return;
-  closeHaftManagerDialog();   // stapla inte dialoger om knappen trycks två gånger
+  destroyHaftManagerDialog();   // stapla inte dialoger om knappen trycks två gånger
 
-  const aktivt = haften.find(h => h.id === currentHaftId && h.id !== ALL_SONGS_ID);
-  haftManager = aktivt
-    ? { id: aktivt.id, namn: aktivt.namn, filenames: [...(haftLists[aktivt.id] || [])] }
-    : null;
+  const valbara = redigerbaraHaften();
+  haftManagerLoad(valbara.some(h => h.id === currentHaftId) ? currentHaftId : valbara[0]?.id);
   haftDragIndex = null;
+  haftPoolQuery = '';
 
   const backdrop = document.createElement('div');
   backdrop.className = 'variant-save-dialog-backdrop haft-manager-backdrop';
@@ -1055,37 +1104,11 @@ function openHaftManagerDialog() {
   dialog.setAttribute('role', 'dialog');
   dialog.setAttribute('aria-label', 'Hantera häften');
 
-  dialog.innerHTML = `
-    <div class="variant-save-dialog-header">Hantera häften</div>
-    <div class="variant-save-dialog-group">
-      <label class="variant-save-dialog-label" for="haftManagerNewName">Nytt häfte</label>
-      <div class="haft-manager-new">
-        <input type="text" class="variant-save-dialog-input" id="haftManagerNewName" placeholder="t.ex. Vårkonsert">
-        <button class="variant-save-dialog-btn haft-manager-new-btn" onclick="createHaft()">+ Skapa</button>
-      </div>
-    </div>
-    ${haftManager ? `
-    <div class="variant-save-dialog-group">
-      <label class="variant-save-dialog-label" for="haftManagerName">Namn</label>
-      <input type="text" class="variant-save-dialog-input" id="haftManagerName" value="${escHtml(haftManager.namn)}">
-    </div>
-    <div class="variant-save-dialog-group">
-      <label class="variant-save-dialog-label">Låtordning i häftet</label>
-      <div class="haft-manager-list" id="haftManagerList"></div>
-      <span class="haft-manager-hint">Dra raderna eller använd ▲▼. ✕ tar bort låten ur häftet — låtfilen ligger kvar i poolen.</span>
-    </div>` : `
-    <span class="haft-manager-hint">Välj ett häfte i sidopanelen för att ändra namn och låtordning.</span>`}
-    <div class="variant-save-dialog-buttons">
-      <button class="variant-save-dialog-btn" onclick="closeHaftManagerDialog()">Stäng</button>
-      ${haftManager ? `<button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="haftManagerSaveBtn" onclick="saveHaftManager()">💾 Spara häftet</button>` : ''}
-    </div>
-  `;
-
   backdrop.appendChild(dialog);
   document.body.appendChild(backdrop);
 
   setTimeout(() => backdrop.classList.add('active'), 0);
-  renderHaftManagerList();
+  redrawHaftManager();
   document.getElementById(haftManager ? 'haftManagerName' : 'haftManagerNewName')?.focus();
 
   const onEscape = (e) => {
@@ -1096,9 +1119,16 @@ function openHaftManagerDialog() {
     if (e.target === backdrop) closeHaftManagerDialog();
   });
   backdrop._escapeListener = onEscape;
+
+  await refreshHaftManagerPoolMeta();
 }
 
 function closeHaftManagerDialog() {
+  if (haftManagerDirty() && !confirm('Häftet har osparade ändringar som går förlorade. Stänga ändå?')) return;
+  destroyHaftManagerDialog();
+}
+
+function destroyHaftManagerDialog() {
   const backdrop = document.getElementById('haftManagerBackdrop');
   if (backdrop) {
     if (backdrop._escapeListener) document.removeEventListener('keydown', backdrop._escapeListener);
@@ -1106,10 +1136,144 @@ function closeHaftManagerDialog() {
   }
   haftManager = null;
   haftDragIndex = null;
+  haftPoolQuery = '';
 }
 
-function haftSongTitle(filename) {
-  return songs.find(s => s._filename === filename)?.title || filename;
+function haftManagerHtml() {
+  const valbara = redigerbaraHaften();
+  const options = valbara.map(h =>
+    `<option value="${escHtml(h.id)}"${h.id === haftManager?.id ? ' selected' : ''}>${escHtml(h.namn)}</option>`
+  ).join('');
+
+  return `
+    <div class="variant-save-dialog-header">Hantera häften</div>
+    <div class="haft-manager-top">
+      <div class="haft-manager-field">
+        <label class="variant-save-dialog-label" for="haftManagerSelect">Häfte att redigera</label>
+        <select class="variant-save-dialog-input" id="haftManagerSelect" onchange="selectHaftInManager(this.value)"${valbara.length === 0 ? ' disabled' : ''}>
+          ${valbara.length === 0 ? '<option>Inga häften än</option>' : options}
+        </select>
+      </div>
+      <div class="haft-manager-field">
+        <label class="variant-save-dialog-label" for="haftManagerNewName">Nytt häfte</label>
+        <div class="haft-manager-new">
+          <input type="text" class="variant-save-dialog-input" id="haftManagerNewName" placeholder="t.ex. Vårkonsert">
+          <button class="variant-save-dialog-btn haft-manager-new-btn" onclick="createHaft()">+ Skapa</button>
+        </div>
+      </div>
+    </div>
+    ${haftManager ? `
+    <div class="haft-manager-field">
+      <label class="variant-save-dialog-label" for="haftManagerName">Namn</label>
+      <input type="text" class="variant-save-dialog-input" id="haftManagerName" value="${escHtml(haftManager.namn)}" oninput="haftManagerRename(this.value)">
+    </div>
+    <div class="haft-manager-cols">
+      <div class="haft-manager-col">
+        <div class="haft-manager-col__head">
+          <span class="variant-save-dialog-label">Låtpool <span id="haftManagerPoolCount"></span></span>
+          <input type="search" class="variant-save-dialog-input haft-manager-search" id="haftManagerSearch" placeholder="Sök titel eller artist…" value="${escHtml(haftPoolQuery)}" oninput="filterHaftPool(this.value)">
+        </div>
+        <div class="haft-manager-pool" id="haftManagerPool"></div>
+        <span class="haft-manager-hint">Kryssa i en låt för att lägga den sist i häftet.</span>
+      </div>
+      <div class="haft-manager-col">
+        <div class="haft-manager-col__head">
+          <span class="variant-save-dialog-label">I häftet <span id="haftManagerListCount"></span></span>
+        </div>
+        <div class="haft-manager-list" id="haftManagerList"></div>
+        <span class="haft-manager-hint">Dra raderna eller använd ▲▼ för menyordningen. ✕ tar bort låten ur häftet — låtfilen ligger kvar i poolen.</span>
+      </div>
+    </div>` : `
+    <span class="haft-manager-hint">Skapa ett häfte ovan för att välja låtar till det.</span>`}
+    <div class="variant-save-dialog-buttons">
+      <span class="haft-manager-dirty" id="haftManagerDirty" aria-live="polite"></span>
+      <button class="variant-save-dialog-btn" onclick="closeHaftManagerDialog()">Stäng</button>
+      ${haftManager ? `<button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="haftManagerSaveBtn" onclick="saveHaftManager()">💾 Spara häftet</button>` : ''}
+    </div>
+  `;
+}
+
+function redrawHaftManager() {
+  const dialog = document.querySelector('#haftManagerBackdrop .haft-manager-dialog');
+  if (!dialog) return;
+  dialog.innerHTML = haftManagerHtml();
+  renderHaftManagerPool();
+  refreshHaftManager();
+}
+
+// Poolen ritas bara om när urvalet ändras — kryssrutorna synkas på plats så att
+// scrollpositionen överlever att man bockar i en låt.
+function refreshHaftManager() {
+  renderHaftManagerList();
+  syncHaftManagerPoolChecks();
+  updateHaftManagerDirty();
+}
+
+async function refreshHaftManagerPoolMeta() {
+  await ensurePoolMeta();
+  if (document.getElementById('haftManagerBackdrop')) {
+    renderHaftManagerPool();
+    refreshHaftManager();
+  }
+}
+
+function updateHaftManagerDirty() {
+  const el = document.getElementById('haftManagerDirty');
+  if (el) el.textContent = haftManagerDirty() ? '● Osparade ändringar' : '';
+}
+
+function renderHaftManagerPool() {
+  const box = document.getElementById('haftManagerPool');
+  if (!box || !haftManager) return;
+
+  const träffar = pool.map(poolSongMeta)
+    .filter(m => matchesSongQuery(m, haftPoolQuery))
+    .sort((a, b) => a.title.localeCompare(b.title, 'sv'));
+
+  const count = document.getElementById('haftManagerPoolCount');
+  if (count) count.textContent = träffar.length === pool.length ? `(${pool.length})` : `(${träffar.length}/${pool.length})`;
+
+  if (träffar.length === 0) {
+    box.innerHTML = `<p class="haft-manager-empty">${pool.length === 0 ? 'Låtpoolen är tom.' : 'Ingen låt matchar sökningen.'}</p>`;
+    return;
+  }
+
+  box.innerHTML = träffar.map(m => {
+    const andra = haftenForSong(haftLists, m.filename).filter(id => id !== haftManager.id).length;
+    const badgeTitel = andra === 1 ? 'Ingår även i 1 annat häfte' : `Ingår även i ${andra} andra häften`;
+    return `
+      <label class="haft-manager-pool-item" data-file="${escHtml(m.filename)}">
+        <input type="checkbox">
+        <span class="haft-manager-pool-item__text">
+          <span class="haft-manager-pool-item__title">${escHtml(m.title)}</span>
+          ${m.artist ? `<span class="haft-manager-pool-item__artist">${escHtml(m.artist)}</span>` : ''}
+        </span>
+        ${andra > 0 ? `<span class="haft-manager-pool-item__badge" title="${escHtml(badgeTitel)}">${andra}</span>` : ''}
+      </label>`;
+  }).join('');
+
+  box.querySelectorAll('.haft-manager-pool-item').forEach(row => {
+    row.querySelector('input').addEventListener('change', (e) => {
+      toggleHaftSong(row.dataset.file, e.target.checked);
+    });
+  });
+
+  syncHaftManagerPoolChecks();
+}
+
+function syncHaftManagerPoolChecks() {
+  if (!haftManager) return;
+  document.querySelectorAll('#haftManagerPool .haft-manager-pool-item').forEach(row => {
+    const ingår = haftManager.filenames.includes(row.dataset.file);
+    row.classList.toggle('is-in', ingår);
+    row.querySelector('input').checked = ingår;
+  });
+}
+
+function toggleHaftSong(filename, skaIngå) {
+  if (!haftManager) return;
+  haftManager.filenames = toggleInHaft(haftManager.filenames, filename, skaIngå);
+  refreshHaftManager();
 }
 
 function renderHaftManagerList() {
@@ -1117,15 +1281,19 @@ function renderHaftManagerList() {
   if (!list || !haftManager) return;
 
   const filer = haftManager.filenames;
+  const count = document.getElementById('haftManagerListCount');
+  if (count) count.textContent = `(${filer.length})`;
+
   if (filer.length === 0) {
-    list.innerHTML = `<p class="haft-manager-empty">Häftet är tomt — lägg till låtar via kryssrutorna i låtredigeraren.</p>`;
+    list.innerHTML = `<p class="haft-manager-empty">Häftet är tomt — kryssa i låtar ur poolen till vänster.</p>`;
     return;
   }
 
   list.innerHTML = filer.map((f, i) => `
     <div class="haft-manager-item" draggable="true" data-index="${i}">
       <span class="haft-manager-item__grip" aria-hidden="true">⠿</span>
-      <span class="haft-manager-item__title">${escHtml(haftSongTitle(f))}</span>
+      <span class="haft-manager-item__nr">${i + 1}</span>
+      <span class="haft-manager-item__title">${escHtml(poolSongMeta(f).title)}</span>
       <span class="haft-manager-item__ctrl">
         <button onclick="moveHaftSong(${i}, -1)" aria-label="Flytta upp"${i === 0 ? ' disabled' : ''}>▲</button>
         <button onclick="moveHaftSong(${i}, 1)" aria-label="Flytta ner"${i === filer.length - 1 ? ' disabled' : ''}>▼</button>
@@ -1148,7 +1316,7 @@ function renderHaftManagerList() {
       if (haftDragIndex === null) return;
       haftManager.filenames = moveInList(haftManager.filenames, haftDragIndex, Number(el.dataset.index));
       haftDragIndex = null;
-      renderHaftManagerList();
+      refreshHaftManager();
     });
   });
 }
@@ -1156,13 +1324,36 @@ function renderHaftManagerList() {
 function moveHaftSong(index, delta) {
   if (!haftManager) return;
   haftManager.filenames = moveInList(haftManager.filenames, index, index + delta);
-  renderHaftManagerList();
+  refreshHaftManager();
 }
 
 function removeHaftSong(index) {
   if (!haftManager) return;
   haftManager.filenames = haftManager.filenames.filter((_, i) => i !== index);
-  renderHaftManagerList();
+  refreshHaftManager();
+}
+
+function haftManagerRename(namn) {
+  if (!haftManager) return;
+  haftManager.namn = namn;
+  updateHaftManagerDirty();
+}
+
+function filterHaftPool(query) {
+  haftPoolQuery = query;
+  renderHaftManagerPool();
+}
+
+function selectHaftInManager(id) {
+  if (!haftManager || id === haftManager.id) return;
+  if (haftManagerDirty() && !confirm(`"${haftManager.sparatNamn}" har osparade ändringar som går förlorade. Byta häfte ändå?`)) {
+    const sel = document.getElementById('haftManagerSelect');
+    if (sel) sel.value = haftManager.id;
+    return;
+  }
+  haftManagerLoad(id);
+  haftPoolQuery = '';
+  redrawHaftManager();
 }
 
 async function createHaft() {
@@ -1171,12 +1362,19 @@ async function createHaft() {
     alert('Ge häftet ett namn.');
     return;
   }
+  if (haftManagerDirty() && !confirm(`"${haftManager.sparatNamn}" har osparade ändringar som går förlorade. Skapa det nya häftet ändå?`)) return;
+
   const id = uniqueHaftId(slugifyHaftId(namn), haften.map(h => h.id));
   try {
     await saveHaftToBackend(id, namn, []);
-    closeHaftManagerDialog();
-    await changeHaft(id);
-    openHaftManagerDialog();
+    // Nya häften hamnar sist i songs/haften/index.json — men före pseudo-häftet __alla.
+    const allaIdx = haften.findIndex(h => h.id === ALL_SONGS_ID);
+    haften.splice(allaIdx === -1 ? haften.length : allaIdx, 0, { id, namn });
+    haftLists[id] = [];
+    renderHaftSelect();
+    haftManagerLoad(id);
+    haftPoolQuery = '';
+    redrawHaftManager();
   } catch (err) {
     console.error('Kunde inte skapa häfte:', err);
     alert(`Fel vid sparning: ${err.message}`);
@@ -1185,24 +1383,37 @@ async function createHaft() {
 
 async function saveHaftManager() {
   if (!haftManager) return;
-  const namn = document.getElementById('haftManagerName')?.value.trim();
+  const namn = haftManager.namn.trim();
   if (!namn) {
     alert('Häftet måste ha ett namn.');
     return;
   }
   const btn = document.getElementById('haftManagerSaveBtn');
   if (btn) btn.disabled = true;
+  const sparatId = haftManager.id;
   try {
-    await saveHaftToBackend(haftManager.id, namn, haftManager.filenames);
-    closeHaftManagerDialog();
-    await loadSongs(true);
-    if (songs.length === 0) renderEmptyHaft();
-    renderSongList();
-    renderSong();
+    await saveHaftToBackend(sparatId, namn, haftManager.filenames);
+
+    haftLists[sparatId] = [...haftManager.filenames];
+    const post = haften.find(h => h.id === sparatId);
+    if (post) post.namn = namn;
+    Object.assign(haftManager, { namn, sparatNamn: namn, sparadeFiler: [...haftManager.filenames] });
+    renderHaftSelect();
+    redrawHaftManager();
+
+    if (sparatId === currentHaftId) {
+      await loadSongs(true);
+      if (songs.length === 0) renderEmptyHaft();
+      renderSongList();
+      renderSong();
+      await refreshHaftManagerPoolMeta();   // loadSongs nollställer poolMeta
+    }
   } catch (err) {
     console.error('Kunde inte spara häftet:', err);
     alert(`Fel vid sparning: ${err.message}`);
-    if (btn) btn.disabled = false;
+  } finally {
+    const aktuell = document.getElementById('haftManagerSaveBtn');
+    if (aktuell) aktuell.disabled = false;
   }
 }
 
@@ -2083,7 +2294,7 @@ Object.assign(window, {
   transposeAllChords, extendAllMeasures, shortenAllMeasures, openVariantSaveDialog,
   updateTemplateMeasure, addMeasureToTemplate, removeMeasureFromTemplate,
   openHaftManagerDialog, closeHaftManagerDialog, createHaft, saveHaftManager,
-  moveHaftSong, removeHaftSong,
+  moveHaftSong, removeHaftSong, selectHaftInManager, haftManagerRename, filterHaftPool,
   openUgImportDialog, closeUgImportDialog, parseUgImportPreview, saveUgImportSong,
 });
 
