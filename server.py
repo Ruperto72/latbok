@@ -39,6 +39,19 @@ def _valid_song_filename(name):
     return bool(name) and not any(c in name for c in '/\\:') and name.endswith('.json')
 
 
+def _valid_haft_id(hid):
+    return isinstance(hid, str) and bool(ID_RE.fullmatch(hid)) and hid not in RESERVED_HAFT_IDS
+
+
+def _iter_haften():
+    """Yieldar (post, sökväg, låtlista) för varje häfte med giltigt id i registret."""
+    for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
+        if not _valid_haft_id(h.get('id')):
+            continue
+        path = os.path.join(HAFTEN_DIR, h['id'] + '.json')
+        yield h, path, _read_json(path, [])
+
+
 class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path == '/save-song':
@@ -91,15 +104,11 @@ class Handler(SimpleHTTPRequestHandler):
                     # Bygg klart alla ändringar innan något skrivs, så ett fel
                     # mitt i inte lämnar häftesfilerna halvuppdaterade.
                     att_skriva = []
-                    for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
-                        hid = h.get('id')
+                    for h, path, lista in _iter_haften():
+                        hid = h['id']
                         namn = h.get('namn')
-                        if not hid or not ID_RE.fullmatch(hid) or hid in RESERVED_HAFT_IDS:
-                            continue
                         if not isinstance(namn, str) or namn == '':
                             continue
-                        path = os.path.join(HAFTEN_DIR, hid + '.json')
-                        lista = _read_json(path, [])
                         if hid in valda and filename not in lista:
                             lista = lista + [filename]
                         elif hid not in valda and filename in lista:
@@ -123,7 +132,7 @@ class Handler(SimpleHTTPRequestHandler):
                 namn = data.get('namn')
                 filenames = data.get('filenames')
 
-                if not isinstance(hid, str) or not ID_RE.fullmatch(hid) or hid in RESERVED_HAFT_IDS:
+                if not _valid_haft_id(hid):
                     self._respond(400, 'Ogiltigt häftes-id')
                     return
                 if not isinstance(namn, str) or namn.strip() == '':
@@ -180,23 +189,16 @@ class Handler(SimpleHTTPRequestHandler):
                         self._respond(404, f'Okänd låt: {filename}')
                         return
 
-                    # Bygg klart alla ändringar innan något skrivs — en trasig
-                    # häftesfil ska inte kunna avbryta mitt i och lämna poolen
-                    # utan låten medan häftena fortfarande pekar på den.
+                    # Bygg klart alla ändringar innan något skrivs, och skriv
+                    # referenserna före filen — ett avbrott ska lämna en
+                    # föräldralös fil, inte ett häfte som pekar på något som
+                    # saknas.
                     att_skriva = [(POOL_INDEX, [f for f in pool if f != filename])]
 
-                    for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
-                        hid = h.get('id')
-                        if not hid or not ID_RE.fullmatch(hid) or hid in RESERVED_HAFT_IDS:
-                            continue
-                        path = os.path.join(HAFTEN_DIR, hid + '.json')
-                        lista = _read_json(path, [])
+                    for _h, path, lista in _iter_haften():
                         if filename in lista:
                             att_skriva.append((path, [f for f in lista if f != filename]))
 
-                    # Referenserna först, filen sist — ett avbrott mitt i ska
-                    # lämna en föräldralös fil, inte ett häfte som pekar på
-                    # något som saknas.
                     for path, lista in att_skriva:
                         _write_json(path, lista)
 
@@ -214,7 +216,7 @@ class Handler(SimpleHTTPRequestHandler):
                 data = json.loads(body)
                 hid = data.get('id')
 
-                if not isinstance(hid, str) or not ID_RE.fullmatch(hid) or hid in RESERVED_HAFT_IDS:
+                if not _valid_haft_id(hid):
                     self._respond(400, 'Ogiltigt häftes-id')
                     return
 

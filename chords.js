@@ -693,9 +693,10 @@ export function lookupChord(name) {
   return null;
 }
 
+const HTML_ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
+
 export function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  return s.replace(/[&<>"']/g, c => HTML_ESC[c]);
 }
 
 // Generate SVG chord diagram

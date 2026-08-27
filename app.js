@@ -148,6 +148,7 @@ function renderHaftSelect() {
 function renderEmptyHaft() {
   const display = document.getElementById('songDisplay');
   if (!display) return;
+  display.className = 'song-display';
   display.innerHTML = `
     <div style="text-align:center;padding:80px 20px;color:var(--text-dim)">
       <p style="font-family:'JetBrains Mono',monospace;font-size:13px">Häftet är tomt.</p>
@@ -164,7 +165,6 @@ async function changeHaft(id) {
   currentHaftId = id;
   currentSongFile = null;
   await loadSongs(true);
-  if (songs.length === 0) renderEmptyHaft();
   updateMobileEditorBtn();
   renderSongList();
   renderSong();
@@ -213,15 +213,6 @@ async function init() {
     await loadFromStorage();
     await loadSongs();
 
-    if (songs.length === 0) {
-      if (currentHaftId) {
-        renderEmptyHaft();
-      } else {
-        document.getElementById('songDisplay').innerHTML =
-          `<div style="padding:40px;color:#f66;font-family:monospace">Inga låtar laddades. Kontrollera konsolen.</div>`;
-      }
-    }
-
     // Reset editor modes
     if (songEditorMode) { songEditorMode = false; updateMobileEditorBtn(); }
     if (variantEditorMode) { variantEditorMode = false; variantEditorSong = null; }
@@ -249,6 +240,12 @@ async function init() {
       document.querySelector('.app').classList.add('sidebar-hidden');
     }
     renderSong();
+    // Utan häfte är tomheten ett laddningsfel, inte ett tomt häfte — skrivs
+    // efter renderSong() som annars ritar "Häftet är tomt" över meddelandet.
+    if (songs.length === 0 && !currentHaftId) {
+      document.getElementById('songDisplay').innerHTML =
+        `<div style="padding:40px;color:#f66;font-family:monospace">Inga låtar laddades. Kontrollera konsolen.</div>`;
+    }
     // Persistera valt häfte (t.ex. från ?haft=) redan vid start. Hoppas över när
     // inga häften kunde laddas, så ett misslyckat anrop inte nollar sparat val.
     if (haften.length > 0) savePrefs();
@@ -292,7 +289,6 @@ async function reloadSongs() {
   if (btn) btn.disabled = true;
   try {
     await loadSongs(true);
-    if (songs.length === 0) renderEmptyHaft();
     renderSongList();
     renderSong();
   } finally {
@@ -506,33 +502,30 @@ function selectSong(idx) {
 // ─── Render ───
 
 function renderSong() {
-  // Verktygsraden och display-klassen måste återställas även när häftet är
-  // tomt — annars ligger redigerarens läge kvar när sista låten raderas.
+  try {
+  const display = document.getElementById('songDisplay');
+  // Verktygsraden återställs före den tomma grenen — annars ligger
+  // redigerarens läge kvar när sista låten raderas.
   const controls = document.querySelector('.controls');
   if (controls) controls.style.display = songEditorMode ? 'none' : '';
 
   if (songs.length === 0) {
-    const display = document.getElementById('songDisplay');
-    if (display) display.className = 'song-display';
+    renderEmptyHaft();
     return;
   }
 
-  try {
   if (variantEditorMode) {
-    const display = document.getElementById('songDisplay');
     if (display) display.innerHTML = renderVariantEditor();
     return;
   }
 
   if (songEditorMode) {
-    const display = document.getElementById('songDisplay');
     display.className = 'song-display song-display--editor';
     display.innerHTML = renderSongEditor();
     attachEditorHandlers();
     return;
   }
   const s = songs[currentSong];
-  const display = document.getElementById('songDisplay');
   const transposedKey = transposeSemitones !== 0
     ? transposeChordName(s.key, transposeSemitones) : s.key;
 
@@ -1407,7 +1400,6 @@ async function deleteHaft() {
     // resolveHaftId() peka ut ett nytt aktivt häfte när det raderade var det.
     if (currentHaftId === id) currentHaftId = null;
     await loadSongs(true);
-    if (songs.length === 0) renderEmptyHaft();
     updateMobileEditorBtn();
     renderSongList();
     renderSong();
@@ -1445,7 +1437,6 @@ async function saveHaftManager() {
 
     if (sparatId === currentHaftId) {
       await loadSongs(true);
-      if (songs.length === 0) renderEmptyHaft();
       renderSongList();
       renderSong();
       await refreshHaftManagerPoolMeta();   // loadSongs nollställer poolMeta
@@ -1899,7 +1890,6 @@ async function deleteSong() {
     songEditorMode = false;
     currentSongFile = null;
     await loadSongs(true);
-    if (songs.length === 0) renderEmptyHaft();
     updateMobileEditorBtn();
     renderSongList();
     renderSong();

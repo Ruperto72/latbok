@@ -1,6 +1,6 @@
 {
   "name": "latbok",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Låtbok — Ackord & Text för kören",
   "private": true,
   "type": "module",
