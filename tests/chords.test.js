@@ -153,6 +153,13 @@ describe('escHtml', () => {
     assert.equal(escHtml('<script>'), '&lt;script&gt;');
   });
 
+  // Värdena hamnar i attribut (value="…", data-file="…"), så citattecken
+  // måste escapas — annars kapas ett häfte som heter Vår "22" av vid citatet.
+  it('escapes quotes', () => {
+    assert.equal(escHtml('Vår "22"'), 'Vår &quot;22&quot;');
+    assert.equal(escHtml("Blinka's"), 'Blinka&#39;s');
+  });
+
   it('leaves normal text unchanged', () => {
     assert.equal(escHtml('Hello World'), 'Hello World');
   });

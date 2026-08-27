@@ -16,6 +16,9 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 HAFTEN_DIR = os.path.join('songs', 'haften')
 POOL_INDEX = os.path.join('songs', 'index.json')
 ID_RE = re.compile(r'[a-z0-9_-]+')
+# Måste spegla RESERVED_HAFT_IDS i haften.js: __alla är pseudo-häftet, och
+# "index" skulle peka ut songs/haften/index.json — själva häftesregistret.
+RESERVED_HAFT_IDS = {'__alla', 'index'}
 
 index_lock = threading.Lock()
 
@@ -91,7 +94,7 @@ class Handler(SimpleHTTPRequestHandler):
                     for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
                         hid = h.get('id')
                         namn = h.get('namn')
-                        if not hid or not ID_RE.fullmatch(hid) or hid == '__alla':
+                        if not hid or not ID_RE.fullmatch(hid) or hid in RESERVED_HAFT_IDS:
                             continue
                         if not isinstance(namn, str) or namn == '':
                             continue
@@ -120,7 +123,7 @@ class Handler(SimpleHTTPRequestHandler):
                 namn = data.get('namn')
                 filenames = data.get('filenames')
 
-                if not isinstance(hid, str) or not ID_RE.fullmatch(hid) or hid == '__alla':
+                if not isinstance(hid, str) or not ID_RE.fullmatch(hid) or hid in RESERVED_HAFT_IDS:
                     self._respond(400, 'Ogiltigt häftes-id')
                     return
                 if not isinstance(namn, str) or namn.strip() == '':
@@ -177,19 +180,25 @@ class Handler(SimpleHTTPRequestHandler):
                         self._respond(404, f'Okänd låt: {filename}')
                         return
 
-                    # Referenserna först, filen sist — ett avbrott mitt i ska
-                    # lämna en föräldralös fil, inte ett häfte som pekar på
-                    # något som saknas.
-                    _write_json(POOL_INDEX, [f for f in pool if f != filename])
+                    # Bygg klart alla ändringar innan något skrivs — en trasig
+                    # häftesfil ska inte kunna avbryta mitt i och lämna poolen
+                    # utan låten medan häftena fortfarande pekar på den.
+                    att_skriva = [(POOL_INDEX, [f for f in pool if f != filename])]
 
                     for h in _read_json(os.path.join(HAFTEN_DIR, 'index.json'), []):
                         hid = h.get('id')
-                        if not hid or not ID_RE.fullmatch(hid) or hid == '__alla':
+                        if not hid or not ID_RE.fullmatch(hid) or hid in RESERVED_HAFT_IDS:
                             continue
                         path = os.path.join(HAFTEN_DIR, hid + '.json')
                         lista = _read_json(path, [])
                         if filename in lista:
-                            _write_json(path, [f for f in lista if f != filename])
+                            att_skriva.append((path, [f for f in lista if f != filename]))
+
+                    # Referenserna först, filen sist — ett avbrott mitt i ska
+                    # lämna en föräldralös fil, inte ett häfte som pekar på
+                    # något som saknas.
+                    for path, lista in att_skriva:
+                        _write_json(path, lista)
 
                     song_path = os.path.join('songs', filename)
                     if os.path.exists(song_path):
@@ -205,7 +214,7 @@ class Handler(SimpleHTTPRequestHandler):
                 data = json.loads(body)
                 hid = data.get('id')
 
-                if not isinstance(hid, str) or not ID_RE.fullmatch(hid) or hid == '__alla':
+                if not isinstance(hid, str) or not ID_RE.fullmatch(hid) or hid in RESERVED_HAFT_IDS:
                     self._respond(400, 'Ogiltigt häftes-id')
                     return
 

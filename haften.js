@@ -2,13 +2,17 @@
 
 export const ALL_SONGS_ID = '__alla';
 
+// Id:n som aldrig får bli ett häfte: __alla är pseudo-häftet "Alla låtar", och
+// "index" skulle peka ut songs/haften/index.json — själva häftesregistret.
+export const RESERVED_HAFT_IDS = [ALL_SONGS_ID, 'index'];
+
 const ID_RE = /^[a-z0-9_-]+$/;
 
 export function parseHaftenIndex(raw) {
   if (!Array.isArray(raw)) return [];
   return raw
     .filter(h =>
-      h && typeof h.id === 'string' && ID_RE.test(h.id) && h.id !== ALL_SONGS_ID &&
+      h && typeof h.id === 'string' && ID_RE.test(h.id) && !RESERVED_HAFT_IDS.includes(h.id) &&
       typeof h.namn === 'string' && h.namn !== ''
     )
     .map(h => ({ id: h.id, namn: h.namn }));
@@ -67,9 +71,9 @@ export function slugifyHaftId(namn) {
   return slug || 'haft';
 }
 
-// Lägger till -2, -3 … tills id:t är ledigt. ALL_SONGS_ID är alltid upptaget.
+// Lägger till -2, -3 … tills id:t är ledigt. De reserverade id:na är alltid upptagna.
 export function uniqueHaftId(base, taken) {
-  const upptagna = new Set([...taken, ALL_SONGS_ID]);
+  const upptagna = new Set([...taken, ...RESERVED_HAFT_IDS]);
   if (!upptagna.has(base)) return base;
   let n = 2;
   while (upptagna.has(`${base}-${n}`)) n++;

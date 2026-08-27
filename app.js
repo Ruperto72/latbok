@@ -506,11 +506,18 @@ function selectSong(idx) {
 // ─── Render ───
 
 function renderSong() {
-  if (songs.length === 0) return;
-  try {
+  // Verktygsraden och display-klassen måste återställas även när häftet är
+  // tomt — annars ligger redigerarens läge kvar när sista låten raderas.
   const controls = document.querySelector('.controls');
   if (controls) controls.style.display = songEditorMode ? 'none' : '';
 
+  if (songs.length === 0) {
+    const display = document.getElementById('songDisplay');
+    if (display) display.className = 'song-display';
+    return;
+  }
+
+  try {
   if (variantEditorMode) {
     const display = document.getElementById('songDisplay');
     if (display) display.innerHTML = renderVariantEditor();

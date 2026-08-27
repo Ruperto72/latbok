@@ -227,6 +227,24 @@ describe('uniqueHaftId', () => {
   it('betraktar __alla som upptaget', () => {
     assert.equal(uniqueHaftId(ALL_SONGS_ID, []), `${ALL_SONGS_ID}-2`);
   });
+
+  // "index" skulle peka ut songs/haften/index.json — själva häftesregistret.
+  it('betraktar index som upptaget', () => {
+    assert.equal(uniqueHaftId('index', []), 'index-2');
+  });
+});
+
+describe('reserverade häftes-id', () => {
+  it('parseHaftenIndex kastar poster med id "index"', () => {
+    const raw = [{ id: 'index', namn: 'Index' }, { id: 'ok', namn: 'OK' }];
+    assert.deepEqual(parseHaftenIndex(raw), [{ id: 'ok', namn: 'OK' }]);
+  });
+
+  it('ett häfte som heter "Index" får ett id som inte krockar', () => {
+    const id = uniqueHaftId(slugifyHaftId('Index'), ['demestkoren']);
+    assert.notEqual(id, 'index');
+    assert.deepEqual(parseHaftenIndex([{ id, namn: 'Index' }]), [{ id, namn: 'Index' }]);
+  });
 });
 
 describe('moveInList', () => {
