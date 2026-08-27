@@ -16,7 +16,12 @@
         {
           "c": "G  D  G  G",
           "l": ""
-        },
+        }
+      ]
+    },
+    {
+      "label": "Vers 1",
+      "lines": [
         {
           "c": "      D             G",
           "l": "Här slutar jag min resa"
@@ -36,7 +41,12 @@
         {
           "c": "             G       D              G",
           "l": "Men jag ser ljus på flodens andra strand"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
         {
           "c": "G            D   G             G",
           "l": "Där får jag vila, där får jag frid"
@@ -56,7 +66,12 @@
         {
           "c": "       G            D             G",
           "l": "Men på andra sidan floden går den opp"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Mellanspel",
+      "lines": [
         {
           "c": "G  D  G  C",
           "l": ""
@@ -64,7 +79,12 @@
         {
           "c": "G  D  G  G",
           "l": ""
-        },
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
         {
           "c": "G     D       G           G",
           "l": "Kära kamrater, spara era tårar"
@@ -84,7 +104,12 @@
         {
           "c": "        G         D        G",
           "l": "Det är farväl vi ses snart igen"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
         {
           "c": "G                     D",
           "l": "Så drick ett glas för mig"
@@ -108,7 +133,12 @@
         {
           "c": "   G           D               G",
           "l": "På andra sidan floden blir jag fri"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Mellanspel 2",
+      "lines": [
         {
           "c": "G  D  G  G",
           "l": ""
@@ -124,7 +154,12 @@
         {
           "c": "G  D  G  G",
           "l": ""
-        },
+        }
+      ]
+    },
+    {
+      "label": "Vers 5",
+      "lines": [
         {
           "c": "G   D              G",
           "l": "Framför mig slutar vägen"
@@ -144,7 +179,12 @@
         {
           "c": "       G            D              G",
           "l": "Här på andra sidan floden vill jag bo"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Outro",
+      "lines": [
         {
           "c": "G  D  G  C",
           "l": ""
