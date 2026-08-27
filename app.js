@@ -1033,13 +1033,17 @@ function saveVariantSong() {
 
 // ─── Häfteshantering (lokalt) ───
 
-async function saveHaftToBackend(id, namn, filenames) {
-  const resp = await fetch('/save-haft', {
+async function postJson(url, body) {
+  const resp = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, namn, filenames }),
+    body: JSON.stringify(body),
   });
   if (!resp.ok) throw new Error(await resp.text().catch(() => `HTTP ${resp.status}`));
+}
+
+async function saveHaftToBackend(id, namn, filenames) {
+  await postJson('/save-haft', { id, namn, filenames });
 }
 
 // songs[] innehåller bara det aktiva häftets låtar, så häftesvyn måste hämta
@@ -1186,6 +1190,7 @@ function haftManagerHtml() {
     </div>` : `
     <span class="haft-manager-hint">Skapa ett häfte ovan för att välja låtar till det.</span>`}
     <div class="variant-save-dialog-buttons">
+      ${haftManager ? `<button class="variant-save-dialog-btn variant-save-dialog-btn--danger" onclick="deleteHaft()">🗑 Radera häftet</button>` : ''}
       <span class="haft-manager-dirty" id="haftManagerDirty" aria-live="polite"></span>
       <button class="variant-save-dialog-btn" onclick="closeHaftManagerDialog()">Stäng</button>
       ${haftManager ? `<button class="variant-save-dialog-btn variant-save-dialog-btn--primary" id="haftManagerSaveBtn" onclick="saveHaftManager()">💾 Spara häftet</button>` : ''}
@@ -1378,6 +1383,36 @@ async function createHaft() {
   } catch (err) {
     console.error('Kunde inte skapa häfte:', err);
     alert(`Fel vid sparning: ${err.message}`);
+  }
+}
+
+async function deleteHaft() {
+  if (!haftManager) return;
+  const { id, sparatNamn, sparadeFiler } = haftManager;
+  const antal = sparadeFiler.length;
+  const medLatar = antal === 1 ? 'med 1 låt' : `med ${antal} låtar`;
+  if (!confirm(`Radera häftet "${sparatNamn}" ${medLatar}? Låtarna ligger kvar i låtpoolen.`)) return;
+
+  try {
+    await postJson('/delete-haft', { id });
+
+    // loadSongs() bygger om haften och haftLists från disk och låter
+    // resolveHaftId() peka ut ett nytt aktivt häfte när det raderade var det.
+    if (currentHaftId === id) currentHaftId = null;
+    await loadSongs(true);
+    if (songs.length === 0) renderEmptyHaft();
+    updateMobileEditorBtn();
+    renderSongList();
+    renderSong();
+    savePrefs();
+
+    haftManagerLoad(redigerbaraHaften()[0]?.id);
+    haftPoolQuery = '';
+    redrawHaftManager();
+    await refreshHaftManagerPoolMeta();
+  } catch (err) {
+    console.error('Kunde inte radera häftet:', err);
+    alert(`Fel vid radering: ${err.message}`);
   }
 }
 
@@ -1828,6 +1863,7 @@ function renderSongEditor() {
     </div>
     <button class="sed-save-btn"${isLocal ? '' : ' disabled'}${songErrors.length > 0 ? ' title="Åtgärda valideringsfel först"' : ''}>Spara till fil</button>
     ${isLocal ? `<button class="sed-btn" id="sed-clone-btn">🔄 Klona</button>` : ''}
+    ${isLocal ? `<button class="sed-btn sed-btn--danger" onclick="deleteSong()">🗑 Radera låt</button>` : ''}
     ${haftCheckboxes ? `<span class="sed-save-note">Ingår i:</span>${haftCheckboxes}` : ''}
     <span class="sed-save-note">${isLocal ? `songs/${escHtml(s._filename || '?')}` : 'Sparning fungerar bara på localhost'}</span>
     <span class="sed-save-error" id="sed-save-error"></span>
@@ -1835,6 +1871,36 @@ function renderSongEditor() {
 
   html += `</div>`;
   return html;
+}
+
+async function deleteSong() {
+  const s = songs[currentSong];
+  if (!s || !s._filename) return;
+  const filename = s._filename;
+
+  const ingårI = haftenForSong(haftLists, filename)
+    .map(id => haften.find(h => h.id === id)?.namn || id);
+  const häftesrad = ingårI.length === 0
+    ? 'Den ingår inte i något häfte.'
+    : `Den tas bort ur ${ingårI.length === 1 ? '1 häfte' : `${ingårI.length} häften`}: ${ingårI.join(', ')}.`;
+
+  if (!confirm(`Radera låten "${s.title || filename}"?\n\n${häftesrad}\nFilen songs/${filename} raderas och det går inte att ångra i appen.`)) return;
+
+  try {
+    await postJson('/delete-song', { filename });
+
+    songEditorMode = false;
+    currentSongFile = null;
+    await loadSongs(true);
+    if (songs.length === 0) renderEmptyHaft();
+    updateMobileEditorBtn();
+    renderSongList();
+    renderSong();
+    savePrefs();
+  } catch (err) {
+    console.error('Kunde inte radera låten:', err);
+    alert(`Fel vid radering: ${err.message}`);
+  }
 }
 
 async function setSongHaften() {
@@ -2295,6 +2361,7 @@ Object.assign(window, {
   updateTemplateMeasure, addMeasureToTemplate, removeMeasureFromTemplate,
   openHaftManagerDialog, closeHaftManagerDialog, createHaft, saveHaftManager,
   moveHaftSong, removeHaftSong, selectHaftInManager, haftManagerRename, filterHaftPool,
+  deleteHaft, deleteSong,
   openUgImportDialog, closeUgImportDialog, parseUgImportPreview, saveUgImportSong,
 });
 

@@ -87,7 +87,24 @@ fyller på titlar för resten och måste köras om efter `loadSongs(true)`, som 
 Kryssrutorna i låtredigeraren finns kvar som genväg för enstaka låtar och anropar
 `POST /set-song-haften`. Se [SONGS_GUIDE.md](SONGS_GUIDE.md) för handredigering.
 
-Att **ta bort** ett häfte stöds inte — `/save-haft` kan bara skapa och uppdatera.
+## Radering
+
+Två endpoints i `server.py`, båda bara lokalt och båda bakom en `confirm()` som visar
+konsekvensen:
+
+- `POST /delete-haft { id }` — tar bort posten ur `songs/haften/index.json` och raderar
+  `songs/haften/<id>.json`. Låtfilerna rörs inte. Knappen 🗑 Radera häftet i häftesvyn
+- `POST /delete-song { filename }` — plockar låten ur `songs/index.json`, ur varje häfte
+  som innehåller den, och raderar `songs/<filnamn>`. Knappen 🗑 Radera låt i låtredigeraren
+
+`/delete-song` kräver att filnamnet finns i `songs/index.json`, vilket samtidigt spärrar
+`index.json` och `template.json` från att raderas. **Referenserna skrivs före filen tas
+bort** — ett avbrott mitt i ska lämna en föräldralös fil, inte ett häfte som pekar på
+något som saknas.
+
+Efter en radering kör klienten `loadSongs(true)`, som bygger om `pool`, `poolMeta`,
+`haften` och `haftLists` från disk. Raderas det aktiva häftet nollställs `currentHaftId`
+först så att `resolveHaftId()` väljer ett nytt.
 
 ## Import från urklipp
 

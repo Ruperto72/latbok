@@ -1293,6 +1293,17 @@ body {
   opacity: 0.9;
 }
 
+.variant-save-dialog-btn--danger {
+  border-color: rgba(200, 80, 80, 0.5);
+  color: #c85050;
+}
+
+.variant-save-dialog-btn--danger:hover {
+  border-color: #c85050;
+  color: #c85050;
+  background: rgba(200, 80, 80, 0.1);
+}
+
 .variant-save-dialog-btn:disabled {
   opacity: 0.4;
   cursor: default;

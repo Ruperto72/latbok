@@ -36,7 +36,7 @@ Alla inställningar sparas lokalt på enheten.
 - **Dela en länk** — `?haft=demestkoren` öppnar appen direkt i rätt häfte
 - **Delad låtpool** — samma låt kan ingå i flera häften; en rättning slår igenom för alla
 - **Alla låtar** — extra val som visar hela poolen, bara när appen körs lokalt
-- **Hantera häften (lokalt)** — knappen **✎ Hantera häften** under ⚙ Inställningar öppnar en administrationsvy med hela låtpoolen till vänster och häftets menyordning till höger: kryssa i låtar, sök på titel/artist, byt namn, skapa nya häften och dra raderna (eller ▲▼) för att ordna om. Allt sparas med **💾 Spara häftet**
+- **Hantera häften (lokalt)** — knappen **✎ Hantera häften** under ⚙ Inställningar öppnar en administrationsvy med hela låtpoolen till vänster och häftets menyordning till höger: kryssa i låtar, sök på titel/artist, byt namn, skapa nya häften och dra raderna (eller ▲▼) för att ordna om. Allt sparas med **💾 Spara häftet**; **🗑 Radera häftet** tar bort urvalet utan att röra låtfilerna
 
 ### Import från urklipp (lokalt)
 Knappen **⭳ Från urklipp** (under ⚙ Inställningar) visas bara när appen körs lokalt, precis som låtredaktören. Den öppnar en dialog där du klistrar in ackord/text kopierad från valfri ackordsida (t.ex. Ultimate Guitar):
@@ -52,6 +52,7 @@ Knappen **✎ Redigera låt** öppnar ett strukturerat redigeringsläge direkt i
 - **Delar & rader** — lägg till/ta bort delar och rader; välj ackordmall per rad eller skriv ackord fritt
 - **Texteditering** — redigera lyrics direkt; använd `|` för att markera taktgränser
 - **Spara till fil** — skriver ändringarna tillbaka till JSON-filen via en lokal server (fungerar på localhost)
+- **Radera låt** — **🗑 Radera låt** tar bort låtfilen och städar bort låten ur alla häften den ingår i; bekräftelserutan visar vilka häften som berörs
 - **Validering** — visar varningar för saknade fält, ogiltig taktart och okända ackord i realtid
 
 ### Tillgänglighet

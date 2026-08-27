@@ -43,11 +43,27 @@ Inget sparas förrän du klickar **💾 Spara häftet** — dessförinnan står 
 stänger. Ändringarna skrivs till `songs/haften/<id>.json` och `songs/haften/index.json` —
 samma filer som du annars kan handredigera.
 
-Att **ta bort** ett häfte går inte i appen; radera `songs/haften/<id>.json` och posten i
-`songs/haften/index.json` för hand.
+**🗑 Radera häftet** tar bort häftet helt. Låtarna ligger kvar i låtpoolen — det är bara
+urvalet som försvinner. Raderar du det häfte du just tittar på byter appen till det första
+kvarvarande.
 
 Kryssrutorna längst ner i låtredigeraren finns kvar som genväg när du står i en enskild
 låt — t.ex. direkt efter en import.
+
+## Radera en låt
+
+**✎ Redigera låt → 🗑 Radera låt** (bara lokalt). Bekräftelserutan visar vilka häften
+låten ingår i innan du bekräftar.
+
+Låten plockas ur `songs/index.json`, ur alla häften som innehåller den, och `songs/<fil>.json`
+raderas från disk. Det går **inte** att ångra i appen — men är låten committad hämtar du
+tillbaka den med:
+
+```bash
+git checkout -- songs/<fil>.json
+```
+
+och lägger tillbaka filnamnet i `songs/index.json` (och i de häften den ska ingå i).
 
 ## Snabbstart
 
