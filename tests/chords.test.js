@@ -7,6 +7,7 @@ import {
   getUniqueChords,
   isUgChordLine, parseUgImportText,
   isUgInlineChordLine, parseUgInlineChordLine,
+  renderChordFlow,
 } from '../chords.js';
 
 // ─── transposeChordName ───
@@ -440,5 +441,63 @@ describe('parseUgImportText with inline chords', () => {
     const result = parseUgImportText(text);
     assert.deepEqual(result.sections.map(s => s.label), ['Vers 1', 'Refräng']);
     assert.equal(result.sections[1].lines[0].l, 'Praise God from whom all blessings flow');
+  });
+});
+
+// ─── renderChordFlow ───
+
+describe('renderChordFlow', () => {
+  const flow = (lyric, chordStr, semi = 0) =>
+    renderChordFlow(lyric, parseChordLine(chordStr), semi);
+  // Plockar bort hela ankarelementen (inklusive ackordnamnet inuti) så att
+  // bara sångtexten blir kvar — den ska alltid vara oförändrad.
+  const plain = html =>
+    html.replace(/<span class="cl-anchor">.*?<\/span><\/span><\/span>/g, '');
+
+  it('väver in ackorden vid rätt teckenposition', () => {
+    const html = flow('I en evighet levde jag', '     C       F');
+    assert.ok(html.startsWith('I en <span class="cl-anchor">'));
+    assert.ok(html.includes('>C<'));
+    assert.ok(html.includes('evighet '));
+  });
+
+  it('bevarar textinnehållet exakt', () => {
+    const lyric = 'I en evighet levde jag som om du inte fanns';
+    assert.equal(plain(flow(lyric, '     C       F         G7')), lyric);
+  });
+
+  it('behåller ackord vars offset pekar bortom radens slut', () => {
+    // Ackordraden är längre än texten — G7 får inte tappas bort (den gamla
+    // renderingen klippte bort ackord som hamnade utanför radbredden)
+    const html = flow('kort text', '     C                   G7');
+    assert.ok(html.includes('>C<'));
+    assert.ok(html.includes('>G7<'));
+    assert.equal(plain(html), 'kort text');
+  });
+
+  it('lägger ackord i textordning även vid udda positioner', () => {
+    const html = flow('abcdef', '  X  Y');
+    assert.ok(html.indexOf('>X<') < html.indexOf('>Y<'));
+  });
+
+  it('returnerar ren text när raden saknar ackord', () => {
+    assert.equal(flow('bara text', ''), 'bara text');
+  });
+
+  it('transponerar ackordnamnen', () => {
+    const html = flow('I en evighet', '     C', 2);
+    assert.ok(html.includes('>D<'));
+    assert.ok(!html.includes('>C<'));
+  });
+
+  it('escapar html i både text och ackordnamn', () => {
+    const html = renderChordFlow('a<b>c', [{ name: '<X>', pos: 1 }]);
+    assert.ok(!html.includes('<b>'));
+    assert.ok(html.includes('&lt;b&gt;'));
+    assert.ok(html.includes('&lt;X&gt;'));
+  });
+
+  it('hanterar tom text utan att krascha', () => {
+    assert.equal(plain(renderChordFlow('', [])), '');
   });
 });

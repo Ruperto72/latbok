@@ -4,6 +4,7 @@ import {
   transposeChordName, parseChordLine,
   escHtml, renderChordDiagrams, lookupChord,
   getAllVoicings, chordSVG,
+  renderChordFlow,
   parseUgImportText,
 } from './chords.js';
 import {
@@ -663,15 +664,20 @@ function renderSong() {
           html += `</div>`;
         } else {
           html += `<div class="cl-abs-pair">`;
-          html += `<div class="cl-abs-chord-row">`;
-          chords.forEach(ch => {
-            const name = transposeSemitones !== 0
-              ? transposeChordName(ch.name, transposeSemitones) : ch.name;
-            html += `<span class="chord-tag" style="left:${ch.pos}ch"><span>${escHtml(name)}</span></span>`;
-          });
-          html += `</div>`;
           if (lyric.trim()) {
-            html += `<div class="cl-display-lyric">${escHtml(lyric)}</div>`;
+            // Ackorden vävs in i textflödet så att de följer med sin stavelse
+            // när raden radbryts (se renderChordFlow i chords.js).
+            html += `<div class="cl-flow">${renderChordFlow(lyric, chords, transposeSemitones)}</div>`;
+          } else {
+            // Ackordrad utan text (intro, mellanspel) — inget flöde att haka i,
+            // så här behålls den teckenpositionerade ackordraden.
+            html += `<div class="cl-abs-chord-row">`;
+            chords.forEach(ch => {
+              const name = transposeSemitones !== 0
+                ? transposeChordName(ch.name, transposeSemitones) : ch.name;
+              html += `<span class="chord-tag" style="left:${ch.pos}ch"><span>${escHtml(name)}</span></span>`;
+            });
+            html += `</div>`;
           }
           html += `</div>`;
         }
