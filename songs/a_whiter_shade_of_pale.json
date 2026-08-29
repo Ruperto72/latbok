@@ -68,13 +68,14 @@
           "l": "that her face, at first just ghostly,"
         },
         {
-          "c": "",
-          "l": "           C    F        C    G6add11 G6"
-        },
-        {
-          "c": "",
+          "c": "           C    F        C    Cmaj9/G G6",
           "l": "turned a whiter shade of pale"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Mellanspel",
+      "lines": [
         {
           "c": "C C/B  Am Am/G  F F/E  Dm Dm/C  G G/F  Em Em/D  C F  G F G",
           "l": ""
@@ -134,11 +135,15 @@
           "l": "that her face, at first just ghostly,"
         },
         {
-          "c": "           C    F        C    G6add11 G6",
+          "c": "           C    F        C    Cmaj9/G G6",
           "l": "turned a whiter shade of pale"
         },
         {
           "c": "C C/B  Am Am/G  F F/E  Dm Dm/C  G G/F  Em Em/D  C F  G",
+          "l": ""
+        },
+        {
+          "c": "",
           "l": ""
         },
         {

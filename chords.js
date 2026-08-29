@@ -487,6 +487,20 @@ export const CHORD_LIB = {
   'Ab9':    { frets: [4,6,4,5,4,6], fingers: [1,3,1,2,1,4], baseFret: 4, barre: 4 },
   'Bb9':    { frets: [6,8,6,7,6,8], fingers: [1,3,1,2,1,4], baseFret: 6, barre: 6 },
 
+  // ─── Major 9th ───
+  'Cmaj9':  { frets: [-1,3,0,0,0,0], fingers: [0,1,0,0,0,0] },
+  'C#maj9': { frets: [-1,4,3,5,4,-1], fingers: [0,2,1,4,3,0], baseFret: 3 },
+  'Dmaj9':  { frets: [-1,5,4,6,5,-1], fingers: [0,2,1,4,3,0], baseFret: 4 },
+  'Ebmaj9': { frets: [-1,6,5,7,6,-1], fingers: [0,2,1,4,3,0], baseFret: 5 },
+  'Emaj9':  { frets: [0,2,1,1,0,2], fingers: [0,3,1,2,0,4] },
+  'Fmaj9':  { frets: [1,0,2,0,1,0], fingers: [2,0,3,0,1,0] },
+  'F#maj9': { frets: [2,1,3,1,2,1], fingers: [2,1,4,1,3,1], barre: 1 },
+  'Gmaj9':  { frets: [3,-1,0,2,0,2], fingers: [3,0,0,1,0,2] },
+  'G#maj9': { frets: [4,3,5,3,4,3], fingers: [2,1,4,1,3,1], baseFret: 3, barre: 3 },
+  'Amaj9':  { frets: [5,4,6,4,5,4], fingers: [2,1,4,1,3,1], baseFret: 4, barre: 4 },
+  'Bbmaj9': { frets: [-1,1,0,2,1,-1], fingers: [0,2,0,4,3,0] },
+  'Bmaj9':  { frets: [-1,2,1,3,2,-1], fingers: [0,2,1,4,3,0] },
+
   // ─── m7b5 (half-diminished) ───
   'Bm7b5':  { frets: [-1,2,3,2,3,-1], fingers: [0,1,3,2,4,0] },
   'Am7b5':  { frets: [-1,0,1,0,1,3], fingers: [0,0,1,0,2,4] },
@@ -518,6 +532,7 @@ export const CHORD_LIB = {
   'Am/G':   { frets: [3,0,2,2,1,0], fingers: [4,0,2,3,1,0] },
   'Em/D':   { frets: [-1,-1,0,0,0,0], fingers: [0,0,0,0,0,0] },
   'Em/G':   { frets: [3,2,2,0,0,0], fingers: [3,1,2,0,0,0] },
+  'Cmaj9/G':{ frets: [3,2,0,0,1,0], fingers: [3,2,0,0,1,0] },
   'Dm/C':   { frets: [-1,3,0,2,3,1], fingers: [0,3,0,2,4,1] },
   'Dm/F':   { frets: [-1,-1,3,2,3,1], fingers: [0,0,3,2,4,1] },
   'E7/G#':  { frets: [4,2,0,1,0,0], fingers: [4,2,0,1,0,0] },

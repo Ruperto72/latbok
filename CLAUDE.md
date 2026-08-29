@@ -38,7 +38,7 @@ och felar annars. `dist/sw.js` skrivs av bygget och behöver inte röras för ha
 ## Ackordbiblioteket
 
 `CHORD_LIB` i `chords.js` ska ha alla 12 grundtoner i varje kategori (dur, moll, 7, m7,
-6, m6, maj7, sus4, 7sus4, sus2, add9, dim, dim7, aug, 9, m7b5, 7+). En stavning per grundton räcker —
+6, m6, maj7, maj9, sus4, 7sus4, sus2, add9, dim, dim7, aug, 9, m7b5, 7+). En stavning per grundton räcker —
 `lookupChord()` slår upp enharmoniska namn (`D#m` → `Ebm`).
 
 `tests/chords-lib.test.js` räknar ut tonerna ur `frets` (stämning E A D G B E) och jämför
