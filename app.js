@@ -253,6 +253,9 @@ async function init() {
     // Persistera valt häfte (t.ex. från ?haft=) redan vid start. Hoppas över när
     // inga häften kunde laddas, så ett misslyckat anrop inte nollar sparat val.
     if (haften.length > 0) savePrefs();
+    // Håll skärmen tänd så länge låten visas — telefonens skärmsläckare slår
+    // annars till mitt i en sång.
+    requestWakeLock();
   } catch (e) {
     console.error('init() kraschade:', e);
     document.getElementById('songDisplay').innerHTML =
@@ -334,9 +337,9 @@ function setupGlobalEvents() {
     resizeTimer = setTimeout(alignMeasureColumns, 150);
   });
 
-  // Återaktivera Wake Lock om fliken blir synlig igen under scroll
+  // Återaktivera Wake Lock varje gång fliken blir synlig igen
   document.addEventListener('visibilitychange', async () => {
-    if (scrollActive && document.visibilityState === 'visible') {
+    if (document.visibilityState === 'visible') {
       await requestWakeLock();
     }
   });
@@ -380,18 +383,14 @@ function alignMeasureColumns() {
 }
 
 async function requestWakeLock() {
-  if ('wakeLock' in navigator) {
-    try {
-      wakeLock = await navigator.wakeLock.request('screen');
-    } catch (err) {
-      console.warn('Screen Wake Lock kunde inte aktiveras:', err);
-    }
-  }
-}
-
-function releaseWakeLock() {
-  if (wakeLock) {
-    wakeLock.release().then(() => { wakeLock = null; });
+  if (wakeLock || !('wakeLock' in navigator)) return;
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    // Webbläsaren släpper låset själv när fliken göms eller skärmen låses —
+    // nolla variabeln så nästa visibilitychange kan ta ett nytt.
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  } catch (err) {
+    console.warn('Screen Wake Lock kunde inte aktiveras:', err);
   }
 }
 
@@ -462,18 +461,16 @@ function toggleSettingsSheet() {
   }
 }
 
-async function toggleAutoScroll() {
+function toggleAutoScroll() {
   scrollActive = !scrollActive;
   updateMobileScrollBtn();
   if (scrollActive) {
     scrollLastTime = null;
     scrollAccum = 0;
     scrollRAF = requestAnimationFrame(autoScrollStep);
-    await requestWakeLock();
   } else {
     cancelAnimationFrame(scrollRAF);
     scrollRAF = null;
-    releaseWakeLock();
   }
 }
 
