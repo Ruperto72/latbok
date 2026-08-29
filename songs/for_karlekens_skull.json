@@ -1,0 +1,193 @@
+{
+  "title": "För Kärlekens Skull",
+  "artist": "Ted Gärdestad",
+  "key": "C",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Intro",
+      "lines": [
+        {
+          "c": "",
+          "l": "C G/B Am Em/G F F C/E Dm7"
+        },
+        {
+          "c": "",
+          "l": "G6 G7 C"
+        }
+      ]
+    },
+    {
+      "label": "vers 1",
+      "lines": [
+        {
+          "c": "Dm7     G7            C     F",
+          "l": "Utanför fönstret slår våren ut."
+        },
+        {
+          "c": "",
+          "l": "Dm7        G7sus4  G7 C"
+        },
+        {
+          "c": "",
+          "l": "Marken blir grön   i- gen."
+        },
+        {
+          "c": "Dm7          E7               Am    Am/G",
+          "l": "Allt som var dött, väcks till liv,"
+        },
+        {
+          "c": "              Fmaj7     F6",
+          "l": "det kan också vi   Mm.."
+        },
+        {
+          "c": "",
+          "l": "            G7sus4   G7"
+        },
+        {
+          "c": "",
+          "l": "Så länge vi andas."
+        }
+      ]
+    },
+    {
+      "label": "vers 2",
+      "lines": [
+        {
+          "c": "Dm7      G7           C     Fmaj7",
+          "l": "Ute till havs styr en fiskebåt."
+        },
+        {
+          "c": "",
+          "l": "Dm7          G7sus4 G7  Cmaj7"
+        },
+        {
+          "c": "",
+          "l": "Längs en fri hor -  i - sont."
+        },
+        {
+          "c": "Dm7           E7            Am     Am/G",
+          "l": "Den gungar så tryggt in mot hamn"
+        },
+        {
+          "c": "              Fmaj7       F6",
+          "l": "som jag i din famn.   Mm.."
+        },
+        {
+          "c": "",
+          "l": "            G7sus4  G7"
+        },
+        {
+          "c": "",
+          "l": "Så länge vi älskar."
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "C   G/B    Am   Em/G      F",
+          "l": "Det är för oss  solen går opp."
+        },
+        {
+          "c": "F  C/E     Dm7       G6 G7     C",
+          "l": "Ly-ser som guld, för kärlekens skull"
+        },
+        {
+          "c": "C  G/B     Am   Em/G      F",
+          "l": "So-len går upp, så oskuldsfull"
+        },
+        {
+          "c": "F  C/E    Dm7     G6 G7     C",
+          "l": "Ly-ser på oss för kärlekens skull."
+        }
+      ]
+    },
+    {
+      "label": "vers 3",
+      "lines": [
+        {
+          "c": "Dm7         G7           C     F",
+          "l": "Högt på ett berg står en katedral,"
+        },
+        {
+          "c": "",
+          "l": "Dm7       G7sus4 G7   C"
+        },
+        {
+          "c": "",
+          "l": "och pekar upp    mot  skyn."
+        },
+        {
+          "c": "Dm7           E7        Am    Am/G",
+          "l": "Men det är för himlen i dig,"
+        },
+        {
+          "c": "             Fmaj7    F6",
+          "l": "och jorden i mig...Mm.."
+        },
+        {
+          "c": "",
+          "l": "          G7sus4   G7"
+        },
+        {
+          "c": "",
+          "l": "Vi älskar varandra."
+        }
+      ]
+    },
+    {
+      "label": "Refräng 2",
+      "lines": [
+        {
+          "c": "C   G/B    Am   Em/G      F",
+          "l": "Det är för oss  solen går opp."
+        },
+        {
+          "c": "F  C/E     Dm7       G6 G7     C",
+          "l": "Ly-ser som guld, för kärlekens skull"
+        },
+        {
+          "c": "C  G/B     Am   Em/G      F",
+          "l": "So-len går upp, så oskuldsfull"
+        },
+        {
+          "c": "F  C/E    Dm7     G6 G7     C",
+          "l": "Ly-ser på oss för kärlekens skull."
+        }
+      ]
+    },
+    {
+      "label": "Outro",
+      "lines": [
+        {
+          "c": "",
+          "l": "|C|G/B|Am|Em/G|F|F|C/E|Dm7|"
+        },
+        {
+          "c": "",
+          "l": "|G6 G7|C|"
+        },
+        {
+          "c": "C  G/B  Am  Em/G     F  F  C/E  Dm7",
+          "l": "m m m m m.................................."
+        },
+        {
+          "c": "G6 G7 C",
+          "l": "...................."
+        },
+        {
+          "c": "F  C/E    Dm7      G6 G7     C",
+          "l": "Lyser som guld för kärlekens skull."
+        },
+        {
+          "c": "F  C/E   Dm7      G6 G7     C",
+          "l": "Lyser på oss, för kärlekens skull"
+        }
+      ]
+    }
+  ]
+}

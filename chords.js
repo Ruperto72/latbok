@@ -333,6 +333,20 @@ export const CHORD_LIB = {
   'Gm7':    { frets: [3,5,3,3,3,3], fingers: [1,3,1,1,1,1], baseFret: 3, barre: 3 },
   'Abm7':   { frets: [-1,-1,6,8,7,7], fingers: [0,0,1,3,2,2], baseFret: 6 },
 
+  // ─── 6th ───
+  'C6':     { frets: [-1,3,2,2,1,0], fingers: [0,4,2,3,1,0] },
+  'C#6':    { frets: [-1,4,6,-1,6,6], fingers: [0,1,2,0,3,4], baseFret: 4 },
+  'D6':     { frets: [-1,-1,0,2,0,2], fingers: [0,0,0,2,0,3] },
+  'Eb6':    { frets: [-1,-1,1,3,1,3], fingers: [0,0,1,3,1,4], barre: 1 },
+  'E6':     { frets: [0,2,2,1,2,0], fingers: [0,2,3,1,4,0] },
+  'F6':     { frets: [-1,-1,3,2,3,1], fingers: [0,0,3,2,4,1] },
+  'F#6':    { frets: [-1,-1,4,3,4,2], fingers: [0,0,3,2,4,1], baseFret: 2 },
+  'G6':     { frets: [3,2,0,0,0,0], fingers: [2,1,0,0,0,0] },
+  'G#6':    { frets: [4,-1,6,5,6,-1], fingers: [1,0,3,2,4,0], baseFret: 4 },
+  'A6':     { frets: [-1,0,2,2,2,2], fingers: [0,0,1,1,1,1], barre: 2 },
+  'Bb6':    { frets: [-1,1,0,0,3,3], fingers: [0,1,0,0,3,4] },
+  'B6':     { frets: [-1,2,1,1,0,2], fingers: [0,3,1,2,0,4] },
+
   // ─── Minor 6th ───
   'Cm6':    { frets: [-1,3,5,-1,4,5], fingers: [0,1,3,0,2,4], baseFret: 3 },
   'C#m6':   { frets: [-1,4,6,-1,5,6], fingers: [0,1,3,0,2,4], baseFret: 4 },
@@ -374,6 +388,20 @@ export const CHORD_LIB = {
   'Asus4':  { frets: [-1,0,2,2,3,0], fingers: [0,0,1,2,3,0] },
   'Bbsus4': { frets: [-1,1,3,3,4,1], fingers: [0,1,3,3,4,1], barre: 1 },
   'Bsus4':  { frets: [7,9,9,9,7,7], fingers: [1,3,4,4,1,1], baseFret: 7, barre: 7 },
+
+  // ─── 7sus4 ───
+  'C7sus4':  { frets: [-1,3,3,3,1,1], fingers: [0,2,3,4,1,1], barre: 1 },
+  'C#7sus4': { frets: [-1,4,4,4,2,2], fingers: [0,2,3,4,1,1], baseFret: 2, barre: 2 },
+  'D7sus4':  { frets: [-1,-1,0,2,1,3], fingers: [0,0,0,2,1,3] },
+  'Eb7sus4': { frets: [-1,-1,1,3,2,4], fingers: [0,0,1,3,2,4] },
+  'E7sus4':  { frets: [0,2,0,2,0,0], fingers: [0,2,0,3,0,0] },
+  'F7sus4':  { frets: [1,3,1,3,1,1], fingers: [1,3,1,4,1,1], barre: 1 },
+  'F#7sus4': { frets: [2,4,2,4,2,2], fingers: [1,3,1,4,1,1], baseFret: 2, barre: 2 },
+  'G7sus4':  { frets: [3,3,0,0,1,1], fingers: [3,4,0,0,1,1], barre: 1 },
+  'G#7sus4': { frets: [4,6,4,6,4,4], fingers: [1,3,1,4,1,1], baseFret: 4, barre: 4 },
+  'A7sus4':  { frets: [-1,0,2,0,3,0], fingers: [0,0,2,0,3,0] },
+  'Bb7sus4': { frets: [-1,1,3,1,4,1], fingers: [0,1,3,1,4,1], barre: 1 },
+  'B7sus4':  { frets: [-1,2,4,2,5,2], fingers: [0,1,3,1,4,1], baseFret: 2, barre: 2 },
 
   // ─── sus2 ───
   'Csus2':  { frets: [-1,3,0,0,3,3], fingers: [0,1,0,0,2,2] },
@@ -485,6 +513,8 @@ export const CHORD_LIB = {
   'G/B':    { frets: [-1,2,0,0,0,3], fingers: [0,1,0,0,0,3] },
   'G/D':    { frets: [-1,-1,0,0,0,3], fingers: [0,0,0,0,0,3] },
   'Am/E':   { frets: [0,0,2,2,1,0], fingers: [0,0,2,3,1,0] },
+  'Am/G':   { frets: [3,0,2,2,1,0], fingers: [4,0,2,3,1,0] },
+  'Em/G':   { frets: [3,2,2,0,0,0], fingers: [3,1,2,0,0,0] },
   'Dm/F':   { frets: [-1,-1,3,2,3,1], fingers: [0,0,3,2,4,1] },
   'E7/G#':  { frets: [4,2,0,1,0,0], fingers: [4,2,0,1,0,0] },
   'E7/B':   { frets: [-1,2,0,1,0,0], fingers: [0,2,0,1,0,0] },

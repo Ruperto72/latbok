@@ -1,0 +1,153 @@
+{
+  "title": "Paradiset",
+  "artist": "Bo Sundström",
+  "key": "D",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "",
+          "l": "Intro: D G F#7 B7 Em G B7 Em Em"
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "         Em                 Em",
+          "l": "Vi hade båda några år låtit läka samma sår,"
+        },
+        {
+          "c": "         G                        B7",
+          "l": "vi var sargade och skadade från varsitt håll."
+        },
+        {
+          "c": "          Em                        G",
+          "l": "Men just denna ljusa kväll var det något speciellt,"
+        },
+        {
+          "c": "        B7                         Em",
+          "l": "det var som om inget spelade nå'n roll."
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "            Em                            Em",
+          "l": "Det var en kväll man drömmer om, vet inte varifrån det kom."
+        },
+        {
+          "c": "           G                         B7",
+          "l": "Allt var enkelt, du var vacker i en långsam vals."
+        },
+        {
+          "c": "          Em                         G",
+          "l": "Jag förde och du följde med dit vi kunde va' i fred,"
+        },
+        {
+          "c": "           B7                        Em",
+          "l": "Jag minns doften ännu från din mjuka hals."
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "    D                              G",
+          "l": "Och att jag kunde ge dom spillror som fanns kvar"
+        },
+        {
+          "c": "F#7                         B7",
+          "l": "att du tog emot mig som jag en gång var."
+        },
+        {
+          "c": "       Em                         G",
+          "l": "I vårt eget sommarland, på en av tusen sjöars strand,"
+        },
+        {
+          "c": "        B7                            Em",
+          "l": "var det vi som fann att livet kan va' gott."
+        },
+        {
+          "c": "   D      G      F#7    B7    Em G B7 Em Em",
+          "l": "Aj-aj, aj-aj. Aj-aj, aj-aj."
+        }
+      ]
+    },
+    {
+      "label": "Vers 5",
+      "lines": [
+        {
+          "c": "       Em                       Em",
+          "l": "Och nu när vårt paradis frusit fast i snö och is,"
+        },
+        {
+          "c": "         G                              B7",
+          "l": "när det känns som vintern aldrig kommer att ta slut,"
+        },
+        {
+          "c": "       Em                             G",
+          "l": "är jag glad att jag har dig, att du stannar här hos mig,"
+        },
+        {
+          "c": "             B7                          Em",
+          "l": "att jag får älska dig tills livet rinner ut."
+        }
+      ]
+    },
+    {
+      "label": "Vers 6",
+      "lines": [
+        {
+          "c": "    D                              G",
+          "l": "Och att jag kunde ge dom spillror som fanns kvar"
+        },
+        {
+          "c": "F#7                         B7",
+          "l": "att du tog emot mig som jag en gång var."
+        },
+        {
+          "c": "       Em                         G",
+          "l": "I vårt eget sommarland, på en av tusen sjöars strand,"
+        },
+        {
+          "c": "        B7                            Em",
+          "l": "var det vi som fann att livet kan va' gott."
+        },
+        {
+          "c": "   D      G      F#7    B7",
+          "l": "Aj-aj, aj-aj. Aj-aj, aj-aj."
+        }
+      ]
+    },
+    {
+      "label": "Vers 7",
+      "lines": [
+        {
+          "c": "       Em                         G",
+          "l": "I vårt eget sommarland, på en av tusen sjöars strand,"
+        },
+        {
+          "c": "        B7                            Em",
+          "l": "var det vi som fann att livet kan va' gott."
+        },
+        {
+          "c": "        B7                            Em",
+          "l": "var det vi som fann att livet kan va' gott."
+        },
+        {
+          "c": "        B7                            Em    Em",
+          "l": "var det vi som fann att livet kan va' gott."
+        }
+      ]
+    }
+  ]
+}

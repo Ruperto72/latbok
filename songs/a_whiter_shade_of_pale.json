@@ -1,0 +1,155 @@
+{
+  "title": "A Whiter Shade Of Pale",
+  "artist": "Procol Harum",
+  "key": "C",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Intro",
+      "lines": [
+        {
+          "c": "C C/B  Am Am/G  F F/E  Dm Dm/C  G G/F  Em Em/D  C F  G F G",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers",
+      "lines": [
+        {
+          "c": "C     C/B              Am     Am/G",
+          "l": "We skipped the light fandango"
+        },
+        {
+          "c": "F    F/E                     Dm    Dm/C",
+          "l": "turned cartwheels 'cross the floor"
+        },
+        {
+          "c": "G       G/F          Em      Em/D",
+          "l": "I was feeling kinda seasick"
+        },
+        {
+          "c": "C        C/B           Am         Am/G",
+          "l": "but the crowd called out for more"
+        },
+        {
+          "c": "F       F/E          Dm     Dm/C",
+          "l": "The room was humming harder"
+        },
+        {
+          "c": "G       G/F          Em    Em/D",
+          "l": "as the ceiling flew away"
+        },
+        {
+          "c": "C          C/B            Am     Am/G",
+          "l": "When we called out for another drink"
+        },
+        {
+          "c": "F       F/E          Dm",
+          "l": "the waiter brought a tray"
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "G7          C  C/B        Am    Am/G",
+          "l": "And so it was,___ that later,____"
+        },
+        {
+          "c": "F       F/E             Dm  Dm/C",
+          "l": "as the miller told his tale"
+        },
+        {
+          "c": "G   G/F                  Em           Em/D",
+          "l": "that her face, at first just ghostly,"
+        },
+        {
+          "c": "",
+          "l": "           C    F        C    G6add11 G6"
+        },
+        {
+          "c": "",
+          "l": "turned a whiter shade of pale"
+        },
+        {
+          "c": "C C/B  Am Am/G  F F/E  Dm Dm/C  G G/F  Em Em/D  C F  G F G",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "C     C/B            Am     Am/G",
+          "l": "She said there is no reason"
+        },
+        {
+          "c": "F        F/E              Dm    Dm/C",
+          "l": "And the truth is plain to see"
+        },
+        {
+          "c": "G       G/F                Em       Em/D",
+          "l": "But I wandered through my playing cards"
+        },
+        {
+          "c": "C       C/B       Am       Am/G",
+          "l": "Would not let her be"
+        },
+        {
+          "c": "F       F/E           Dm      Dm/C",
+          "l": "One of sixteen vestal virgins"
+        },
+        {
+          "c": "G        G/F             Em    Em/D",
+          "l": "Who were leaving for the coast"
+        },
+        {
+          "c": "C           C/B           Am   Am/G",
+          "l": "And although my eyes were o____pen"
+        },
+        {
+          "c": "F       F/E                  Dm",
+          "l": "They might just as well been closed"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 2",
+      "lines": [
+        {
+          "c": "G7          C  C/B        Am    Am/G",
+          "l": "And so it was,___ that later,____"
+        },
+        {
+          "c": "F       F/E             Dm  Dm/C",
+          "l": "as the miller told his tale"
+        },
+        {
+          "c": "G   G/F                  Em           Em/D",
+          "l": "that her face, at first just ghostly,"
+        },
+        {
+          "c": "           C    F        C    G6add11 G6",
+          "l": "turned a whiter shade of pale"
+        },
+        {
+          "c": "C C/B  Am Am/G  F F/E  Dm Dm/C  G G/F  Em Em/D  C F  G",
+          "l": ""
+        },
+        {
+          "c": "G7          C  C/B        Am    Am/G",
+          "l": "And so it was,___ that later,____"
+        },
+        {
+          "c": "F       F/E             Dm  Dm/C",
+          "l": "as the miller told his tale"
+        }
+      ]
+    }
+  ]
+}
