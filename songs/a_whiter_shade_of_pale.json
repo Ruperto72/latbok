@@ -4,13 +4,12 @@
   "key": "C",
   "timeSignature": "4/4",
   "difficulty": "Medel",
-  "chordTemplates": {},
   "sections": [
     {
       "label": "Intro",
       "lines": [
         {
-          "c": "C C/B  Am Am/G  F F/E  Dm Dm/C  G G/F  Em Em/D  C F  G F G",
+          "c": "C  C/B  Am  Am/G  F  F/E  Dm  Dm/C  G  G/F  Em  Em/D  C  F  G  F  G",
           "l": ""
         }
       ]
@@ -77,7 +76,7 @@
       "label": "Mellanspel",
       "lines": [
         {
-          "c": "C C/B  Am Am/G  F F/E  Dm Dm/C  G G/F  Em Em/D  C F  G F G",
+          "c": "C  C/B  Am  Am/G  F  F/E  Dm  Dm/C  G  G/F  Em  Em/D  C  F  G  F  G",
           "l": ""
         }
       ]
@@ -139,7 +138,7 @@
           "l": "turned a whiter shade of pale"
         },
         {
-          "c": "C C/B  Am Am/G  F F/E  Dm Dm/C  G G/F  Em Em/D  C F  G",
+          "c": "C  C/B  Am  Am/G  F  F/E  Dm  Dm/C  G  G/F  Em  Em/D  C  F  G  F  G",
           "l": ""
         },
         {
