@@ -10,12 +10,12 @@
       "label": "Intro",
       "lines": [
         {
-          "c": "",
-          "l": "C G/B Am Em/G F F C/E Dm7"
+          "c": "C G/B Am Em/G F F C/E Dm7",
+          "l": ""
         },
         {
-          "c": "",
-          "l": "G6 G7 C"
+          "c": "G6 G7 C",
+          "l": ""
         }
       ]
     },
@@ -27,11 +27,7 @@
           "l": "Utanför fönstret slår våren ut."
         },
         {
-          "c": "",
-          "l": "Dm7        G7sus4  G7 C"
-        },
-        {
-          "c": "",
+          "c": "Dm7        G7sus4  G7 C",
           "l": "Marken blir grön   i- gen."
         },
         {
@@ -43,11 +39,7 @@
           "l": "det kan också vi   Mm.."
         },
         {
-          "c": "",
-          "l": "            G7sus4   G7"
-        },
-        {
-          "c": "",
+          "c": "            G7sus4   G7",
           "l": "Så länge vi andas."
         }
       ]
@@ -60,11 +52,7 @@
           "l": "Ute till havs styr en fiskebåt."
         },
         {
-          "c": "",
-          "l": "Dm7          G7sus4 G7  Cmaj7"
-        },
-        {
-          "c": "",
+          "c": "Dm7          G7sus4 G7  Cmaj7",
           "l": "Längs en fri hor -  i - sont."
         },
         {
@@ -76,11 +64,7 @@
           "l": "som jag i din famn.   Mm.."
         },
         {
-          "c": "",
-          "l": "            G7sus4  G7"
-        },
-        {
-          "c": "",
+          "c": "            G7sus4  G7",
           "l": "Så länge vi älskar."
         }
       ]
@@ -114,11 +98,7 @@
           "l": "Högt på ett berg står en katedral,"
         },
         {
-          "c": "",
-          "l": "Dm7       G7sus4 G7   C"
-        },
-        {
-          "c": "",
+          "c": "Dm7       G7sus4 G7   C",
           "l": "och pekar upp    mot  skyn."
         },
         {
@@ -130,11 +110,7 @@
           "l": "och jorden i mig...Mm.."
         },
         {
-          "c": "",
-          "l": "          G7sus4   G7"
-        },
-        {
-          "c": "",
+          "c": "          G7sus4   G7",
           "l": "Vi älskar varandra."
         }
       ]
@@ -164,12 +140,12 @@
       "label": "Outro",
       "lines": [
         {
-          "c": "",
-          "l": "|C|G/B|Am|Em/G|F|F|C/E|Dm7|"
+          "c": "|C|G/B|Am|Em/G|F|F|C/E|Dm7|",
+          "l": ""
         },
         {
-          "c": "",
-          "l": "|G6 G7|C|"
+          "c": "|G6 G7|C|",
+          "l": ""
         },
         {
           "c": "C  G/B  Am  Em/G     F  F  C/E  Dm7",

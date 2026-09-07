@@ -5,7 +5,7 @@ import {
   transposeChordName, parseChordLine,
   lookupChord, toEnharmonic, escHtml,
   getUniqueChords,
-  isUgChordLine, parseUgImportText, preferSharpSpelling,
+  isUgChordLine, parseUgImportText, preferSharpSpelling, rescueChordLines,
   isUgInlineChordLine, parseUgInlineChordLine,
   renderChordFlow,
 } from '../chords.js';
@@ -265,6 +265,21 @@ describe('isUgChordLine', () => {
     assert.equal(isUgChordLine('C   G   (2x)'), true);
   });
 
+  it('känner igen tal före sus/add, t.ex. 7sus4', () => {
+    assert.equal(isUgChordLine('Dm7        G7sus4  G7 C'), true);
+    assert.equal(isUgChordLine('C6add11'), true);
+  });
+
+  it('känner igen 7+ och andra alterationer', () => {
+    assert.equal(isUgChordLine('      Am    E7+     Am  B7'), true);
+    assert.equal(isUgChordLine('C7b9   G7#5   Bm7b5'), true);
+  });
+
+  it('behandlar taktstreck som avgränsare', () => {
+    assert.equal(isUgChordLine('|C|G/B|Am|Em/G|F|F|C/E|Dm7|'), true);
+    assert.equal(isUgChordLine('|G6 G7|C|'), true);
+  });
+
   it('rejects lyric lines', () => {
     assert.equal(isUgChordLine('Amazing grace how sweet the sound'), false);
   });
@@ -280,6 +295,42 @@ describe('isUgChordLine', () => {
 });
 
 // ─── parseUgImportText ───
+
+// rescueChordLines är importens andra skyddsnät och nås inte via
+// parseUgImportText så länge UG_CHORD_TOKEN_RE täcker hela biblioteket — det
+// gör den idag. Testas därför direkt, så nätet är känt fungerande den dag
+// regexen får en lucka.
+describe('rescueChordLines', () => {
+  it('parar en ackordrad i l med textraden under', () => {
+    const sek = { label: 'Vers', lines: [
+      { c: '', l: 'Dm7   G7  C' },
+      { c: '', l: 'Marken blir grön' },
+    ] };
+    assert.deepEqual(rescueChordLines(sek).lines, [
+      { c: 'Dm7   G7  C', l: 'Marken blir grön' },
+    ]);
+  });
+
+  it('flyttar en ackordrad utan text under till c', () => {
+    const sek = { label: 'Intro', lines: [{ c: '', l: '|C|G/B|Am|' }] };
+    assert.deepEqual(rescueChordLines(sek).lines, [{ c: '|C|G/B|Am|', l: '' }]);
+  });
+
+  it('rör inte rader som redan har ackorden i c', () => {
+    const sek = { label: 'Vers', lines: [{ c: 'C  G', l: 'Text här' }] };
+    assert.deepEqual(rescueChordLines(sek).lines, [{ c: 'C  G', l: 'Text här' }]);
+  });
+
+  it('rör inte ren sångtext', () => {
+    const sek = { label: 'Vers', lines: [{ c: '', l: 'Marken blir grön igen' }] };
+    assert.deepEqual(rescueChordLines(sek).lines, [{ c: '', l: 'Marken blir grön igen' }]);
+  });
+
+  it('behåller sektionens etikett', () => {
+    const sek = { label: 'Refräng', lines: [{ c: '', l: 'C G' }] };
+    assert.equal(rescueChordLines(sek).label, 'Refräng');
+  });
+});
 
 describe('preferSharpSpelling', () => {
   it('byter alla fem b-stavningarna mot #', () => {
@@ -319,6 +370,20 @@ describe('parseUgImportText', () => {
     assert.deepEqual(result.sections[0].lines, [
       { c: 'A#         G#', l: 'Text på raden' },
     ]);
+  });
+
+  it('lägger 7sus4-rader i c, inte i l', () => {
+    const text = ['[Verse 1]', 'Dm7        G7sus4  G7 C', 'Marken blir grön   i- gen.'].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections[0].lines, [
+      { c: 'Dm7        G7sus4  G7 C', l: 'Marken blir grön   i- gen.' },
+    ]);
+  });
+
+  it('lägger en taktstrecksrad utan text i c', () => {
+    const text = ['[Intro]', '|C|G/B|Am|Em/G|'].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections[0].lines, [{ c: '|C|G/B|Am|Em/G|', l: '' }]);
   });
 
   it('normaliserar b-ackord även i inline-format och tonart', () => {

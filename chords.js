@@ -48,7 +48,12 @@ export function parseChordLine(chordStr) {
 //      en egen ackordrad i samma format som (1).
 // Sektioner markeras med "[Vers]"/"[Chorus]"-headers.
 
-const UG_CHORD_TOKEN_RE = /^(?:N\.?C\.?|[A-G](?:#|b)?(?:maj7|maj9|maj|min7|min|m|sus2|sus4|sus|dim7|dim|aug|add9|add)?\d{0,2}(?:[#b](?:5|9|11|13))?(?:\/[A-G](?:#|b)?)?)$/i;
+// Delarna efter grundtonen får komma i den ordning de faktiskt skrivs: först
+// dur/moll-kvaliteten, sedan ett tal (7, 9, 13), sedan sus/add med eget tal.
+// Den gamla varianten hade suffixet före talet och matchade därför "Gsus4" men
+// inte "G7sus4" — en ackordrad med ett enda sådant ackord underkändes i sin
+// helhet och importerades som sångtext. Samma sak med "E7+".
+const UG_CHORD_TOKEN_RE = /^(?:N\.?C\.?|[A-G](?:#|b)?(?:maj|min|m|dim|aug)?\d{0,2}(?:(?:sus|add)\d{0,2})?(?:[#b+\-]\d{0,2})*(?:\/[A-G](?:#|b)?)?)$/i;
 const UG_REPEAT_TOKEN_RE = /^\(?[xX]?\d+[xX]?\)?$/;
 const UG_SECTION_HEADER_RE = /^\[(.+?)\]\s*$/;
 const UG_META_SKIP_RE = /^(tabbed by|tuning|difficulty|tab|album|submitter)\s*[:\-]/i;
@@ -71,11 +76,12 @@ const UG_SECTION_LABELS = {
 };
 
 // Avgör om en rad ser ut att bestå enbart av ackord (ev. blandat med
-// repetitionsmarkörer som "x2") snarare än sångtext.
+// repetitionsmarkörer som "x2") snarare än sångtext. Taktstreck räknas som
+// avgränsare, så "|C|G/B|Am|" är en ackordrad och inte en textrad.
 export function isUgChordLine(line) {
   const trimmed = line.trim();
   if (!trimmed) return false;
-  const tokens = trimmed.split(/\s+/).filter(t => !UG_REPEAT_TOKEN_RE.test(t));
+  const tokens = trimmed.split(/[\s|]+/).filter(t => t && !UG_REPEAT_TOKEN_RE.test(t));
   if (tokens.length === 0) return false;
   return tokens.every(t => UG_CHORD_TOKEN_RE.test(t));
 }
@@ -236,7 +242,35 @@ export function parseUgImportText(rawText) {
     }
   }
 
-  return { ...detected, sections: sections.filter(s => s.lines.length > 0) };
+  return {
+    ...detected,
+    sections: sections.filter(s => s.lines.length > 0).map(rescueChordLines),
+  };
+}
+
+// Sista skyddsnät: en ackordrad som ändå hamnat i l flyttas till c. Kriteriet är
+// medvetet ett annat än isUgChordLine — här krävs att varje token slår upp ett
+// riktigt grepp — så ett hål i UG_CHORD_TOKEN_RE inte tar båda kontrollerna med
+// sig. Ligger nästa rad ren text där, hör de ihop och slås ihop till ett par.
+function looksLikeChordRow(s) {
+  const tokens = (s || '').split(/[\s|]+/).filter(Boolean);
+  return tokens.length > 0 && tokens.every(t => lookupChord(t));
+}
+
+export function rescueChordLines(section) {
+  const lines = [];
+  for (let i = 0; i < section.lines.length; i++) {
+    const rad = section.lines[i];
+    if ((rad.c || '').trim() || !looksLikeChordRow(rad.l)) { lines.push(rad); continue; }
+
+    const nästa = section.lines[i + 1];
+    const nästaÄrText = nästa && !(nästa.c || '').trim()
+      && (nästa.l || '').trim() && !looksLikeChordRow(nästa.l);
+
+    if (nästaÄrText) { lines.push({ c: rad.l, l: nästa.l }); i++; }
+    else lines.push({ c: rad.l, l: '' });
+  }
+  return { ...section, lines };
 }
 
 // Bygger en textrad där ackorden ligger som nollbreda ankare inne i själva
