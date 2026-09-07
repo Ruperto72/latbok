@@ -83,7 +83,7 @@ async function loadSongs(bustCache = false) {
       haftLists[h.id] = Array.isArray(lista) ? lista : [];
     }));
 
-    haften = definierade.length > 0 && isLocalHost()
+    haften = definierade.length > 0
       ? [...definierade, { id: ALL_SONGS_ID, namn: 'Alla låtar' }]
       : definierade;
 

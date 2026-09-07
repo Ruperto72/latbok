@@ -70,7 +70,8 @@ Ett häfte är ett urval ur låtpoolen — varje kör ser sitt eget.
 - `songs/haften/<id>.json` — filnamnen som ingår, i menyordning (sortera aldrig om)
 
 Aktivt häfte väljs via `?haft=<id>` → `localStorage` → första häftet. Pseudo-häftet
-`__alla` ("Alla låtar") visar hela poolen och finns bara lokalt.
+`__alla` ("Alla låtar") visar hela poolen och läggs till så snart minst ett häfte är
+definierat — även i produktion, så det går att välja från mobilen.
 
 **Reserverade id:n:** `RESERVED_HAFT_IDS` i `haften.js` (`__alla` och `index`) speglas av
 `RESERVED_HAFT_IDS` i `server.py`, och båda måste hållas i synk. `index` är reserverat för
