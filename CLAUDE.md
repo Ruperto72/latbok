@@ -39,7 +39,14 @@ och felar annars. `dist/sw.js` skrivs av bygget och behöver inte röras för ha
 
 `CHORD_LIB` i `chords.js` ska ha alla 12 grundtoner i varje kategori (dur, moll, 7, m7,
 6, m6, maj7, maj9, sus4, 7sus4, sus2, add9, dim, dim7, aug, 9, m7b5, 7+). En stavning per grundton räcker —
-`lookupChord()` slår upp enharmoniska namn (`D#m` → `Ebm`).
+`lookupChord()` slår upp enharmoniska namn (`Ebm` → `D#m`).
+
+**Appen stavar alltid med #.** Biblioteket har bara `C# D# F# G# A#` som nycklar,
+`transposeChordName()` svarar alltid med `NOTES_SHARP`, och `preferSharpSpelling()` byter
+b mot # vid import (anropas i `parseUgImportText()` på varje ackordrad och på tonarten).
+`NOTES_FLAT` och `toEnharmonic()` finns kvar för att *tolka* b-stavad indata — aldrig för
+utdata. Alla fem bytena är två tecken mot två tecken, så kolumnpositionerna i en ackordrad
+överlever normaliseringen; `Cb`/`Fb` lämnas därför orörda.
 
 `tests/chords-lib.test.js` räknar ut tonerna ur `frets` (stämning E A D G B E) och jämför
 med ackordformeln, kollar att grundtonen ligger i basen och att alla greppade band ryms i

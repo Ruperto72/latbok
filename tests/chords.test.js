@@ -5,7 +5,7 @@ import {
   transposeChordName, parseChordLine,
   lookupChord, toEnharmonic, escHtml,
   getUniqueChords,
-  isUgChordLine, parseUgImportText,
+  isUgChordLine, parseUgImportText, preferSharpSpelling,
   isUgInlineChordLine, parseUgInlineChordLine,
   renderChordFlow,
 } from '../chords.js';
@@ -55,12 +55,18 @@ describe('transposeChordName', () => {
     assert.equal(transposeChordName('Bbm7b5', 1), 'Bm7b5');
   });
 
-  it('spells "downward" transpositions with flats regardless of normalization', () => {
+  it('stavar alltid med #, även neråt', () => {
     // 10 = ((-2) + 12) % 12, dvs samma transponering som -2 men normaliserat till 0–11
-    assert.equal(transposeChordName('F', 10), 'Eb');
-    assert.equal(transposeChordName('Bb', 10), 'Ab');
-    assert.equal(transposeChordName('Cm', 10), 'Bbm');
-    assert.equal(transposeChordName('F', -2), 'Eb');
+    assert.equal(transposeChordName('F', 10), 'D#');
+    assert.equal(transposeChordName('Bb', 10), 'G#');
+    assert.equal(transposeChordName('Cm', 10), 'A#m');
+    assert.equal(transposeChordName('F', -2), 'D#');
+  });
+
+  it('tolkar b-stavad indata men svarar med #', () => {
+    assert.equal(transposeChordName('Bb', 1), 'B');
+    assert.equal(transposeChordName('Eb', 2), 'F');
+    assert.equal(transposeChordName('Abm7', 1), 'Am7');
   });
 });
 
@@ -275,7 +281,54 @@ describe('isUgChordLine', () => {
 
 // ─── parseUgImportText ───
 
+describe('preferSharpSpelling', () => {
+  it('byter alla fem b-stavningarna mot #', () => {
+    assert.equal(preferSharpSpelling('Db Eb Gb Ab Bb'), 'C# D# F# G# A#');
+  });
+
+  it('behåller kolumnpositionerna', () => {
+    const före = 'Bb           A        Dm';
+    const efter = preferSharpSpelling(före);
+    assert.equal(efter, 'A#           A        Dm');
+    assert.equal(efter.length, före.length);
+    assert.equal(efter.indexOf('Dm'), före.indexOf('Dm'));
+  });
+
+  it('rör inte b som inte är förtecken', () => {
+    assert.equal(preferSharpSpelling('Bbm7b5'), 'A#m7b5');
+    assert.equal(preferSharpSpelling('C7b9'), 'C7b9');
+  });
+
+  it('tar basnoten i slash-ackord', () => {
+    assert.equal(preferSharpSpelling('F/Bb'), 'F/A#');
+  });
+
+  it('lämnar Cb och Fb orörda hellre än att flytta kolumner', () => {
+    assert.equal(preferSharpSpelling('Cb Fb'), 'Cb Fb');
+  });
+});
+
 describe('parseUgImportText', () => {
+  it('normaliserar b-ackord till # vid import', () => {
+    const text = [
+      '[Verse 1]',
+      'Bb         Ab',
+      'Text på raden',
+    ].join('\n');
+    const result = parseUgImportText(text);
+    assert.deepEqual(result.sections[0].lines, [
+      { c: 'A#         G#', l: 'Text på raden' },
+    ]);
+  });
+
+  it('normaliserar b-ackord även i inline-format och tonart', () => {
+    const text = ['Key: Bb', '[Verse 1]', '[Bb]Text [Eb]här'].join('\n');
+    const result = parseUgImportText(text);
+    assert.equal(result.key, 'A#');
+    assert.ok(result.sections[0].lines[0].c.includes('A#'));
+    assert.ok(result.sections[0].lines[0].c.includes('D#'));
+  });
+
   it('pairs a chord line with the lyric line below it, preserving alignment', () => {
     const text = [
       '[Verse 1]',

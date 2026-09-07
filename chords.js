@@ -3,19 +3,25 @@
 export const NOTES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 export const NOTES_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
 
+// Appen stavar alltid med #. NOTES_FLAT används bara för att tolka b-namn som
+// redan finns i låtdata eller klistras in vid import — aldrig som utdata.
 export function transposeChordName(chord, semitones) {
   if (semitones === 0) return chord;
-  // Riktning för #/b-val: oberoende av om semitones är normaliserat till 0–11
-  // eller skickas som ett litet negativt tal, ska "neråt" alltid ge b-stavning.
-  let dir = ((semitones % 12) + 12) % 12;
-  if (dir > 6) dir -= 12;
   return chord.replace(/(?<![A-Za-z])([A-G])(#|b)?/g, (match, note, acc) => {
     let idx = NOTES_SHARP.indexOf(note + (acc || ''));
     if (idx === -1) idx = NOTES_FLAT.indexOf(note + (acc || ''));
     if (idx === -1) return match;
-    let newIdx = (((idx + semitones) % 12) + 12) % 12;
-    return dir >= 0 ? NOTES_SHARP[newIdx] : NOTES_FLAT[newIdx];
+    return NOTES_SHARP[(((idx + semitones) % 12) + 12) % 12];
   });
+}
+
+// Skriver om b-stavade ackord till # utan att flytta något: alla fem bytena är
+// två tecken mot två tecken, så kolumnpositionerna i en ackordrad överlever.
+// 'b' som inte föregås av A–G (m7b5, 7b9) rörs inte.
+const FLAT_TO_SHARP = { 'Db':'C#', 'Eb':'D#', 'Gb':'F#', 'Ab':'G#', 'Bb':'A#' };
+
+export function preferSharpSpelling(text) {
+  return (text || '').replace(/([A-G])b/g, (m, rot) => FLAT_TO_SHARP[rot + 'b'] || m);
 }
 
 export function parseChordLine(chordStr) {
@@ -154,7 +160,7 @@ export function parseUgImportText(rawText) {
     if (!trimmed) { bodyLines.push(line); return; }
 
     const keyMatch = trimmed.match(/^key\s*[:\-]\s*(.+)$/i);
-    if (keyMatch) { detected.key = keyMatch[1].trim(); return; }
+    if (keyMatch) { detected.key = preferSharpSpelling(keyMatch[1].trim()); return; }
 
     const capoMatch = trimmed.match(/^capo\s*[:\-]\s*(.+)$/i);
     if (capoMatch) { detected.capo = capoMatch[1].trim(); return; }
@@ -214,14 +220,15 @@ export function parseUgImportText(rawText) {
       const nextIsLyric = next !== undefined && next.trim() !== ''
         && !isUgChordLine(next) && !isUgSectionHeader(next);
       if (nextIsLyric) {
-        current.lines.push({ c: raw.replace(/\s+$/, ''), l: next.replace(/\s+$/, '') });
+        current.lines.push({ c: preferSharpSpelling(raw.replace(/\s+$/, '')), l: next.replace(/\s+$/, '') });
         i += 2;
       } else {
-        current.lines.push({ c: raw.replace(/\s+$/, ''), l: '' });
+        current.lines.push({ c: preferSharpSpelling(raw.replace(/\s+$/, '')), l: '' });
         i += 1;
       }
     } else if (isUgInlineChordLine(raw)) {
-      current.lines.push(parseUgInlineChordLine(raw.replace(/\s+$/, '')));
+      const rad = parseUgInlineChordLine(raw.replace(/\s+$/, ''));
+      current.lines.push({ ...rad, c: preferSharpSpelling(rad.c) });
       i += 1;
     } else {
       current.lines.push({ c: '', l: raw.replace(/\s+$/, '') });
@@ -298,7 +305,7 @@ export const CHORD_LIB = {
   'Gm':     { frets: [3,5,5,3,3,3], fingers: [1,3,4,1,1,1], baseFret: 3, barre: 3 },
   'G#m':    { frets: [4,6,6,4,4,4], fingers: [1,3,4,1,1,1], baseFret: 4, barre: 4 },
   'Am':     { frets: [-1,0,2,2,1,0], fingers: [0,0,2,3,1,0] },
-  'Bbm':    { frets: [-1,1,3,3,2,1], fingers: [0,1,3,4,2,1], barre: 1 },
+  'A#m':    { frets: [-1,1,3,3,2,1], fingers: [0,1,3,4,2,1], barre: 1 },
   'Bm':     { frets: [-1,2,4,4,3,2], fingers: [0,1,3,4,2,1], baseFret: 2, barre: 2 },
 
   // ─── 7th (dominant) ───
@@ -310,9 +317,9 @@ export const CHORD_LIB = {
   'F7':     { frets: [1,3,1,2,1,1], fingers: [1,3,1,2,1,1], barre: 1 },
   'F#7':    { frets: [2,4,2,3,2,2], fingers: [1,3,1,2,1,1], baseFret: 2, barre: 2 },
   'G7':     { frets: [3,2,0,0,0,1], fingers: [3,2,0,0,0,1] },
-  'Ab7':    { frets: [4,6,4,5,4,4], fingers: [1,3,1,2,1,1], baseFret: 4, barre: 4 },
+  'G#7':    { frets: [4,6,4,5,4,4], fingers: [1,3,1,2,1,1], baseFret: 4, barre: 4 },
   'A7':     { frets: [-1,0,2,0,2,0], fingers: [0,0,2,0,3,0] },
-  'Bb7':    { frets: [-1,1,3,1,3,1], fingers: [0,1,3,1,3,1], barre: 1 },
+  'A#7':    { frets: [-1,1,3,1,3,1], fingers: [0,1,3,1,3,1], barre: 1 },
   'B7':     { frets: [-1,2,1,2,0,2], fingers: [0,2,1,3,0,4] },
 
   // ─── Minor 7th ───
@@ -324,9 +331,9 @@ export const CHORD_LIB = {
   'Fm7':    { frets: [-1,-1,3,5,4,4], fingers: [0,0,1,3,2,2], baseFret: 3 },
   'F#m7':   { frets: [-1,-1,4,6,5,5], fingers: [0,0,1,3,2,2], baseFret: 4 },
   'Gm7':    { frets: [3,5,3,3,3,3], fingers: [1,3,1,1,1,1], baseFret: 3, barre: 3 },
-  'Abm7':   { frets: [-1,-1,6,8,7,7], fingers: [0,0,1,3,2,2], baseFret: 6 },
+  'G#m7':   { frets: [-1,-1,6,8,7,7], fingers: [0,0,1,3,2,2], baseFret: 6 },
   'Am7':    { frets: [-1,0,2,0,1,0], fingers: [0,0,2,0,1,0] },
-  'Bbm7':   { frets: [-1,1,3,1,2,1], fingers: [0,1,3,1,2,1], barre: 1 },
+  'A#m7':   { frets: [-1,1,3,1,2,1], fingers: [0,1,3,1,2,1], barre: 1 },
   'Bm7':    { frets: [-1,2,0,2,0,2], fingers: [0,1,0,2,0,3] },
 
   // ─── 6th ───
@@ -340,7 +347,7 @@ export const CHORD_LIB = {
   'G6':     { frets: [3,2,0,0,0,0], fingers: [2,1,0,0,0,0] },
   'G#6':    { frets: [4,-1,6,5,6,-1], fingers: [1,0,3,2,4,0], baseFret: 4 },
   'A6':     { frets: [-1,0,2,2,2,2], fingers: [0,0,1,1,1,1], barre: 2 },
-  'Bb6':    { frets: [-1,1,0,0,3,3], fingers: [0,1,0,0,3,4] },
+  'A#6':    { frets: [-1,1,0,0,3,3], fingers: [0,1,0,0,3,4] },
   'B6':     { frets: [-1,2,1,1,0,2], fingers: [0,3,1,2,0,4] },
 
   // ─── Minor 6th ───
@@ -354,7 +361,7 @@ export const CHORD_LIB = {
   'Gm6':    { frets: [3,5,5,3,5,3], fingers: [1,2,3,1,4,1], baseFret: 3, barre: 3 },
   'G#m6':   { frets: [4,6,6,4,6,4], fingers: [1,2,3,1,4,1], baseFret: 4, barre: 4 },
   'Am6':    { frets: [-1,0,2,2,1,2], fingers: [0,0,2,3,1,4] },
-  'Bbm6':   { frets: [-1,1,3,-1,2,3], fingers: [0,1,3,0,2,4] },
+  'A#m6':   { frets: [-1,1,3,-1,2,3], fingers: [0,1,3,0,2,4] },
   'Bm6':    { frets: [-1,2,4,-1,3,4], fingers: [0,1,3,0,2,4], baseFret: 2 },
 
   // ─── Major 7th ───
@@ -366,9 +373,9 @@ export const CHORD_LIB = {
   'Fmaj7':  { frets: [1,0,2,2,1,0], fingers: [1,0,3,3,2,0] },
   'F#maj7': { frets: [2,4,3,3,2,2], fingers: [1,3,2,2,1,1], baseFret: 2, barre: 2 },
   'Gmaj7':  { frets: [3,2,0,0,0,2], fingers: [3,2,0,0,0,1] },
-  'Abmaj7': { frets: [4,6,5,5,4,4], fingers: [1,3,2,2,1,1], baseFret: 4, barre: 4 },
+  'G#maj7': { frets: [4,6,5,5,4,4], fingers: [1,3,2,2,1,1], baseFret: 4, barre: 4 },
   'Amaj7':  { frets: [-1,0,2,1,2,0], fingers: [0,0,2,1,3,0] },
-  'Bbmaj7': { frets: [-1,1,3,2,3,1], fingers: [0,1,3,2,4,1], barre: 1 },
+  'A#maj7': { frets: [-1,1,3,2,3,1], fingers: [0,1,3,2,4,1], barre: 1 },
   'Bmaj7':  { frets: [-1,2,1,3,0,2], fingers: [0,2,1,4,0,3] },
 
   // ─── sus4 ───
@@ -380,9 +387,9 @@ export const CHORD_LIB = {
   'Fsus4':  { frets: [1,3,3,3,1,1], fingers: [1,3,4,4,1,1], barre: 1 },
   'F#sus4': { frets: [-1,-1,4,6,7,7], fingers: [0,0,1,3,4,4], baseFret: 4 },
   'Gsus4':  { frets: [3,5,5,5,3,3], fingers: [1,3,4,4,1,1], baseFret: 3, barre: 3 },
-  'Absus4': { frets: [4,6,6,6,4,4], fingers: [1,3,4,4,1,1], baseFret: 4, barre: 4 },
+  'G#sus4': { frets: [4,6,6,6,4,4], fingers: [1,3,4,4,1,1], baseFret: 4, barre: 4 },
   'Asus4':  { frets: [-1,0,2,2,3,0], fingers: [0,0,1,2,3,0] },
-  'Bbsus4': { frets: [-1,1,3,3,4,1], fingers: [0,1,3,3,4,1], barre: 1 },
+  'A#sus4': { frets: [-1,1,3,3,4,1], fingers: [0,1,3,3,4,1], barre: 1 },
   'Bsus4':  { frets: [7,9,9,9,7,7], fingers: [1,3,4,4,1,1], baseFret: 7, barre: 7 },
 
   // ─── 7sus4 ───
@@ -396,7 +403,7 @@ export const CHORD_LIB = {
   'G7sus4':  { frets: [3,3,0,0,1,1], fingers: [3,4,0,0,1,1], barre: 1 },
   'G#7sus4': { frets: [4,6,4,6,4,4], fingers: [1,3,1,4,1,1], baseFret: 4, barre: 4 },
   'A7sus4':  { frets: [-1,0,2,0,3,0], fingers: [0,0,2,0,3,0] },
-  'Bb7sus4': { frets: [-1,1,3,1,4,1], fingers: [0,1,3,1,4,1], barre: 1 },
+  'A#7sus4': { frets: [-1,1,3,1,4,1], fingers: [0,1,3,1,4,1], barre: 1 },
   'B7sus4':  { frets: [-1,2,4,2,5,2], fingers: [0,1,3,1,4,1], baseFret: 2, barre: 2 },
 
   // ─── sus2 ───
@@ -408,9 +415,9 @@ export const CHORD_LIB = {
   'Fsus2':  { frets: [-1,-1,3,0,1,1], fingers: [0,0,3,0,1,1] },
   'F#sus2': { frets: [-1,-1,4,1,2,2], fingers: [0,0,4,1,2,3] },
   'Gsus2':  { frets: [3,0,0,0,3,3], fingers: [1,0,0,0,3,4] },
-  'Absus2': { frets: [4,6,6,3,4,4], fingers: [2,3,4,1,2,2], baseFret: 3 },
+  'G#sus2': { frets: [4,6,6,3,4,4], fingers: [2,3,4,1,2,2], baseFret: 3 },
   'Asus2':  { frets: [-1,0,2,2,0,0], fingers: [0,0,2,3,0,0] },
-  'Bbsus2': { frets: [-1,1,3,3,1,1], fingers: [0,1,3,4,1,1], barre: 1 },
+  'A#sus2': { frets: [-1,1,3,3,1,1], fingers: [0,1,3,4,1,1], barre: 1 },
   'Bsus2':  { frets: [-1,2,4,4,2,2], fingers: [0,1,3,4,1,1], baseFret: 2, barre: 2 },
 
   // ─── add9 ───
@@ -422,9 +429,9 @@ export const CHORD_LIB = {
   'Fadd9':  { frets: [1,0,3,0,1,1], fingers: [1,0,3,0,2,2] },
   'F#add9': { frets: [-1,9,6,6,7,6], fingers: [0,3,1,1,2,1], baseFret: 6, barre: 6 },
   'Gadd9':  { frets: [3,2,0,2,0,3], fingers: [3,1,0,2,0,4] },
-  'Abadd9': { frets: [4,1,1,1,1,4], fingers: [2,1,1,1,1,3], barre: 1 },
+  'G#add9': { frets: [4,1,1,1,1,4], fingers: [2,1,1,1,1,3], barre: 1 },
   'Aadd9':  { frets: [-1,0,2,4,2,0], fingers: [0,0,1,3,2,0] },
-  'Bbadd9': { frets: [6,3,3,3,3,6], fingers: [2,1,1,1,1,3], baseFret: 3, barre: 3 },
+  'A#add9': { frets: [6,3,3,3,3,6], fingers: [2,1,1,1,1,3], baseFret: 3, barre: 3 },
   'Badd9':  { frets: [7,4,4,4,4,7], fingers: [2,1,1,1,1,3], baseFret: 4, barre: 4 },
 
   // ─── Diminished ───
@@ -436,9 +443,9 @@ export const CHORD_LIB = {
   'Fdim':   { frets: [1,2,3,1,0,1], fingers: [1,3,4,1,0,2] },
   'F#dim':  { frets: [2,3,4,2,-1,-1], fingers: [1,2,3,1,0,0], baseFret: 2, barre: 2 },
   'Gdim':   { frets: [3,4,5,3,-1,-1], fingers: [1,2,3,1,0,0], baseFret: 3, barre: 3 },
-  'Abdim':  { frets: [4,5,6,4,-1,-1], fingers: [1,2,3,1,0,0], baseFret: 4, barre: 4 },
+  'G#dim':  { frets: [4,5,6,4,-1,-1], fingers: [1,2,3,1,0,0], baseFret: 4, barre: 4 },
   'Adim':   { frets: [-1,0,1,2,1,-1], fingers: [0,0,1,3,2,0] },
-  'Bbdim':  { frets: [-1,1,2,3,2,-1], fingers: [0,1,2,3,2,0] },
+  'A#dim':  { frets: [-1,1,2,3,2,-1], fingers: [0,1,2,3,2,0] },
   'Bdim':   { frets: [-1,2,3,4,3,-1], fingers: [0,1,2,4,3,0] },
 
   // ─── Diminished 7th ───
@@ -450,9 +457,9 @@ export const CHORD_LIB = {
   'Fdim7':  { frets: [1,2,3,1,3,1], fingers: [1,2,3,1,4,1], barre: 1 },
   'F#dim7': { frets: [2,3,4,2,4,2], fingers: [1,2,3,1,4,1], baseFret: 2, barre: 2 },
   'Gdim7':  { frets: [3,4,2,3,2,-1], fingers: [2,3,1,4,1,0] },
-  'Abdim7': { frets: [4,5,6,4,6,4], fingers: [1,2,3,1,4,1], baseFret: 4, barre: 4 },
+  'G#dim7': { frets: [4,5,6,4,6,4], fingers: [1,2,3,1,4,1], baseFret: 4, barre: 4 },
   'Adim7':  { frets: [-1,0,1,2,1,2], fingers: [0,0,1,3,2,4] },
-  'Bbdim7': { frets: [6,7,8,6,8,6], fingers: [1,2,3,1,4,1], baseFret: 6, barre: 6 },
+  'A#dim7': { frets: [6,7,8,6,8,6], fingers: [1,2,3,1,4,1], baseFret: 6, barre: 6 },
   'Bdim7':  { frets: [-1,2,0,1,0,1], fingers: [0,2,0,1,0,1] },
 
   // ─── Augmented ───
@@ -464,9 +471,9 @@ export const CHORD_LIB = {
   'Faug':   { frets: [1,0,3,2,2,1], fingers: [1,0,4,3,2,1], barre: 1 },
   'F#aug':  { frets: [2,5,4,3,-1,-1], fingers: [1,4,3,2,0,0], baseFret: 2 },
   'Gaug':   { frets: [3,2,1,0,0,3], fingers: [3,2,1,0,0,4] },
-  'Abaug':  { frets: [4,7,6,5,-1,-1], fingers: [1,4,3,2,0,0], baseFret: 4 },
+  'G#aug':  { frets: [4,7,6,5,-1,-1], fingers: [1,4,3,2,0,0], baseFret: 4 },
   'Aaug':   { frets: [-1,0,3,2,2,1], fingers: [0,0,4,3,2,1] },
-  'Bbaug':  { frets: [-1,1,4,3,3,-1], fingers: [0,1,3,2,2,0] },
+  'A#aug':  { frets: [-1,1,4,3,3,-1], fingers: [0,1,3,2,2,0] },
   'Baug':   { frets: [-1,2,1,0,0,3], fingers: [0,2,1,0,0,3] },
 
   // ─── 9th (dominant) ───
@@ -478,9 +485,9 @@ export const CHORD_LIB = {
   'F9':     { frets: [1,0,1,0,1,1], fingers: [1,0,2,0,3,3] },
   'F#9':    { frets: [2,4,2,3,2,4], fingers: [1,3,1,2,1,4], baseFret: 2, barre: 2 },
   'G9':     { frets: [3,0,0,0,0,1], fingers: [3,0,0,0,0,1] },
-  'Ab9':    { frets: [4,6,4,5,4,6], fingers: [1,3,1,2,1,4], baseFret: 4, barre: 4 },
+  'G#9':    { frets: [4,6,4,5,4,6], fingers: [1,3,1,2,1,4], baseFret: 4, barre: 4 },
   'A9':     { frets: [-1,0,2,4,2,3], fingers: [0,0,1,3,1,2], barre: 2 },
-  'Bb9':    { frets: [6,8,6,7,6,8], fingers: [1,3,1,2,1,4], baseFret: 6, barre: 6 },
+  'A#9':    { frets: [6,8,6,7,6,8], fingers: [1,3,1,2,1,4], baseFret: 6, barre: 6 },
   'B9':     { frets: [-1,2,1,2,2,2], fingers: [0,2,1,3,3,3] },
 
   // ─── Major 9th ───
@@ -494,7 +501,7 @@ export const CHORD_LIB = {
   'Gmaj9':  { frets: [3,-1,0,2,0,2], fingers: [3,0,0,1,0,2] },
   'G#maj9': { frets: [4,3,5,3,4,3], fingers: [2,1,4,1,3,1], baseFret: 3, barre: 3 },
   'Amaj9':  { frets: [5,4,6,4,5,4], fingers: [2,1,4,1,3,1], baseFret: 4, barre: 4 },
-  'Bbmaj9': { frets: [-1,1,0,2,1,-1], fingers: [0,2,0,4,3,0] },
+  'A#maj9': { frets: [-1,1,0,2,1,-1], fingers: [0,2,0,4,3,0] },
   'Bmaj9':  { frets: [-1,2,1,3,2,-1], fingers: [0,2,1,4,3,0] },
 
   // ─── m7b5 (half-diminished) ───
@@ -506,9 +513,9 @@ export const CHORD_LIB = {
   'Fm7b5':  { frets: [1,2,1,1,0,1], fingers: [1,3,1,1,0,2] },
   'F#m7b5': { frets: [2,0,2,2,1,0], fingers: [2,0,3,4,1,0] },
   'Gm7b5':  { frets: [3,4,3,3,6,-1], fingers: [1,2,1,1,4,0], baseFret: 3, barre: 3 },
-  'Abm7b5': { frets: [4,5,4,4,7,4], fingers: [1,2,1,1,3,1], baseFret: 4, barre: 4 },
+  'G#m7b5': { frets: [4,5,4,4,7,4], fingers: [1,2,1,1,3,1], baseFret: 4, barre: 4 },
   'Am7b5':  { frets: [-1,0,1,0,1,3], fingers: [0,0,1,0,2,4] },
-  'Bbm7b5': { frets: [-1,1,2,1,2,4], fingers: [0,1,2,1,3,4], barre: 1 },
+  'A#m7b5': { frets: [-1,1,2,1,2,4], fingers: [0,1,2,1,3,4], barre: 1 },
   'Bm7b5':  { frets: [-1,2,3,2,3,-1], fingers: [0,1,3,2,4,0] },
 
   // ─── Slash chords (show base chord) ───
@@ -544,9 +551,9 @@ export const CHORD_LIB = {
   'F7+':    { frets: [1,0,1,2,2,1], fingers: [1,0,2,3,3,2] },
   'F#7+':   { frets: [2,5,2,3,3,2], fingers: [1,3,1,2,2,1], baseFret: 2, barre: 2 },
   'G7+':    { frets: [3,2,1,0,0,1], fingers: [4,3,1,0,0,2] },
-  'Ab7+':   { frets: [4,7,4,5,5,4], fingers: [1,3,1,2,2,1], baseFret: 4, barre: 4 },
+  'G#7+':   { frets: [4,7,4,5,5,4], fingers: [1,3,1,2,2,1], baseFret: 4, barre: 4 },
   'A7+':    { frets: [-1,0,3,0,2,1], fingers: [0,0,3,0,2,1] },
-  'Bb7+':   { frets: [-1,1,4,1,3,2], fingers: [0,1,4,1,3,2], barre: 1 },
+  'A#7+':   { frets: [-1,1,4,1,3,2], fingers: [0,1,4,1,3,2], barre: 1 },
   'B7+':    { frets: [-1,2,1,2,0,3], fingers: [0,2,1,3,0,4] },
 };
 
@@ -602,26 +609,26 @@ export const CHORD_VOICINGS = {
     { label: 'B (D-form, 8:e bandet)', frets: [-1,-1,9,11,12,11], fingers: [0,0,1,3,4,3], baseFret: 9 },
     { label: 'B (C-form, 10:e bandet)', frets: [-1,14,13,11,12,11], fingers: [0,4,3,1,2,1], baseFret: 11 },
   ],
-  'Bb': [
-    { label: 'Bb (E-form, 6:e bandet)', frets: [6,8,8,7,6,6], fingers: [1,3,4,2,1,1], baseFret: 6, barre: 6 },
-    { label: 'Bb (D-form, D–e)', frets: [-1,-1,3,3,3,1], fingers: [0,0,2,3,4,1], baseFret: 1 },
-    { label: 'Bb (utan bas, G–e)', frets: [-1,-1,-1,3,3,1], fingers: [0,0,0,2,3,1] },
+  'A#': [
+    { label: 'A# (E-form, 6:e bandet)', frets: [6,8,8,7,6,6], fingers: [1,3,4,2,1,1], baseFret: 6, barre: 6 },
+    { label: 'A# (D-form, D–e)', frets: [-1,-1,3,3,3,1], fingers: [0,0,2,3,4,1], baseFret: 1 },
+    { label: 'A# (utan bas, G–e)', frets: [-1,-1,-1,3,3,1], fingers: [0,0,0,2,3,1] },
   ],
   'D#': [
     { label: 'D# (utan bas, D–e)', frets: [-1,-1,5,3,4,3], fingers: [0,0,3,1,2,1], baseFret: 3, barre: 3 },
     { label: 'D# (A-form, 6:e bandet)', frets: [-1,6,8,8,8,6], fingers: [0,1,3,3,3,1], baseFret: 6, barre: 6 },
   ],
-  'Ab': [
-    { label: 'Ab (A-form, utan E)', frets: [-1,11,13,13,13,11], fingers: [0,1,3,3,3,1], baseFret: 11, barre: 11 },
-    { label: 'Ab (utan bas, D–e)', frets: [-1,-1,6,5,4,4], fingers: [0,0,3,2,1,1], baseFret: 4 },
+  'G#': [
+    { label: 'G# (A-form, utan E)', frets: [-1,11,13,13,13,11], fingers: [0,1,3,3,3,1], baseFret: 11, barre: 11 },
+    { label: 'G# (utan bas, D–e)', frets: [-1,-1,6,5,4,4], fingers: [0,0,3,2,1,1], baseFret: 4 },
   ],
   'F#': [
     { label: 'F# (A-form, 9:e bandet)', frets: [-1,9,11,11,11,9], fingers: [0,1,3,3,3,1], baseFret: 9, barre: 9 },
     { label: 'F# (utan bas, D–e)', frets: [-1,-1,4,3,2,2], fingers: [0,0,3,2,1,1], baseFret: 2 },
   ],
-  'Db': [
-    { label: 'Db (A-form, 4:e bandet)', frets: [-1,4,6,6,6,4], fingers: [0,1,3,3,3,1], baseFret: 4, barre: 4 },
-    { label: 'Db (E-form, 9:e bandet)', frets: [9,11,11,10,9,9], fingers: [1,3,4,2,1,1], baseFret: 9, barre: 9 },
+  'C#': [
+    { label: 'C# (A-form, 4:e bandet)', frets: [-1,4,6,6,6,4], fingers: [0,1,3,3,3,1], baseFret: 4, barre: 4 },
+    { label: 'C# (E-form, 9:e bandet)', frets: [9,11,11,10,9,9], fingers: [1,3,4,2,1,1], baseFret: 9, barre: 9 },
   ],
 
   // ─── Minor ───
@@ -668,9 +675,9 @@ export const CHORD_VOICINGS = {
     { label: 'C#m (utan bas, D–e)', frets: [-1,-1,6,6,5,4], fingers: [0,0,3,4,2,1], baseFret: 4 },
     { label: 'C#m (E-form, 9:e bandet)', frets: [9,11,11,9,9,9], fingers: [1,3,4,1,1,1], baseFret: 9, barre: 9 },
   ],
-  'Bbm': [
-    { label: 'Bbm (E-form, 6:e bandet)', frets: [6,8,8,6,6,6], fingers: [1,3,4,1,1,1], baseFret: 6, barre: 6 },
-    { label: 'Bbm (utan bas, D–e)', frets: [-1,-1,3,3,2,1], fingers: [0,0,3,4,2,1] },
+  'A#m': [
+    { label: 'A#m (E-form, 6:e bandet)', frets: [6,8,8,6,6,6], fingers: [1,3,4,1,1,1], baseFret: 6, barre: 6 },
+    { label: 'A#m (utan bas, D–e)', frets: [-1,-1,3,3,2,1], fingers: [0,0,3,4,2,1] },
   ],
 
   // ─── Dominant 7 ───
