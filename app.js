@@ -11,6 +11,7 @@ import {
   ALL_SONGS_ID, parseHaftenIndex, resolveHaftId, withSongInHaften, haftenForSong,
   slugifyHaftId, uniqueHaftId, moveInList,
   toggleInHaft, sameFileList, matchesSongQuery,
+  SORT_MODES, compareSongs,
 } from './haften.js';
 
 // Column layout modes
@@ -49,6 +50,7 @@ let ugImportParsed = null; // Senaste tolkningsresultatet från UG-importdialoge
 let haftManager = null;    // { id, namn, filenames } — häftet som redigeras i häftesdialogen
 let haftDragIndex = null;  // Raden som dras i häftesdialogens låtlista
 let haftPoolQuery = '';    // Sökfältet i häftesdialogens poolkolumn
+let sortMode = 'haft';     // 'haft' | 'title' | 'artist' — bara en vy, se haften.js
 let storageReady = false;
 
 // ─── Auto-scroll ───
@@ -190,6 +192,7 @@ async function loadFromStorage() {
       if (p.hideChords !== undefined) hideChords = p.hideChords;
       if (p.sidebarHidden !== undefined) sidebarHidden = p.sidebarHidden;
       if (p.scrollLevel !== undefined) scrollLevel = p.scrollLevel;
+      if (SORT_MODES.includes(p.sortMode)) sortMode = p.sortMode;
       if (p.haftId) currentHaftId = p.haftId;
       if (p.currentSongFile) currentSongFile = p.currentSongFile;
     }
@@ -201,7 +204,7 @@ async function savePrefs() {
   if (!storageReady) return;
   try {
     localStorage.setItem(PREFS_KEY, JSON.stringify({
-      fontSize, columnsMode, hideChords, sidebarHidden, scrollLevel,
+      fontSize, columnsMode, hideChords, sidebarHidden, scrollLevel, sortMode,
       haftId: currentHaftId,
       currentSongFile: songs[currentSong]?._filename || null,
     }));
@@ -225,6 +228,8 @@ async function init() {
     setupGlobalEvents();
 
     // Sync initial state to mobile elements
+    const sortSel = document.getElementById('sortSelect');
+    if (sortSel) sortSel.value = sortMode;
     const mfl = document.getElementById('mobileFontLabel');
     if (mfl) mfl.textContent = fontSize;
     const msl = document.getElementById('mobileScrollSpeedLabel');
@@ -268,9 +273,14 @@ function renderSongList(filter = '') {
   list.innerHTML = '';
   const f = filter.toLowerCase();
 
-  songs.forEach((s, i) => {
-    if (f && !s.title.toLowerCase().includes(f) && !s.artist.toLowerCase().includes(f)) return;
-    
+  // currentSong och selectSong() är index i songs-arrayen, så den får aldrig
+  // sorteras om. Sorteringen sker på en kopia som bär originalindexet med sig.
+  const poster = songs
+    .map((s, i) => ({ s, i }))
+    .filter(({ s }) => !f || s.title.toLowerCase().includes(f) || s.artist.toLowerCase().includes(f))
+    .sort((a, b) => compareSongs(a.s, b.s, sortMode));
+
+  poster.forEach(({ s, i }) => {
     const div = document.createElement('div');
     div.className = 'song-item' + (i === currentSong ? ' active' : '');
     div.setAttribute('role', 'listitem');
@@ -291,12 +301,23 @@ function renderSongList(filter = '') {
   });
 }
 
+function currentSongQuery() {
+  return document.getElementById('songSearch')?.value || '';
+}
+
+function changeSort(mode) {
+  if (!SORT_MODES.includes(mode)) return;
+  sortMode = mode;
+  savePrefs();
+  renderSongList(currentSongQuery());
+}
+
 async function reloadSongs() {
   const btn = document.getElementById('mobileReloadBtn');
   if (btn) btn.disabled = true;
   try {
     await loadSongs(true);
-    renderSongList();
+    renderSongList(currentSongQuery());
     renderSong();
   } finally {
     if (btn) btn.disabled = false;
@@ -2377,7 +2398,7 @@ async function saveSongEditorToFile() {
 Object.assign(window, {
   toggleSidebar, reloadSongs, changeHaft, setSongHaften, changeFontSize, toggleColumns,
   toggleHideChords, transpose, toggleSongEditor, toggleAutoScroll,
-  changeScrollSpeed, transposeSongData, selectSong, renderSongList,
+  changeScrollSpeed, transposeSongData, selectSong, renderSongList, changeSort,
   toggleSettingsSheet, closeSettingsSheet,
   toggleVariantEditor, closeVariantEditor, closeVariantSaveDialog, saveVariantSong,
   transposeAllChords, extendAllMeasures, shortenAllMeasures, openVariantSaveDialog,

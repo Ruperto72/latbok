@@ -26,6 +26,14 @@
         <select class="haft-select" id="haftSelect" aria-label="Välj häfte" onchange="changeHaft(this.value)"></select>
       </div>
       <p aria-live="polite">Laddar låtar...</p>
+      <div class="list-controls">
+        <input type="search" class="search-input" id="songSearch" placeholder="Sök titel eller artist…" aria-label="Sök bland låtarna">
+        <select class="sort-select" id="sortSelect" aria-label="Sortera låtlistan" onchange="changeSort(this.value)">
+          <option value="haft">Häftets ordning</option>
+          <option value="title">Titel</option>
+          <option value="artist">Artist</option>
+        </select>
+      </div>
     </div>
     <div class="song-list" id="songList" role="list" aria-label="Låtar"></div>
   </aside>

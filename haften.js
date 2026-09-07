@@ -80,6 +80,24 @@ export function uniqueHaftId(base, taken) {
   return `${base}-${n}`;
 }
 
+// Sorteringslägen för låtlistan. 'haft' är häftets egen menyordning — den är
+// handplockad och ska alltid vara default. Titel/artist är bara en vy; själva
+// häftesfilen sorteras aldrig om.
+export const SORT_MODES = ['haft', 'title', 'artist'];
+
+const collator = new Intl.Collator('sv', { sensitivity: 'base', numeric: true });
+
+// Jämför två låtar { title, artist } för det givna läget. 'haft' ger 0 så att
+// en stabil sort lämnar häftesordningen orörd. Vid lika värde avgör det andra
+// fältet, så listan inte hoppar mellan omritningar.
+export function compareSongs(a, b, mode) {
+  const titel = () => collator.compare(a?.title ?? '', b?.title ?? '');
+  const artist = () => collator.compare(a?.artist ?? '', b?.artist ?? '');
+  if (mode === 'title') return titel() || artist();
+  if (mode === 'artist') return artist() || titel();
+  return 0;
+}
+
 // Flyttar ett element i en lista. Ogiltiga index ger en oförändrad kopia.
 export function moveInList(list, from, to) {
   const out = [...list];

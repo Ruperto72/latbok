@@ -88,6 +88,26 @@ body {
 
 .search-input:focus { border-color: var(--accent); }
 
+/* Sökfält + sorteringsväljare i sidebar-headern */
+.list-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sort-select {
+  width: 100%;
+  padding: 7px 9px;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+
 .sidebar-header h1 {
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;

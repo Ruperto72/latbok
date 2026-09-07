@@ -6,7 +6,75 @@ import {
   haftenForSong, withSongInHaften,
   slugifyHaftId, uniqueHaftId, moveInList,
   toggleInHaft, sameFileList, matchesSongQuery,
+  SORT_MODES, compareSongs,
 } from '../haften.js';
+
+describe('compareSongs', () => {
+  const sortera = (låtar, mode) => [...låtar].sort((a, b) => compareSongs(a, b, mode))
+    .map(s => s.title);
+
+  it('lämnar häftesordningen orörd', () => {
+    const låtar = [
+      { title: 'Öland', artist: 'B' },
+      { title: 'Amazing Grace', artist: 'A' },
+    ];
+    assert.deepEqual(sortera(låtar, 'haft'), ['Öland', 'Amazing Grace']);
+  });
+
+  it('sorterar på titel', () => {
+    const låtar = [
+      { title: 'Termos', artist: 'X' },
+      { title: 'Bella Ciao', artist: 'Y' },
+      { title: 'Amazing Grace', artist: 'Z' },
+    ];
+    assert.deepEqual(sortera(låtar, 'title'), ['Amazing Grace', 'Bella Ciao', 'Termos']);
+  });
+
+  it('sorterar på artist', () => {
+    const låtar = [
+      { title: 'Ett', artist: 'Ted Gärdestad' },
+      { title: 'Två', artist: 'Cornelis Vreeswijk' },
+    ];
+    assert.deepEqual(sortera(låtar, 'artist'), ['Två', 'Ett']);
+  });
+
+  it('sätter å ä ö sist, inte bland a och o', () => {
+    const låtar = [
+      { title: 'Öland', artist: '' },
+      { title: 'Zebra', artist: '' },
+      { title: 'Ärlig', artist: '' },
+      { title: 'Åka', artist: '' },
+      { title: 'Apa', artist: '' },
+    ];
+    assert.deepEqual(sortera(låtar, 'title'), ['Apa', 'Zebra', 'Åka', 'Ärlig', 'Öland']);
+  });
+
+  it('låter artist avgöra när titlarna är lika', () => {
+    const låtar = [
+      { title: 'Visa', artist: 'Ted Gärdestad' },
+      { title: 'Visa', artist: 'Cornelis Vreeswijk' },
+    ];
+    assert.deepEqual(
+      [...låtar].sort((a, b) => compareSongs(a, b, 'title')).map(s => s.artist),
+      ['Cornelis Vreeswijk', 'Ted Gärdestad'],
+    );
+  });
+
+  it('klarar låtar utan titel eller artist', () => {
+    const låtar = [{ title: 'Bella Ciao' }, {}, { artist: 'A' }];
+    assert.equal(sortera(låtar, 'title').length, 3);
+    assert.equal(sortera(låtar, 'artist').length, 3);
+  });
+
+  it('ett okänt läge behandlas som häftesordning', () => {
+    const låtar = [{ title: 'Ö', artist: '' }, { title: 'A', artist: '' }];
+    assert.deepEqual(sortera(låtar, 'nonsens'), ['Ö', 'A']);
+  });
+
+  it('SORT_MODES innehåller de tre lägena', () => {
+    assert.deepEqual(SORT_MODES, ['haft', 'title', 'artist']);
+  });
+});
 
 describe('parseHaftenIndex', () => {
   it('behåller giltiga poster', () => {
