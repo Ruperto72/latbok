@@ -1,0 +1,164 @@
+{
+  "title": "Your Song",
+  "artist": "Elton John",
+  "key": "D",
+  "timeSignature": "4/4",
+  "difficulty": "Svår",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Intro",
+      "lines": [
+        {
+          "c": "D   G/D   A/D  G/D",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "D                 Gmaj7  A/C#             F#m",
+          "l": "It's a little bit funny,   this feeling inside"
+        },
+        {
+          "c": "Bm             Bm/A       Bm/G#      Gmaj7",
+          "l": "I'm not one of those who can easily hide"
+        },
+        {
+          "c": "D                  A        F#         Bm",
+          "l": "I don't have much money, but boy, if I did"
+        },
+        {
+          "c": "D             Em7        G               A",
+          "l": "I'd buy a big house where we both could live"
+        },
+        {
+          "c": "D             Gmaj7  A/C#              F#m",
+          "l": "If I was a sculptor,   but then again, no"
+        },
+        {
+          "c": "     Bm            Bm/A       Bm/G#         G",
+          "l": "Or a man who makes potions in a travelling show"
+        },
+        {
+          "c": "   D             A                 F#        Bm",
+          "l": "I know it's not much but it's the best I can do"
+        },
+        {
+          "c": "D              Em7     G                D",
+          "l": "My gift is my song, and this one's for you"
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "A/C#              Bm      Em7            Gmaj7",
+          "l": "And you can tell everybody this is your song"
+        },
+        {
+          "c": "A/C#       Bm            Em               G",
+          "l": "It may be quite simple but now that it's done"
+        },
+        {
+          "c": "Bm                    Bm/A",
+          "l": "I hope you don't mind, I hope you don't mind"
+        },
+        {
+          "c": "Bm/G#                G6",
+          "l": "That I put down in words,"
+        },
+        {
+          "c": "      D/F#    Em            G             A",
+          "l": "How wonderful life is while you're in the world"
+        }
+      ]
+    },
+    {
+      "label": "Mellanspel",
+      "lines": [
+        {
+          "c": "D   G/D   A/D   G/D",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "D            Gmaj7  A/C#                 F#m",
+          "l": "I sat on the roof     and kicked off the moss"
+        },
+        {
+          "c": "        Bm          Bm/A              Bm/G#           Gmaj7",
+          "l": "Well a few of the verses, well they've got me quite cross"
+        },
+        {
+          "c": "D                    A        F#                   Bm",
+          "l": "But the sun's been quite kind, while I wrote this song"
+        },
+        {
+          "c": "D                    Em7     G                A",
+          "l": "It's for people like you that keep it turned on"
+        },
+        {
+          "c": "D               Gmaj7    A/C#                F#m",
+          "l": "So excuse me forgetting,   but these things I do"
+        },
+        {
+          "c": "Bm               Bm/A              Bm/G#             Gmaj7",
+          "l": "You see I've forgotten if they're green or they're blue"
+        },
+        {
+          "c": "D                  A                 F#     Bm",
+          "l": "Anyway, the thing is, what I really mean"
+        },
+        {
+          "c": "D               Em7        G              D",
+          "l": "Yours are the sweetest eyes I've ever seen"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 2",
+      "lines": [
+        {
+          "c": "A/C#              Bm      Em7            G",
+          "l": "And you can tell everybody this is your song"
+        },
+        {
+          "c": "A/C#       Bm            Em               G",
+          "l": "It may be quite simple but now that it's done"
+        },
+        {
+          "c": "Bm                    Bm/A",
+          "l": "I hope you don't mind, I hope you don't mind"
+        },
+        {
+          "c": "Bm/G#                G6",
+          "l": "That I put down in words,"
+        },
+        {
+          "c": "      D        Em            G              A",
+          "l": "How wonderful life is while you're in the world"
+        },
+        {
+          "c": "Bm                   Bm/A",
+          "l": "I hope you don't mind, I hope you don't mind"
+        },
+        {
+          "c": "Bm/G#                G6",
+          "l": "That I put down in words,"
+        },
+        {
+          "c": "     D/F#     Em            G             D       G/D   A/D   G/D   D",
+          "l": "How wonderful life is while you're in the world"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "title": "Gammeldansk",
+  "artist": "Lars Demian",
+  "key": "C",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "G                    B7",
+          "l": "Jag satt och drack en Gammeldansk"
+        },
+        {
+          "c": "      C         G",
+          "l": "På en krog i Köpenhamn"
+        },
+        {
+          "c": "       G                    Em",
+          "l": "Jag var ensam och slagen och längtade så"
+        },
+        {
+          "c": "      D               D7",
+          "l": "Efter någon att hålla i famn"
+        },
+        {
+          "c": "G                  B7",
+          "l": "Då kom hon in genom dörren"
+        },
+        {
+          "c": "         Em         D         C",
+          "l": "Som ett svar på den bön som jag bad"
+        },
+        {
+          "c": "            G             D",
+          "l": "Och när hon log mot mig och blinkade"
+        },
+        {
+          "c": "   C                       G",
+          "l": "Då visste jag vad jag ville ha"
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "G                   B7",
+          "l": "Det var nånting med henne"
+        },
+        {
+          "c": "    C                    G",
+          "l": "Som jag tyckte mig känna igen"
+        },
+        {
+          "c": "                    Em",
+          "l": "Hon hade nog varit utvikt"
+        },
+        {
+          "c": "   D              D7",
+          "l": "I nåt magasin för män"
+        },
+        {
+          "c": "G                   B7",
+          "l": "Men det måste vart längesen nu"
+        },
+        {
+          "c": "               Em   D        C",
+          "l": "Hon var säkert 15 år äldre än jag"
+        },
+        {
+          "c": "    G                        D",
+          "l": "Och fast hon var en kvinna om natten"
+        },
+        {
+          "c": "        C            G",
+          "l": "Var hon vacker som en dag"
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "G                            B7",
+          "l": "Jag sa min sköna jag har inga pengar"
+        },
+        {
+          "c": "          C             G",
+          "l": "Jag är en fattig förlorad poet"
+        },
+        {
+          "c": "                              Em",
+          "l": "Men om ni blott för en endaste timma"
+        },
+        {
+          "c": "      D             D7",
+          "l": "Ville lindra min ensamhet"
+        },
+        {
+          "c": "G                   B7",
+          "l": "Då skulle jag bli evigt tacksam"
+        },
+        {
+          "c": "         Em     D          C",
+          "l": "Och det måste ha hänt någon gång"
+        },
+        {
+          "c": "       G                 D",
+          "l": "Att en trubadur fått köpa kärlek"
+        },
+        {
+          "c": "    C              G",
+          "l": "Och betalat med en sång"
+        }
+      ]
+    },
+    {
+      "label": "Vers 4",
+      "lines": [
+        {
+          "c": "G                   B7",
+          "l": "Hon skrattade till och kysste mig lätt"
+        },
+        {
+          "c": "    C                     G",
+          "l": "Och skakade på huvudet med grace"
+        },
+        {
+          "c": "                         Em",
+          "l": "Sen lade hon en sedel på disken"
+        },
+        {
+          "c": "    D                     D7",
+          "l": "Och gubben han fyllde mitt glas"
+        },
+        {
+          "c": "G                    B7",
+          "l": "Och innan hon gick ut i natten"
+        },
+        {
+          "c": "       Em          D            C",
+          "l": "Sa hon skål och god lycka min vän"
+        },
+        {
+          "c": "   G               D",
+          "l": "Och jag drack upp min Gammeldansk"
+        },
+        {
+          "c": "C              G",
+          "l": "Sen var jag ensam igen"
+        }
+      ]
+    }
+  ]
+}
