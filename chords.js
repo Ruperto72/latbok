@@ -275,19 +275,15 @@ export function renderChordFlow(lyric, chords, transposeSemitones = 0) {
 export const CHORD_LIB = {
   // ─── Major ───
   'C':      { frets: [-1,3,2,0,1,0], fingers: [0,3,2,0,1,0] },
-  'Db':     { frets: [-1,4,3,1,2,1], fingers: [0,4,3,1,2,1], baseFret: 1 },
   'C#':     { frets: [-1,4,3,1,2,1], fingers: [0,4,3,1,2,1], baseFret: 1 },
   'D':      { frets: [-1,-1,0,2,3,2], fingers: [0,0,0,1,3,2] },
   'Eb':     { frets: [-1,-1,1,3,4,3], fingers: [0,0,1,2,4,3] },
   'E':      { frets: [0,2,2,1,0,0], fingers: [0,2,3,1,0,0] },
   'F':      { frets: [1,3,3,2,1,1], fingers: [1,3,4,2,1,1], barre: 1 },
-  'Gb':     { frets: [2,4,4,3,2,2], fingers: [1,3,4,2,1,1], baseFret: 2, barre: 2 },
   'F#':     { frets: [2,4,4,3,2,2], fingers: [1,3,4,2,1,1], baseFret: 2, barre: 2 },
   'G':      { frets: [3,2,0,0,0,3], fingers: [2,1,0,0,0,3] },
-  'Ab':     { frets: [4,6,6,5,4,4], fingers: [1,3,4,2,1,1], baseFret: 4, barre: 4 },
   'G#':     { frets: [4,6,6,5,4,4], fingers: [1,3,4,2,1,1], baseFret: 4, barre: 4 },
   'A':      { frets: [-1,0,2,2,2,0], fingers: [0,0,1,2,3,0] },
-  'Bb':     { frets: [-1,1,3,3,3,1], fingers: [0,1,2,3,4,1], barre: 1 },
   'A#':     { frets: [-1,1,3,3,3,1], fingers: [0,1,2,3,4,1], barre: 1 },
   'B':      { frets: [-1,2,4,4,4,2], fingers: [0,1,2,3,4,1], baseFret: 2, barre: 2 },
 
