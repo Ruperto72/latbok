@@ -886,7 +886,7 @@ export function chordSVG(chordData, size = 60) {
   if (barre !== undefined) {
     const barFret = frets.reduce((min, f) => (f > 0 && f < min ? f : min), 99);
     const barreStrings = [];
-    frets.forEach((f, i) => { if (f === barFret || (f > 0 && barre)) barreStrings.push(i); });
+    frets.forEach((f, i) => { if (f === barFret) barreStrings.push(i); });
     const firstStr = barreStrings[0];
     const lastStr = barreStrings[barreStrings.length - 1];
     const y = gridTop + (barFret - (baseFret - 1) - 0.5) * fretSpacing;

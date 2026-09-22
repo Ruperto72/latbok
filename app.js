@@ -558,6 +558,7 @@ function renderSong() {
 
   if (variantEditorMode) {
     if (display) display.innerHTML = renderVariantEditor();
+    attachVariantEditorHandlers();
     return;
   }
 
@@ -579,8 +580,8 @@ function renderSong() {
 
   let html = `
     <div class="header">
-      <h2>${s.title}</h2>
-      <div class="artist">${s.artist}</div>
+      <h2>${escHtml(s.title)}</h2>
+      <div class="artist">${escHtml(s.artist)}</div>
       <div class="info">${info}</div>
     </div>
   `;
@@ -2071,17 +2072,14 @@ function renderVariantEditor() {
         data-mi="${mi}"
         value="${escHtml(m)}"
         size="${ms}"
-        placeholder="ackord"
-        onchange="updateTemplateMeasure('${escHtml(name)}', ${mi}, this.value)">
+        placeholder="ackord">
         <button class="variant-btn variant-btn--add"
           data-name="${escHtml(name)}"
-          data-mi="${mi}"
-          onclick="addMeasureToTemplate('${escHtml(name)}', ${mi})">+</button>`;
+          data-mi="${mi}">+</button>`;
       if (measures.length > 1) {
         html += `<button class="variant-btn variant-btn--danger"
           data-name="${escHtml(name)}"
-          data-mi="${mi}"
-          onclick="removeMeasureFromTemplate('${escHtml(name)}', ${mi})">−</button>`;
+          data-mi="${mi}">−</button>`;
       }
     });
 
@@ -2136,6 +2134,24 @@ function renderVariantEditor() {
 
   html += `</div>`;
   return html;
+}
+
+function attachVariantEditorHandlers() {
+  document.querySelectorAll('.variant-tpl-list .variant-tpl-measure').forEach(el => {
+    el.addEventListener('change', () => {
+      updateTemplateMeasure(el.dataset.name, +el.dataset.mi, el.value);
+    });
+  });
+  document.querySelectorAll('.variant-tpl-list .variant-btn--add').forEach(el => {
+    el.addEventListener('click', () => {
+      addMeasureToTemplate(el.dataset.name, +el.dataset.mi);
+    });
+  });
+  document.querySelectorAll('.variant-tpl-list .variant-btn--danger').forEach(el => {
+    el.addEventListener('click', () => {
+      removeMeasureFromTemplate(el.dataset.name, +el.dataset.mi);
+    });
+  });
 }
 
 function attachEditorHandlers() {
