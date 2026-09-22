@@ -19,6 +19,17 @@ och pull request.
 
 När du ändrar en fil i roten ska motsvarande fil i `dist/` uppdateras också, antingen via `npm run dist` eller manuellt.
 
+## Versionsnummer
+
+`version` i `package.json` (och `package-lock.json`) bumpas för varje commit som ändrar
+appens kod eller beteende — den håller inte synk med git-historiken automatiskt, så det
+måste göras för hand vid varje sådan commit:
+
+- **Buggfix** (rättar felaktigt beteende utan att lägga till något nytt): +0.0.1
+- **Ny funktion**: +0.1.0 (nollställ patch-siffran)
+
+Rena data-/dokumentationsändringar (nya låtar, README, kommentarer) kräver ingen bump.
+
 ## Service Worker & mobilcache
 
 `sw.js` (och `dist/sw.js`) cachar statiska filer med **cache-first**. Mobila enheter fastnar i gammal cache om `CACHE_NAME` inte byts.
