@@ -1,0 +1,145 @@
+{
+  "title": "I Still Miss Someone",
+  "artist": "J Tex",
+  "key": "Am",
+  "timeSignature": "4/4",
+  "difficulty": "Medel",
+  "sections": [
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "      Am        G          Am",
+          "l": "At my door the leaves are falling"
+        },
+        {
+          "c": "    C         G         Am",
+          "l": "The cold wild wind will come"
+        },
+        {
+          "c": "Am           G       Am",
+          "l": "Sweethearts walk by together"
+        },
+        {
+          "c": "    F       G        Am",
+          "l": "And I Still Miss Someone"
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "  Am  G       Am",
+          "l": "I go out on a party"
+        },
+        {
+          "c": "    C           G      Am",
+          "l": "And look for a little fun"
+        },
+        {
+          "c": "    Am        G        Am",
+          "l": "But I find a darkened corner"
+        },
+        {
+          "c": "F              G        Am",
+          "l": "'Cause I still miss someone"
+        },
+        {
+          "c": "",
+          "l": "---------------------------------------"
+        },
+        {
+          "c": "",
+          "l": "BRIDGE"
+        },
+        {
+          "c": "     Dm                   Am",
+          "l": "No I never got over those blue eyes"
+        },
+        {
+          "c": "  Cadd9    G    Am",
+          "l": "I see them everywhere"
+        },
+        {
+          "c": "Dm                     Am",
+          "l": "I miss those arms that held me"
+        },
+        {
+          "c": "F            G        Am",
+          "l": "When all the love was there"
+        },
+        {
+          "c": "",
+          "l": "----------------------------------------"
+        },
+        {
+          "c": "  Am     G        Am",
+          "l": "I wonder if she's sorry"
+        },
+        {
+          "c": "    C       G            Am",
+          "l": "For leavin' what we'd begun"
+        },
+        {
+          "c": "        Am      G      Am",
+          "l": "There's someone for me somewhere"
+        },
+        {
+          "c": "F           G        Am",
+          "l": "And I Still Miss Someone"
+        },
+        {
+          "c": "",
+          "l": "----------------------------------------"
+        }
+      ]
+    },
+    {
+      "label": "Vers 3",
+      "lines": [
+        {
+          "c": "",
+          "l": "BRIDGE"
+        },
+        {
+          "c": "     Dm                   Am",
+          "l": "No I never got over those blue eyes"
+        },
+        {
+          "c": "  Cadd9    G    Am",
+          "l": "I see them everywhere"
+        },
+        {
+          "c": "Dm                     Am",
+          "l": "I miss those arms that held me"
+        },
+        {
+          "c": "F            G        Am",
+          "l": "When all the love was there"
+        },
+        {
+          "c": "",
+          "l": "-------------------------------------"
+        },
+        {
+          "c": "  Am     G        Am",
+          "l": "I wonder if she's sorry"
+        },
+        {
+          "c": "    C       G            Am",
+          "l": "For leavin' what we'd begun"
+        },
+        {
+          "c": "        Am      G      Am",
+          "l": "There's someone for me somewhere"
+        },
+        {
+          "c": "F           G        Am",
+          "l": "And I Still Miss Someone"
+        }
+      ]
+    }
+  ],
+  "capio": "3rd fret"
+}

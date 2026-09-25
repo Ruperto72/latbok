@@ -1,0 +1,207 @@
+{
+  "title": "Space Oddity",
+  "artist": "David Bowie",
+  "key": "C",
+  "timeSignature": "4/4",
+  "difficulty": "Svår",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Intro",
+      "lines": [
+        {
+          "c": "Fmaj7  Em   Fmaj7  Em   ",
+          "l": ""
+        },
+        {
+          "c": "Fmaj7  Em   Fmaj7  Em",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Pre-Verse",
+      "lines": [
+        {
+          "c": "C                           Em",
+          "l": "  Ground control to Major Tom"
+        },
+        {
+          "c": "C                           Em",
+          "l": "  Ground control to Major Tom"
+        },
+        {
+          "c": "Am          Am/G              D7/F#",
+          "l": "  Take your protein pills and put your helmet on"
+        },
+        {
+          "c": "C                           Em",
+          "l": "  Ground control to Major Tom"
+        },
+        {
+          "c": "C                              Em",
+          "l": "  Commencing countdown engines on"
+        },
+        {
+          "c": "Am        Am/G           D7/F#",
+          "l": "  Check ignition and may God's love be with you"
+        }
+      ]
+    },
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "C                                E7",
+          "l": "This is ground control to Major Tom"
+        },
+        {
+          "c": "                         F",
+          "l": "You've really made the grade"
+        },
+        {
+          "c": "        Fm              C                     F",
+          "l": "And the papers want to know whose shirts you wear"
+        },
+        {
+          "c": "         Fm                 C              F",
+          "l": "Now it's time to leave the capsule if you dare"
+        },
+        {
+          "c": "  C                              E7",
+          "l": "This is Major Tom to ground control"
+        },
+        {
+          "c": "                          F",
+          "l": "I'm stepping through the door"
+        },
+        {
+          "c": "         Fm            C             F",
+          "l": "And I'm floating in a most peculiar way"
+        },
+        {
+          "c": "         Fm              C           F",
+          "l": "And the stars look very different today"
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "    Fmaj7     Em",
+          "l": "For here am I sitting in a tin can"
+        },
+        {
+          "c": "Fmaj7         Em",
+          "l": "Far above the world"
+        },
+        {
+          "c": "A#              Am               G             F",
+          "l": "Planet Earth is blue and there's nothing I can do"
+        }
+      ]
+    },
+    {
+      "label": "Instrumental",
+      "lines": [
+        {
+          "c": "C  F  G   A A   ",
+          "l": ""
+        },
+        {
+          "c": "C  F  G   A A   ",
+          "l": ""
+        },
+        {
+          "c": "Fmaj7   Em      A ",
+          "l": ""
+        },
+        {
+          "c": "C       D       E ",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "C                                      E7",
+          "l": "Though I'm past one hundred thousand miles"
+        },
+        {
+          "c": "                   F",
+          "l": "I'm feeling very still"
+        },
+        {
+          "c": "       Fm                 C                  F",
+          "l": "And I think my spaceship knows which way to go"
+        },
+        {
+          "c": "         Fm              C             F",
+          "l": "Tell my wife I love her very much she knows"
+        }
+      ]
+    },
+    {
+      "label": "Brygga",
+      "lines": [
+        {
+          "c": "G                 E7              Am                      C/G",
+          "l": "Ground control to Major Tom, your circuit's dead, there's something wrong"
+        },
+        {
+          "c": "        D7/F#",
+          "l": "Can you hear me Major Tom?"
+        },
+        {
+          "c": "        C",
+          "l": "Can you hear me Major Tom?"
+        },
+        {
+          "c": "        G",
+          "l": "Can you hear me Major Tom? Can you..."
+        }
+      ]
+    },
+    {
+      "label": "Refräng 2",
+      "lines": [
+        {
+          "c": "Fmaj7     Em",
+          "l": "Here am I floating 'round my tin can"
+        },
+        {
+          "c": "Fmaj7         Em",
+          "l": "Far above the Moon"
+        },
+        {
+          "c": "A#              Am               G             F",
+          "l": "Planet Earth is blue and there's nothing I can do"
+        }
+      ]
+    },
+    {
+      "label": "Outro",
+      "lines": [
+        {
+          "c": "C  F  G   A A  ",
+          "l": ""
+        },
+        {
+          "c": "C  F  G   A A  ",
+          "l": ""
+        },
+        {
+          "c": "Fmaj7   Em      A ",
+          "l": ""
+        },
+        {
+          "c": "C       D       E ",
+          "l": ""
+        }
+      ]
+    }
+  ]
+}
