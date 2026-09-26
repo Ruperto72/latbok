@@ -1,0 +1,218 @@
+{
+  "title": "Bamboleo",
+  "artist": "Gipsy Kings",
+  "key": "Em",
+  "timeSignature": "4/4",
+  "difficulty": "Svår",
+  "chordTemplates": {},
+  "sections": [
+    {
+      "label": "Intro",
+      "lines": [
+        {
+          "c": "Em",
+          "l": ""
+        }
+      ]
+    },
+    {
+      "label": "Vers 1",
+      "lines": [
+        {
+          "c": "Em              B7         Em",
+          "l": "Este amor llega asi esta manera"
+        },
+        {
+          "c": "            B7",
+          "l": "No tiene la culpa"
+        },
+        {
+          "c": "B7",
+          "l": "Caballo le ven sabana"
+        },
+        {
+          "c": "B7",
+          "l": "Porque muy depreciado,"
+        },
+        {
+          "c": "                 Em",
+          "l": "Por eso no te perdon de llorar"
+        }
+      ]
+    },
+    {
+      "label": "Vers 2",
+      "lines": [
+        {
+          "c": "Em              B7         Em",
+          "l": "Este amor llega asi esta manera"
+        },
+        {
+          "c": "            B7",
+          "l": "No tiene la culpa"
+        },
+        {
+          "c": "B7",
+          "l": "Amor de compra y venta"
+        },
+        {
+          "c": "B7",
+          "l": "Amor del mes pasado"
+        },
+        {
+          "c": "B7",
+          "l": "Bembele, bembele, bembele"
+        },
+        {
+          "c": "B7",
+          "l": "Bem, bembele, bembele"
+        }
+      ]
+    },
+    {
+      "label": "Refräng",
+      "lines": [
+        {
+          "c": "N.C. Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7add11                     Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        },
+        {
+          "c": "     Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                          Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        }
+      ]
+    },
+    {
+      "label": "Brygga",
+      "lines": [
+        {
+          "c": "                   Am7",
+          "l": "No tiene pardon de dios"
+        },
+        {
+          "c": "           D7                      Gmaj7",
+          "l": "Tu eres mi vida, la fortuna del destin"
+        },
+        {
+          "c": "           C/G              Am",
+          "l": "Pero el destino te ha desamparado"
+        },
+        {
+          "c": "                 B7",
+          "l": "Lo mismo yo que ayer"
+        },
+        {
+          "c": "             Em",
+          "l": "Lo mismo soy yo"
+        },
+        {
+          "c": "                   Am7",
+          "l": "No te encuentro a labandon"
+        },
+        {
+          "c": "       D7                         Gmaj7",
+          "l": "Es imposible no te encuentro de verdad"
+        },
+        {
+          "c": "           C/G                  Am",
+          "l": "Por eso un dia no cuentro si de nada"
+        },
+        {
+          "c": "                 B7",
+          "l": "Lo mismo you que ayer"
+        },
+        {
+          "c": "             Em",
+          "l": "Yo pienso en ti"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 2",
+      "lines": [
+        {
+          "c": "N.C. Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                          Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        },
+        {
+          "c": "     Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                          Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 3",
+      "lines": [
+        {
+          "c": "N.C. Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                          Em",
+          "l": ""
+        },
+        {
+          "c": "N.C. Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                          Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        }
+      ]
+    },
+    {
+      "label": "Refräng 4",
+      "lines": [
+        {
+          "c": "     Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                          Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        },
+        {
+          "c": "     Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                          Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        },
+        {
+          "c": "     Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                          Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        },
+        {
+          "c": "     Em        Am6",
+          "l": "Bamboleo, bambolea"
+        },
+        {
+          "c": "          B7                   N.C.   Em Am Em Am Em",
+          "l": "Porque mi vida, yo la prefiero vivir asi"
+        }
+      ]
+    }
+  ]
+}
