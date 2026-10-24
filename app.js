@@ -283,6 +283,7 @@ function renderSongList(filter = '') {
   poster.forEach(({ s, i }) => {
     const div = document.createElement('div');
     div.className = 'song-item' + (i === currentSong ? ' active' : '');
+    div.dataset.index = i;
     div.setAttribute('role', 'listitem');
     div.setAttribute('tabindex', '0');
     div.setAttribute('aria-current', i === currentSong ? 'true' : 'false');
@@ -527,8 +528,11 @@ function selectSong(idx) {
   currentSong = idx;
   currentSongFile = songs[idx]?._filename || null;
   transposeSemitones = 0;
-  document.querySelectorAll('.song-item').forEach((el, i) => {
-    el.className = 'song-item' + (i === idx ? ' active' : '');
+  // Listan är sorterad/filtrerad, så DOM-positionen är inte songs-indexet.
+  document.querySelectorAll('.song-item').forEach(el => {
+    const active = Number(el.dataset.index) === idx;
+    el.classList.toggle('active', active);
+    el.setAttribute('aria-current', active ? 'true' : 'false');
   });
   renderSong();
   savePrefs();
@@ -1730,6 +1734,11 @@ function toggleSidebar() {
     document.querySelector('.app').classList.toggle('sidebar-hidden', sidebarHidden);
     savePrefs();
   }
+  scrollActiveSongIntoView();
+}
+
+function scrollActiveSongIntoView() {
+  document.querySelector('.song-item.active')?.scrollIntoView({ block: 'center' });
 }
 
 // ─── Editor: transponera sångdata ───
