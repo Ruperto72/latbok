@@ -282,10 +282,11 @@ function renderSongList(filter = '') {
 
   poster.forEach(({ s, i }) => {
     const div = document.createElement('div');
-    div.className = 'song-item' + (i === currentSong ? ' active' : '');
+    div.className = 'song-item';
+    div.dataset.index = i;
     div.setAttribute('role', 'listitem');
     div.setAttribute('tabindex', '0');
-    div.setAttribute('aria-current', i === currentSong ? 'true' : 'false');
+    setSongItemActive(div, i === currentSong);
     div.innerHTML = `
       <div class="song-title">${escHtml(s.title)}</div>
       <div class="song-artist">${escHtml(s.artist)}</div>
@@ -299,6 +300,12 @@ function renderSongList(filter = '') {
     div.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectSong(i); } };
     list.appendChild(div);
   });
+  scrollActiveSongIntoView();
+}
+
+function setSongItemActive(el, active) {
+  el.classList.toggle('active', active);
+  el.setAttribute('aria-current', active ? 'true' : 'false');
 }
 
 function currentSongQuery() {
@@ -527,8 +534,9 @@ function selectSong(idx) {
   currentSong = idx;
   currentSongFile = songs[idx]?._filename || null;
   transposeSemitones = 0;
-  document.querySelectorAll('.song-item').forEach((el, i) => {
-    el.className = 'song-item' + (i === idx ? ' active' : '');
+  // Listan är sorterad/filtrerad, så DOM-positionen är inte songs-indexet.
+  document.querySelectorAll('.song-item').forEach(el => {
+    setSongItemActive(el, Number(el.dataset.index) === idx);
   });
   renderSong();
   savePrefs();
@@ -1723,13 +1731,24 @@ function updateTemplateMeasure(tplName, index, newChord) {
 
 function toggleSidebar() {
   if (window.innerWidth <= 768) {
-    document.getElementById('sidebar').classList.toggle('open');
+    const open = document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('overlay').classList.toggle('open');
+    if (open) scrollActiveSongIntoView();
   } else {
     sidebarHidden = !sidebarHidden;
     document.querySelector('.app').classList.toggle('sidebar-hidden', sidebarHidden);
     savePrefs();
+    if (!sidebarHidden) scrollActiveSongIntoView();
   }
+}
+
+// Scrollar bara låtlistan (inte sidan) så att aktiv låt hamnar i mitten.
+function scrollActiveSongIntoView() {
+  const list = document.getElementById('songList');
+  const el = list?.querySelector('.song-item.active');
+  if (!el || !list.clientHeight) return;
+  const offset = el.getBoundingClientRect().top - list.getBoundingClientRect().top;
+  list.scrollTop += offset - (list.clientHeight - el.offsetHeight) / 2;
 }
 
 // ─── Editor: transponera sångdata ───
