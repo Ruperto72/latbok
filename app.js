@@ -465,6 +465,11 @@ function closeSettingsSheet() {
   if (backdrop) backdrop.classList.remove('mobile-sheet-backdrop--active');
 }
 
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
 function toggleSettingsSheet() {
   const sheet = document.getElementById('mobileSheet');
   const btn = document.getElementById('mobileSettingsBtn');
@@ -474,6 +479,7 @@ function toggleSettingsSheet() {
   if (isOpen) {
     closeSettingsSheet();
   } else {
+    closeMobileSidebar();
     // Sync current values into sheet before opening
     const mfl = document.getElementById('mobileFontLabel');
     if (mfl) mfl.textContent = fontSize;
@@ -541,8 +547,7 @@ function selectSong(idx) {
   renderSong();
   savePrefs();
   if (window.innerWidth <= 768) {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('overlay').classList.remove('open');
+    closeMobileSidebar();
     closeSettingsSheet();
   }
 }
@@ -1733,7 +1738,10 @@ function toggleSidebar() {
   if (window.innerWidth <= 768) {
     const open = document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('overlay').classList.toggle('open');
-    if (open) scrollActiveSongIntoView();
+    if (open) {
+      closeSettingsSheet();
+      scrollActiveSongIntoView();
+    }
   } else {
     sidebarHidden = !sidebarHidden;
     document.querySelector('.app').classList.toggle('sidebar-hidden', sidebarHidden);
