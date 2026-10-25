@@ -31,7 +31,11 @@ const FORMLER = {
   '9':    [0, 4, 7, 10, 2],
   'm7b5': [0, 3, 6, 10],
   '7+':   [0, 4, 8, 10],
+  '7add11': [0, 4, 7, 10, 5],
 };
+
+// Enstaka grepp utan krav på alla 12 grundtoner
+const ENSTAKA = new Set(['7add11']);
 
 function delaNamn(namn) {
   const m = namn.match(/^([A-G][#b]?)(.*)$/);
@@ -46,7 +50,7 @@ function toner(frets) {
 const GRUNDACKORD = Object.entries(CHORD_LIB).filter(([namn]) => !namn.includes('/'));
 
 describe('CHORD_LIB — täckning', () => {
-  for (const suffix of Object.keys(FORMLER)) {
+  for (const suffix of Object.keys(FORMLER).filter(s => !ENSTAKA.has(s))) {
     it(`${suffix || 'dur'} finns för alla 12 grundtoner`, () => {
       const täckta = new Set();
       for (const [namn] of GRUNDACKORD) {
